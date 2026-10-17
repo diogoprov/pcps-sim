@@ -44,7 +44,7 @@ checkpoint() {
 ) &
 
 cd ${WORK}
-docker build -t pcps-sim . > ${WORK}/build.log 2>&1
+docker build -t pcps-sim . > ${WORK}/build.log 2>&1 && \
 docker run --rm \
   -v ${WORK}/${STORE}:/project/${STORE} \
   -v ${WORK}/data/derived:/project/data/derived \

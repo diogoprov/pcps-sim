@@ -4,7 +4,8 @@ references
 logs
 renv/library
 renv/staging
-_targets*
+_targets/
+_targets_*/
 data/derived
 docs
 tests
