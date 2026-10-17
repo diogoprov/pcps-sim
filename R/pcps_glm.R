@@ -80,6 +80,7 @@ f_rda <- function(y, x) {
 #'   equals that of the plain GLM.
 #' - `rda_pcps`: RDA of all `axes` on env (invariant to rotations of the axes,
 #'   so it needs no Procrustes).
+#' It also adds the share of each axis in the total variation (`eig_share<a>`).
 test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
                         extra_axes = FALSE) {
   q <- phylo_q(tree)
@@ -117,11 +118,19 @@ test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
   p_taxa <- vapply(seq_along(obs), \(a) perm_p(obs[a], taxa[a, ]), 0)
   tests <- c("adonis", "mantel", paste0("glm_pcps", axes))
   if (extra_axes) tests <- c(tests, paste0("glm_pcps", axes, "_proc"), "rda_pcps")
-  tibble::tibble(
+  out <- tibble::tibble(
     test = tests,
     stat = c(db_stat(g, env)[["R2"]], obs[-1]),
     p_site = p_site,
     p_taxa = p_taxa,
     p_max = pmax(p_site, p_taxa)
   )
+  if (extra_axes) {
+    # share of each PCPS in the total variation of D_P (the eigenvalue share of
+    # the old tree-shape design, legacy notes 2012); trace(G) is the sum of
+    # the eigenvalues, all non-negative for sqrt Bray-Curtis
+    share <- colSums(y^2) / sum(diag(g))
+    for (a in seq_along(axes)) out[[paste0("eig_share", axes[a])]] <- share[a]
+  }
+  out
 }

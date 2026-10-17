@@ -42,7 +42,7 @@ test_that("extra axis tests: Procrustes and RDA", {
   set.seed(3)
   ext <- test_dp_all(comm, tree, env, nperm = 19, extra_axes = TRUE)
   # the extra tests use no random numbers, so the original tests are unchanged
-  expect_equal(ext[seq_len(nrow(base)), ], base)
+  expect_equal(ext[seq_len(nrow(base)), names(base)], base)
   expect_equal(ext$test[-seq_len(nrow(base))],
                c("glm_pcps1_proc", "glm_pcps2_proc", "rda_pcps"))
   # observed Procrustes F equals the plain F, and so do the site-shuffle p
@@ -52,4 +52,7 @@ test_that("extra axis tests: Procrustes and RDA", {
   y <- pcps_axes(comm, phylo_q(tree), 1:2)
   a <- anova(vegan::rda(y ~ env), permutations = 0)
   expect_equal(ext$stat[7], a$F[1], tolerance = 1e-8)
+  # eigenvalue shares match a full eigen decomposition
+  ev <- eigen(gower_centre(d_p(matrix_p(comm, phylo_q(tree)), sqrt = TRUE)))$values
+  expect_equal(c(ext$eig_share1[1], ext$eig_share2[1]), ev[1:2] / sum(ev), tolerance = 1e-8)
 })

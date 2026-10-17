@@ -531,3 +531,25 @@ Próximos passos sugeridos:
   commit citados acima são anteriores à reescrita.** Backup do histórico antigo:
   `~/Github/pcps-sim_pre-filter_20261017.bundle`.
 - Licenças: MIT (código) e CC BY 4.0 (texto, figuras, resultados); `CITATION.cff`.
+- **Testes extras nos eixos PCPS (2026-10-17).** `test_dp_all(extra_axes = TRUE)`
+  acrescenta `glm_pcps1_proc`, `glm_pcps2_proc` (GLM depois do Procrustes simétrico
+  dos eixos nulos 1–2 sobre os observados, como `pcps.sig` com `choices = 1:2`),
+  `rda_pcps` (RDA nos eixos 1–2) e as colunas `eig_share1/2` (fração da variação
+  em cada PCPS). Os testes extras não consomem números aleatórios, então os
+  originais não mudam. O custo marginal é desprezível. Perfil `axes`: igual ao
+  `full`, sem PCC, com os extras; ≈ 890 vCPU-h, ≈ 4,7 h numa c7a.48xlarge.
+- **Pasta Leandro-Vanderlei no Dropbox (inspecionada em 2026-10-17).**
+  - Os dois scripts, o PDF do desenho e o `Testes PCPS.ppt` são idênticos às
+    cópias em `legacy/`.
+  - `simulações pcps .doc` (dez/2012): rascunho do artigo de forma da árvore, com
+    Debastiani como coautor de mesma contribuição, Duarte e Melo. O objetivo era o
+    efeito de Colless e γ na **fração da variação do PCPS1**. Resultado reportado:
+    só γ tinha efeito (negativo), com F(2,10), ou seja apenas 13 árvores. Por isso
+    o `eig_share` foi incluído no perfil `axes`.
+  - `Artigo com aplicações ecológicas.doc`: esqueleto vazio (Debastiani, Provete,
+    Duarte, Melo).
+  - `pcps_vs_nri.doc`, `plot_nri_pcps.ppt`, `Result NRI.txt`: outro projeto (NRI
+    vs PCPS1 em 12 metacomunidades de girinos da literatura, 167 comunidades).
+    Pode servir de referência empírica para a composição das metacomunidades.
+  - Os três PDFs `Grafico_*phylo_5_10_10_4_6_500.pdf` (~7 MB cada) não foram
+    abertos.
