@@ -406,3 +406,41 @@ Próximos passos sugeridos:
 2. Adicionar o GLM sobre eixos PCPS (`pcps.sig`) e os cenários de nuisance (S2σ,
    S2h).
 3. Pipeline `targets`, com checkpoint por réplica, para a AWS.
+
+## GLM-PCPS, camada A completa e pipeline (2026-10-17)
+
+- Decisão do Diogo: sqrt(BC) já é definitivo. Não vamos separar o efeito Grafen ×
+  sqrt; o estudo completo mede o taxa shuffle em phylo_only com 1000 réplicas.
+- **GLM sobre os eixos PCPS** (`R/pcps_glm.R`):
+  - O F observado confere com `PCPS::pcps.sig` + `FUN.GLM`.
+  - Com um eixo só, o Procrustes simétrico do `pcps.sig` não altera F (testado),
+    por isso foi omitido.
+  - `test_dp_all()` usa as mesmas permutações para ADONIS, Mantel e GLM.
+    RSpectra calcula só os 2 primeiros autovetores.
+  - Custo: PFW + GLM juntos levam 2,0/1,7/3,6 s por réplica (N = 50/100/200),
+    contra 4,2/3,5/6,7 s separados. O PCC soma 0,6/1,5/4,2 s.
+  - **O `PCPS` remove espécies ausentes de todos os sítios** antes de montar Q.
+    Adotamos o mesmo no estudo novo: a árvore é podada, como com dados reais.
+- **Camada A** (`R/simulate_layerA.R`): os 8 cenários do plano, λ de Pagel, σ e h
+  com sinal por ranks (mantendo a marginal), incidência e abundância.
+- **Pipeline** (`_targets.R`, `R/pipeline.R`, `analysis/run_pipeline.R <perfil>
+  <workers>`):
+  - Perfis: smoke, bench, pilot_glm e full; cada um tem seu próprio store,
+    `_targets_<perfil>`.
+  - Cada branch cruza uma célula de árvores com uma linha (cenário, dado, chunk).
+  - Réplica r usa a árvore r da célula, num desenho pareado entre cenários.
+  - O perfil smoke rodou de ponta a ponta, e a reexecução não tem nada
+    desatualizado.
+- **AWS** (`Dockerfile`, `aws/`, instruções em `aws/README.md`): instância spot
+  única; o store vai para o S3 a cada 10 min e no aviso de interrupção, e a
+  instância se encerra no fim.
+  - **O build do Docker ainda não foi testado:** o Docker Desktop não estava
+    rodando. Testar localmente, ou com o perfil bench numa c7a.2xlarge, antes do
+    full.
+- **Custo total previsto do projeto** (estimativa minha): objetivo 1 ≈ R$ 100–300.
+  Mais camada B (mcomsimr; ainda sem medida, mais cara por réplica), objetivo 2
+  (evoPCA e phylofactorization, ainda sem medida), bench/pilotos na AWS e
+  reexecuções para revisores. Total provável de R$ 300–1.000.
+- [ ] Mini-piloto do GLM (perfil pilot_glm: 3 células, 8 cenários, incidência e
+  abundância, 100 réplicas; ~35–40 min com 16 workers) **agendado para quando os
+  jobs do japan-microcosm (PIDs 5814 e 7391) terminarem.**
