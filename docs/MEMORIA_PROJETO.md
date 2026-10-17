@@ -333,7 +333,13 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
 - Rodado em paralelo com o Hmsc do japan-microcosm-bacteria (4 núcleos); a pedido
   do Diogo, usamos 12 workers.
 - [ ] Obter o posterior de árvores datadas de Portik et al. 2023, para a incerteza
-  dos quantis.
+  dos quantis. **Onde:** projeto OSF `qgcf2` (https://osf.io/qgcf2/). A árvore
+  usada no Zenodo da Jessyca (doi:10.5281/zenodo.20297485,
+  `antipredator_v2.qmd` l. 212–214) é o arquivo `64ea07f5ac48a005e340256b`
+  (download por `https://files.osf.io/v1/resources/qgcf2/providers/osfstorage/<id>?action=download`).
+  O OSF fica fora do ar até segunda-feira, 2026-10-19 (status.cos.io). Listar os
+  arquivos do projeto quando voltar e conferir se o SHA-256 da árvore única bate
+  com o de `data/raw/`.
 - [ ] Pools regionais (ex.: espécies do Brasil, do banco de girinos) como
   referência alternativa aos clados.
 - [ ] Piloto: 3 células (Yule×Yule, γ low × Colless yule, γ yule × Colless high),

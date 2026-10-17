@@ -53,3 +53,21 @@ rejection_rates <- function(res, ..., alpha = 0.05) {
       .groups = "drop"
     )
 }
+
+#' One replicate of the tree-shape pilot: PFW (Mantel, ADONIS) and PCC on the
+#' same metacommunity, for a tree drawn from a grid cell
+#'
+#' Optima evolve by Brownian motion on the actual branch lengths
+#' (`sim_optima_pnk`), not on Grafen's lengths, which would erase gamma.
+rep_pilot <- function(tree, phylo, env_original, mu_tol = 10, n_sites = 100,
+                      nperm = 999) {
+  u <- sim_optima_pnk(tree, signal = phylo)
+  env <- stats::runif(n_sites, 0, 100)
+  comm <- sim_comm_static(u, env, mu_tol = mu_tol, incidence = TRUE)
+  env_used <- if (env_original) env else stats::runif(n_sites, 0, 100)
+  ok <- drop_empty_sites(comm, env_used)
+  pfw <- test_pfw(ok$comm, tree, ok$env, nperm = nperm, sqrt_adonis = TRUE)
+  pcc <- test_pcc(ok$comm, tree, ok$env, nperm = nperm)
+  dplyr::bind_rows(pfw, pcc) |>
+    dplyr::mutate(n_dropped = ok$n_dropped)
+}
