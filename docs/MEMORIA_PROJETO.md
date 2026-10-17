@@ -502,3 +502,23 @@ Próximos passos sugeridos:
       S3b).
   - Espécies descartadas por ausência: em média 0,5/0,9/1,7 por N; nenhum sítio
     vazio.
+- **Diagnóstico do S2sigma (2026-10-17, `analysis/09_diag_s2sigma.R`, local).**
+  S2 (controle) e S2sigma; células Yule e γ baixo; N = 100/200; incidência; 100
+  réplicas; 499 permutações; 5,7 min com 6 workers. Resultados em
+  `data/derived/diag_s2sigma/`.
+  - Taxa de rejeição do taxa shuffle:
+    - GLM no PCPS2, um eixo por vez (como no pipeline): S2 0,04–0,08; S2sigma
+      0,09–0,30 (0,30 em γ baixo com N = 200). A inflação se reproduz.
+    - Com Procrustes simétrico dos eixos nulos 1–2 sobre os observados
+      (`pcps.sig` com `choices = 1:2`): 0,00–0,02 nos dois cenários. Remove a
+      inflação, mas fica muito conservador também em S2.
+    - RDA nos eixos 1–2: S2 0,02–0,05; S2sigma 0,01–0,02.
+    - GLM quadrático (env + env²) no PCPS2: 0,03–0,12. Não resolve.
+  - CWM σ × env²: |r| ≈ 0,83–0,89 **nos dois cenários**. É um efeito de borda do
+    gradiente, que existe com ou sem sinal em σ; não distingue os cenários.
+  - Em S2sigma, o PCPS1 fica mais correlacionado com a CWM σ (0,63–0,83, contra
+    0,44–0,61 em S2), e a variância do eixo 2 não muda (≈ 0,14).
+  - Interpretação (minha): o clado de nicho amplo entra nos eixos principais e
+    os gira. No taxa shuffle essa estrutura some, então o PCPS2 nulo não é o
+    mesmo eixo que o PCPS2 observado. O problema é a **identidade dos eixos**
+    no teste eixo a eixo sem rotação, e não uma associação real com o ambiente.

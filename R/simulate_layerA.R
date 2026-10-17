@@ -49,7 +49,7 @@ rank_to_marginal <- function(x, target) {
 #' trait. Empty sites are dropped, and species absent from all sites are dropped
 #' and pruned from the tree (as `PCPS` does and as with real data).
 #' @return list with comm (sites x species, tip order), tree, env (analysed),
-#'   n_dropped_sites, n_dropped_spp.
+#'   n_dropped_sites, n_dropped_spp, and traits (u, sigma, h of the species kept).
 sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_original,
                                 incidence = TRUE, n_sites = 100, mu_tol = 10) {
   k <- ape::Ntip(tree)
@@ -76,7 +76,8 @@ sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_origin
   present <- colSums(ok$comm) > 0
   tree_obs <- if (all(present)) tree else ape::keep.tip(tree, tree$tip.label[present])
   list(comm = ok$comm[, tree_obs$tip.label, drop = FALSE], tree = tree_obs,
-       env = ok$env, n_dropped_sites = ok$n_dropped, n_dropped_spp = sum(!present))
+       env = ok$env, n_dropped_sites = ok$n_dropped, n_dropped_spp = sum(!present),
+       traits = data.frame(u = u, sigma = sigma, h = h)[present, ])
 }
 
 #' Run all methods on one metacommunity
