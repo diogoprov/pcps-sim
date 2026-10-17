@@ -239,7 +239,7 @@ motivação.
 **Permutações:** site shuffle; taxa shuffle (permutação das pontas, topologia
 fixa); largest P. A phylofactorization tem inferência própria; tratar à parte.
 
-**Reimplementação do PCC.** Precisamos do PDF de Peres-Neto & Kembel 2015. A
+**Reimplementação do PCC** (especificação em `docs/ESPEC_PCC.md`; o `picante` não tem o código). Incluir também a versão β (MPD + db-RDA) e uma variante da PCPS com padronização e regressão ponderadas, para testar a crítica (7) de Peres-Neto & Kembel 2015. Precisamos do PDF de Peres-Neto & Kembel 2015. A
 validação é reproduzir o desenho do Appendix A (100 sítios × 50 spp., μtol = 5 ou
 10, 1 gradiente) e conferir se as taxas de rejeição batem com as publicadas, dentro
 do erro de Monte Carlo. Se não baterem, aí sim vale escrever ao Pedro.

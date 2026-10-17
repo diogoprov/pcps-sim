@@ -214,7 +214,15 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
 
 - [x] Passo 1 (2026-10-16): lidos Duarte et al. 2018 e o resumo de ter Braak et al. 2017 → o item 2 continua aberto (ver plano, seção 0).
 - [x] O `mcomsimr` (Thompson et al. 2020) foi avaliado → desenho em duas camadas proposto (plano, seção 3b); aguarda o OK do Diogo.
-- [ ] Passo 2: ler o PDF de Peres-Neto & Kembel 2015 e escrever a especificação do PCC.
+- [x] Diogo aprovou o desenho em duas camadas: A = estática (Peres-Neto et al. 2012), B = `mcomsimr`.
+- [x] Passo 2 (2026-10-16): Peres-Neto & Kembel 2015 lido inteiro → `docs/ESPEC_PCC.md`.
+  O `picante` NÃO implementa PGA/PCC, apesar do que diz o artigo (repositório
+  conferido). Dois achados para a Introdução:
+  (i) p. 717: "tree shape ... Future studies will be important to assess the
+  performance ... for different tree shapes", uma chamada publicada para o nosso eixo;
+  (ii) p. 721: críticas à PCPS (teste só por linhas, correção de Lingoes, falta de
+  ponderação → "very unstable regression estimates", citando simulações não
+  publicadas de Peres-Neto & Dray). O objetivo 1 pode testar essa crítica.
 - [ ] Passo 3: `renv` + funções do piloto (reproduzir a Tabela 1 de Duarte et al. 2016).
 
 - [ ] **Plano v0.1 em `PLANO_SIMULACAO.md` (2026-10-16): aguarda decisões do Diogo (seção 9) e PDFs (seção 10).** O eixo principal é a validade da inferência sobre P; a comparação de métodos é o objetivo 2. O PCC será reimplementado a partir do PDF e do Appendix A (decisão do Diogo).
