@@ -20,9 +20,9 @@ running are lost). The instance terminates itself at the end.
 
 ```bash
 aws/pack_code.sh <bucket>                      # uploads git HEAD (commit first)
-aws/launch_spot.sh <bucket> bench c7a.2xlarge 8 pcps-sim-ec2     # ~15 min, < US$ 1
+aws/launch_spot.sh <bucket> bench c7a.2xlarge 8 pcps-sim-ec2 1   # ~15 min, < US$ 1
 # check s3://<bucket>/pcps-sim/results/bench/ and the log, then:
-aws/launch_spot.sh <bucket> full c7a.48xlarge 190 pcps-sim-ec2
+aws/launch_spot.sh <bucket> full c7a.48xlarge 190 pcps-sim-ec2 10
 ```
 
 - Progress: `aws s3 ls s3://<bucket>/pcps-sim/logs/` (log copied at each checkpoint).

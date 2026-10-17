@@ -1,12 +1,15 @@
 #!/bin/bash
-# EC2 user data (Amazon Linux 2023, x86_64). Placeholders __BUCKET__, __PROFILE__
-# and __WORKERS__ are filled in by aws/launch_spot.sh.
+# EC2 user data (Amazon Linux 2023, x86_64). Placeholders __BUCKET__, __PROFILE__,
+# __WORKERS__ and __MAX_HOURS__ are filled in by aws/launch_spot.sh.
 # Resumes from the targets store saved in S3, checkpoints it every 10 min and on
 # a spot interruption notice, and terminates the instance when the run ends.
 set -uxo pipefail
 BUCKET=__BUCKET__
 PROFILE=__PROFILE__
 WORKERS=__WORKERS__
+MAX_HOURS=__MAX_HOURS__
+# watchdog: terminate after MAX_HOURS whatever happens (shutdown = terminate)
+shutdown -h +$((MAX_HOURS * 60))
 STORE=_targets_${PROFILE}
 WORK=/opt/pcps
 S3=s3://${BUCKET}/pcps-sim
