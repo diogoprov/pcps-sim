@@ -223,7 +223,30 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
   (ii) p. 721: críticas à PCPS (teste só por linhas, correção de Lingoes, falta de
   ponderação → "very unstable regression estimates", citando simulações não
   publicadas de Peres-Neto & Dray). O objetivo 1 pode testar essa crítica.
-- [ ] Passo 3: `renv` + funções do piloto (reproduzir a Tabela 1 de Duarte et al. 2016).
+- [~] Passo 3 (2026-10-16): `renv` iniciado (R 4.6.1). Funções da camada A em `R/`
+  (`pfw.R`, `pcc.R`, `simulate_static.R`, `validation.R`); 7 testes unitários passam
+  (`matrix_p` = `SYNCSA::matrix.p`; F e R² = `vegan::adonis2`; Mantel = `vegan::mantel`).
+  **Validação rápida (200 réplicas/célula, `analysis/01_validate_layerA.R`):**
+  - Duarte et al. 2016, Tabela 1: as taxas de rejeição batem (poder do ADONIS
+    0,75/0,90/0,955 contra 0,766/0,871/0,931; env_only com site = 1 e taxa ≈ 0,05;
+    Mantel phylo_only com largest P ≈ 0). As médias do Mantel batem
+    (0,831/0,887/0,905 contra 0,840/0,884/0,906).
+    **Discrepância:** o R² do ADONIS publicado só é reproduzido com Bray–Curtis
+    **sem** raiz (0,830 contra 0,819 publicado; com raiz, 0,505), embora os Métodos
+    digam "square-rooted". O Mantel bate com a raiz. Interpretação minha: o ADONIS
+    deles provavelmente foi rodado como `adonis(P ~ E, method = "bray")`. Confirmar
+    no Appendix S3. Agora o código tem a opção `sqrt_adonis` (padrão TRUE; FALSE na
+    validação).
+    A conferir com 1000 réplicas: taxa shuffle do ADONIS em phylo_only, ~0,045
+    contra 0,018–0,027 publicado.
+  - Peres-Neto & Kembel 2015, Tabela 1 (PCC): bate com −½·PD sem quadrado, como
+    impresso (poder 0,95/0,94 contra 0,945/0,947; env_only 0,055/0,065 contra
+    0,054/0,052). Com o quadrado, o poder cai (0,925/0,89). Phylo_only col =
+    0,23/0,195 contra 0,267/0,276; depende da árvore única deles.
+  - Nota: o `PCPS::pcps` atual (1.0.9) **não** usa Lingoes (descarta autovalores
+    negativos). A crítica (5) de Peres-Neto & Kembel pode não valer para a versão
+    atual.
+- [ ] Validação completa com 1000 réplicas (~45 min locais com 16 workers).
 
 - [ ] **Plano v0.1 em `PLANO_SIMULACAO.md` (2026-10-16): aguarda decisões do Diogo (seção 9) e PDFs (seção 10).** O eixo principal é a validade da inferência sobre P; a comparação de métodos é o objetivo 2. O PCC será reimplementado a partir do PDF e do Appendix A (decisão do Diogo).
 
