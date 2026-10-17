@@ -1,0 +1,18 @@
+# literature (copyright)
+references/
+
+# R
+.Rhistory
+.Rapp.history
+.RData
+.Rproj.user/
+_targets/
+renv/library/
+renv/staging/
+
+# large simulation outputs
+data/derived/*
+!data/derived/.gitkeep
+
+# OS
+.DS_Store
