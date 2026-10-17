@@ -268,7 +268,7 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
     0,267/0,276) ficam abaixo, com uma árvore fixa diferente da deles. Com 1000
     réplicas, PD com ou sem quadrado não se distinguem (a vantagem do sem quadrado
     com 200 réplicas era ruído). Mantemos −½·PD como impresso.
-  - **Dispersão entre árvores** (`analysis/03_pnk_tree_spread.R 20 200 16`, 2,5 min):
+  - **Dispersão entre árvores** (`analysis/03_pnk_tree_spread.R 20 200 16`, 2,5 min; formato em `analysis/04_pnk_tree_shape.R`):
     20 árvores Yule (`ape::rphylo(50, 1, 0)`), 200 réplicas cada. Poder do PCC
     entre árvores: 0,71–0,925 (μtol = 5) e 0,74–0,915 (μtol = 10), média ~0,85.
     Col em phylo_only: 0,135–0,275. Os valores publicados ficam no extremo superior,
