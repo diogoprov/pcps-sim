@@ -249,7 +249,40 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
   - Nota: o `PCPS::pcps` atual (1.0.9) **não** usa Lingoes (descarta autovalores
     negativos). A crítica (5) de Peres-Neto & Kembel pode não valer para a versão
     atual.
-- [ ] Validação completa com 1000 réplicas (~45 min locais com 16 workers).
+- [x] **Validação completa, 1000 réplicas (2026-10-17; 53 min com 16 workers).**
+  Scripts: `analysis/01_validate_layerA.R 1000 16` e
+  `analysis/02_compare_published.R 1000`. Alvos transcritos em `data/published/`.
+  Critério: a taxa publicada cai no IC95% binomial da nossa (n = 1000).
+  - **Duarte et al. 2016: validado.** 68 de 72 células (taxas site, taxa, largest P)
+    dentro do IC; com cerca de 60 taxas distintas a 95%, ~3 fora seriam esperadas
+    só por acaso. Fora: ADONIS both N = 100 (0,892 contra 0,871), ADONIS env_only
+    N = 200 site (0,996 contra 0,999), ADONIS phylo_only N = 200 largest P (0,021
+    contra 0,013), Mantel env_only N = 200 taxa (0,038 contra 0,059). As médias de
+    ρ e R² batem até a 2ª casa em todas as células (ADONIS com BC sem raiz). A
+    pendência do taxa shuffle em phylo_only (~0,045 com 200 réplicas) era ruído:
+    com 1000, 0,019/0,017/0,026 contra 0,023/0,027/0,018.
+  - **Peres-Neto & Kembel 2015 (PCC): validado nas células que não dependem da
+    árvore.** neither e env_only batem (exceto neither μtol = 10 row/col: 0,009
+    contra 0,004, na borda). O poder (0,925/0,916 sem quadrado; 0,948/0,926 com
+    quadrado, contra 0,945/0,947) e o col em phylo_only (0,247/0,216 contra
+    0,267/0,276) ficam abaixo, com uma árvore fixa diferente da deles. Com 1000
+    réplicas, PD com ou sem quadrado não se distinguem (a vantagem do sem quadrado
+    com 200 réplicas era ruído). Mantemos −½·PD como impresso.
+  - **Dispersão entre árvores** (`analysis/03_pnk_tree_spread.R 20 200 16`, 2,5 min):
+    20 árvores Yule (`ape::rphylo(50, 1, 0)`), 200 réplicas cada. Poder do PCC
+    entre árvores: 0,71–0,925 (μtol = 5) e 0,74–0,915 (μtol = 10), média ~0,85.
+    Col em phylo_only: 0,135–0,275. Os valores publicados ficam no extremo superior,
+    compatível com uma árvore única "favorável".
+  - **Resultado preliminar para H1 (exploratório: 20 árvores, sem inferência).**
+    Spearman entre árvores: poder do PCC × γ de Pybus = 0,90 (μtol = 5) e 0,87
+    (μtol = 10); × Colless = −0,53/−0,56. O col em phylo_only também cresce com γ
+    (0,69/0,73). Interpretação minha: árvores com nós mais perto das pontas (γ > 0)
+    dão autovetores filogenéticos mais "informativos" para o gradiente. O formato da
+    árvore já muda o poder do PCC em ~0,2, mesmo dentro de Yule. Precisa ser
+    testado no desenho γ × Colless e para PFW/PCPS.
+- [x] `renv.lock` criado (R 4.6.1, 101 pacotes; `force = TRUE` porque phangorn
+  sugere BiocManager/BiocVersion, que não estão instalados). `.renvignore` exclui
+  legacy/, references/, data/ e logs/.
 
 - [ ] **Plano v0.1 em `PLANO_SIMULACAO.md` (2026-10-16): aguarda decisões do Diogo (seção 9) e PDFs (seção 10).** O eixo principal é a validade da inferência sobre P; a comparação de métodos é o objetivo 2. O PCC será reimplementado a partir do PDF e do Appendix A (decisão do Diogo).
 
