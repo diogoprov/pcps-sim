@@ -464,3 +464,17 @@ Próximos passos sugeridos:
   c7a.2xlarge a US$ 0,18–0,24/h. O custo estimado foi aprovado pelo Diogo.
 - **Bench** lançado em 2026-10-17: `i-00194c3103455d319` (c7a.2xlarge spot,
   8 workers, limite de 2 h), código no commit 8645914.
+- **Bench na AWS (2026-10-17, 3ª tentativa, `i-07bbca48ab3ec0e6b`): OK.**
+  - As tentativas 1 e 2 falharam no build: o `.dockerignore` excluía o
+    `_targets.R`, e faltavam bibliotecas de sistema.
+  - O rocker 4.6.1 não pegou binários; os 131 pacotes foram compilados em 240 s,
+    com 8 vCPU.
+  - Calibração das árvores: 5,8 min. Pipeline completo: 5,6 min de wall.
+  - **Tempo por réplica (PFW + GLM + PCC, 999 permutações) numa c7a.2xlarge:
+    6,0/7,65/14,3 s** para N = 50/100/200. No Mac M5 local, 2,6/3,1/7,9 s: a vCPU
+    da AWS é ~2× mais lenta, e não 1,4× como eu tinha suposto.
+  - **Estudo completo:** 432 mil réplicas × 9,3 s ≈ 1.120 vCPU-h. Numa
+    c7a.48xlarge, ~6 h; spot a US$ 2,6–3,3/h dá ≈ US$ 16–20 (R$ 85–110). Com 32
+    vCPU (a cota atual), ~35 h pelo mesmo custo.
+  - Cota spot atual: 32 vCPU nas duas regiões; pedidos de 192 abertos em us-east-1
+    e us-east-2.
