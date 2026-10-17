@@ -344,3 +344,65 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
   referência alternativa aos clados.
 - [ ] Piloto: 3 células (Yule×Yule, γ low × Colless yule, γ yule × Colless high),
   com PFW (Mantel/ADONIS) e PCC nos cenários de H0. Confirmar o tempo antes.
+
+## Piloto do formato de árvore (2026-10-17)
+
+`analysis/07_pilot_tree_shape.R 200 16 999`: **45 min com 16 workers**, ou 12
+CPU-h para 7.200 metacomunidades, ~6 s de CPU por réplica com PFW + PCC a 999
+permutações. A estimativa de 25–30 min estava errada: o PCC a 999 permutações
+custa mais que o PFW em N = 200.
+- **Desenho:** 3 células (Yule×Yule, γ low × Colless yule, γ yule × Colless high),
+  N = 50/100/200, 4 cenários, 200 réplicas e uma árvore nova por réplica.
+- **Simulação:** ótimos por BM nos comprimentos reais (não Grafen); ADONIS e Mantel
+  sobre sqrt(BC). Saída em `data/derived/pilot/pilot_reps200_perm999.csv`.
+- **Precisão:** com 200 réplicas, o IC95% em torno de 0,05 é ~0,025–0,08. Tudo
+  abaixo é exploratório.
+
+**sqrt(BC) e propriedade euclidiana (checagem numérica, 60 matrizes P):** BC puro
+deu autovalores negativos na PCoA em 100% dos casos (até 4% do maior); sqrt(BC),
+em 0% (mínimo −1e−16). Decisão do Diogo: sqrt(BC) em todos os testes do estudo
+novo.
+
+Resultados:
+- **Erro tipo I do componente ambiental** (env_only, taxa shuffle; neither): no
+  geral perto de 0,05 nas três células e nos três métodos. Os valores de 0,08–0,095
+  (ADONIS env_only γ low N = 100 e Colless high N = 200; PCC env_only Colless high
+  N = 200) estão na borda do IC; conferir no estudo completo.
+- **PFW no cenário phylo_only (só filogenia):** o taxa shuffle do ADONIS sobe para
+  0,115 (γ low, N = 100), 0,08 (γ low, N = 200) e 0,09 (Yule, N = 200). Duarte
+  (Grafen, BC sem raiz) tinha 0,018–0,027. O largest P fica ≤ 0,055. O Mantel
+  continua baixo (taxa ≤ 0,06; largest P ≤ 0,01).
+  Hipótese minha: a mudança vem de BM nos ramos reais + sqrt. Separar os dois
+  efeitos.
+- **PCC no cenário phylo_only:** o teste de colunas rejeita 0,13–0,39 e cresce com
+  N, como em PNK (0,27). O row/col fica em 0,035–0,075. O valor de 0,075 (Colless
+  high, N = 200) é possível inflação do max test; conferir.
+- **Poder ("both")** — o γ baixo derruba o poder do PCC:
+
+  | N | PCC: Yule | PCC: γ low | PFW: Yule | PFW: γ low |
+  |---|---|---|---|---|
+  | 50 | 0,865 | 0,325 | Mantel 0,705 | Mantel 0,49 |
+  | 100 | 0,99 | 0,73 | ADONIS 0,77 | ADONIS 0,88 |
+  | 200 | 1 | 0,94 | — | — |
+
+  - PFW: efeito pequeno e de sinal instável. Com N = 50, cai no Mantel (tabela);
+    com N = 100, o ADONIS sobe.
+  - O Colless alto quase não muda o poder.
+  - **Isso inverte a ordem dos métodos sob γ realista (N = 50: PFW > PCC)** →
+    evidência preliminar para H4. Confirma a correlação poder × γ vista em
+    `analysis/04`.
+- **Estatísticas de árvore** (`analysis/08_tree_stats.R`, 40 s; 98 colunas por
+  árvore, em `data/derived/trees/tree_stats_*.csv`): no cenário "both", o −log10(p)
+  do PCC correlaciona com γ (ρ ≈ 0,45–0,49), treeness (0,43–0,50), comprimento
+  médio dos ramos internos (−0,40 a −0,50) e MPD (−0,41 a −0,50). Com o PFW, |ρ| ≤
+  0,19. Isso está confundido com o desenho de só 3 células; é exploratório.
+- **Custo do estudo completo:** ~430 mil metacomunidades × ~6 s ≈ 700 CPU-h com
+  PCC a 999 permutações. Opções: PCC com 499 permutações, ou só max test por
+  réplica. Dimensionar a AWS a partir disso.
+
+Próximos passos sugeridos:
+1. Separar o efeito de BM nos ramos reais × Grafen e de sqrt × BC no taxa shuffle
+   do ADONIS em phylo_only.
+2. Adicionar o GLM sobre eixos PCPS (`pcps.sig`) e os cenários de nuisance (S2σ,
+   S2h).
+3. Pipeline `targets`, com checkpoint por réplica, para a AWS.
