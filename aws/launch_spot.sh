@@ -12,8 +12,14 @@ sed -e "s/__BUCKET__/${BUCKET}/" -e "s/__PROFILE__/${PROFILE}/" -e "s/__WORKERS_
   -e "s/__MAX_HOURS__/${MAX_HOURS}/" \
   user_data.sh > /tmp/pcps_user_data.sh
 
+# latest Amazon Linux 2023 AMI (x86_64), looked up without SSM permissions
+AMI=$(aws ec2 describe-images --owners amazon \
+  --filters "Name=name,Values=al2023-ami-2023.*-kernel-*-x86_64" "Name=state,Values=available" \
+  --query 'sort_by(Images, &CreationDate)[-1].ImageId' --output text)
+echo "AMI ${AMI}" >&2
+
 aws ec2 run-instances \
-  --image-id resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64 \
+  --image-id "${AMI}" \
   --instance-type "${TYPE}" \
   --instance-market-options '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time","InstanceInterruptionBehavior":"terminate"}}' \
   --instance-initiated-shutdown-behavior terminate \
