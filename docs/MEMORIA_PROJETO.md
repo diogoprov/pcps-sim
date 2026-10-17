@@ -212,6 +212,11 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
 
 ## Próximos passos
 
+- [x] Passo 1 (2026-10-16): lidos Duarte et al. 2018 e o resumo de ter Braak et al. 2017 → o item 2 continua aberto (ver plano, seção 0).
+- [x] O `mcomsimr` (Thompson et al. 2020) foi avaliado → desenho em duas camadas proposto (plano, seção 3b); aguarda o OK do Diogo.
+- [ ] Passo 2: ler o PDF de Peres-Neto & Kembel 2015 e escrever a especificação do PCC.
+- [ ] Passo 3: `renv` + funções do piloto (reproduzir a Tabela 1 de Duarte et al. 2016).
+
 - [ ] **Plano v0.1 em `PLANO_SIMULACAO.md` (2026-10-16): aguarda decisões do Diogo (seção 9) e PDFs (seção 10).** O eixo principal é a validade da inferência sobre P; a comparação de métodos é o objetivo 2. O PCC será reimplementado a partir do PDF e do Appendix A (decisão do Diogo).
 
 - [x] Busca bibliográfica ampla (2026-10-16): lacuna confirmada (ver acima).

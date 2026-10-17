@@ -51,10 +51,31 @@ Três condições ficaram de fora dos dois estudos e são específicas da PFW:
    interpretação por clado dependem do espectro de autovalores. O espectro, por sua
    vez, depende da topologia (cf. Diniz-Filho et al. 1998 para o PVR).
 
-**Isso ainda precisa ser checado na literatura antes de fecharmos o enquadramento:**
-- ter Braak et al. 2017 *PeerJ* (doi:10.7717/peerj.2885) cita Peres-Neto & Kembel e
-  trata de type I error em modelos trait-based. Pode já cobrir parte do item 2.
-- Duarte et al. 2018 *Ecology* trata de sinal filogenético e CWM.
+**Checado em 2026-10-16: o item 2 continua aberto, e agora tem dois precedentes
+que o sustentam.**
+
+- **ter Braak, Peres-Neto & Dray 2017**, *PeerJ* 5: e2885, doi:10.7717/peerj.2885.
+  Só li o resumo (via OpenAlex); a página da PeerJ deu 403. O p-max test controla
+  o erro tipo I nos modelos usuais, mas "still gave slightly inflated error in more
+  complex models that included both missing (but important) traits and missing
+  (but important) environmental variables". Trabalham com atributos, sem filogenia.
+  → σ e h com sinal são justamente "atributos ausentes mas importantes" e
+  estruturados pela filogenia.
+- **Duarte, Debastiani, Carlucci & Diniz-Filho 2018**, *Ecology* 99: 385–398. Lido
+  em `references/`. Quando o atributo e a distribuição das espécies têm sinal
+  filogenético moderado ou alto, o OLS CWM ~ E infla o erro tipo I **mesmo usando
+  trait shuffle**. A correção que propõem (PGLS ou autovetores; NTDR) devolve o
+  erro tipo I ao nominal, mas com perda de poder. Limites do estudo: só CWM de
+  atributos, não a matriz P; só árvores Yule (`sim.bdtree`, λ = 0.1); μtol = 10 com
+  σ sem sinal. Eles mesmos dizem que o fourth corner "possibly suffer[s] from the
+  same shortcomings", **sem testar**.
+- **Conclusão:** ninguém testou se o taxa shuffle ou o max test sobre P/PCPS falha
+  quando a filogenia estrutura outros atributos da espécie que não o ótimo, nem
+  como o formato da árvore modula isso. O enquadramento da seção 0 se mantém.
+  Duarte et al. 2018 é o precedente mais próximo e precisa ser citado com destaque.
+- **Para o desenho:** incluir a correção filogenética de Duarte et al. 2018
+  (autovetores) como um método extra no objetivo 1, para ver se ela resolve o
+  problema também para P.
 
 ---
 
@@ -147,6 +168,58 @@ comparáveis com os deles.
 
 Fica fora (pode virar extensão): espaço e dispersão. Peres-Neto, Leibold & Dray 2012
 já tratam disso, e Tsang & Cadotte 2025 tratam da autocorrelação composicional.
+
+### 3b. Segunda camada: simulação baseada em processo (`mcomsimr`)
+
+Proposta do Diogo (2026-10-16): usar o `mcomsimr` (github.com/plthompson/mcomsimr),
+que implementa o framework de Thompson et al. 2020 *Ecol Lett* 23: 1314–1329,
+doi:10.1111/ele.13568. A citação vem do README; o artigo ainda não foi lido.
+
+Conferi o código de `simulate_MC()`:
+- Crescimento independente da densidade: Gaussiano em E, com
+  `r = max_r · exp(−((z_j − E)/(2·breadth_j))²)`.
+- Competição Beverton–Holt com uma matriz α (`N·r / (1 + N %*% int_mat)`) e Poisson.
+- Dispersão com kernel exponencial ou `disp_mat` dado pelo usuário.
+- Burn-in e séries temporais.
+
+Pontos de entrada para a filogenia:
+- `env_optima`: vetor fornecido pelo usuário → ótimos simulados por BM na árvore.
+- `env_niche_breadth`: aceita um valor por espécie, segundo a documentação. Falta
+  confirmar em `env_traits()`. Daí sai σ com sinal.
+- `int_mat`: **competição estruturada pela filogenia**. Por exemplo,
+  α_jk = f(similaridade filogenética), que é a hipótese competition–relatedness.
+  É uma nova fonte de estrutura incômoda sob H0, mecanística e ancorada em teoria.
+- `landscape`, `disp_mat` e `env.df`: espaço e dispersão controlados.
+- **Não há h por espécie**, porque `max_r` é comum a todas. Seria preciso adaptar a
+  função (fork) ou abrir mão de h com sinal nesta camada.
+
+**Decisão proposta: um desenho em duas camadas.**
+- **Camada A (estática; Peres-Neto et al. 2012):** validação (reproduzir Duarte et
+  al. 2016 e Peres-Neto & Kembel 2015), comparabilidade, varredura completa da grade
+  de árvores e custo baixo.
+- **Camada B (`mcomsimr`):** cenários principais com realismo de processo e três
+  arquétipos de Thompson et al. 2020:
+  1. species sorting, com dispersão intermediária;
+  2. mass effects, com dispersão alta;
+  3. competição estruturada pela filogenia.
+
+  Cobre um subconjunto das células de árvore: os 4 cantos e o centro da grade
+  γ × desbalanço.
+
+**Cuidados com a camada B:**
+1. Com espaço e dispersão limitada, os sítios deixam de ser permutáveis, e o site
+   shuffle fica inválido por autocorrelação espacial, independentemente da
+   filogenia. Para não confundir as duas fontes de erro, o baseline usa sítios sem
+   estrutura espacial (`disp_mat` uniforme e E sem autocorrelação). O espaço entra
+   como fator separado, com teste espacialmente restrito (por exemplo, Moran
+   spectral randomization, `adespatial::msr`). Esse fator pode ficar para um
+   segundo artigo.
+2. O pacote só existe no GitHub (não está no CRAN): fixar o commit no `renv`. O
+   README avisa que as simulações do artigo foram feitas em Julia e que o pacote
+   pode dar resultados diferentes.
+3. Custo: cada metacomunidade roda cerca de 2200 passos de tempo (padrão:
+   initialization 200, burn-in 800, timesteps 1200). Medir no piloto; dá para
+   encurtar a série e usar só o estado final, ou a média dos últimos passos.
 
 **Do desenho antigo (2013–2016):** o gerador `sim.com`, com espécie de referência e
 filtro por similaridade, sai do desenho, porque não tem gradiente ambiental e não
