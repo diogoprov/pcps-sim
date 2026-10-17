@@ -8,6 +8,9 @@
 #' `pilot_glm`: mini-pilot of the D_P tests (ADONIS, Mantel, GLM on PCPS axes)
 #' in three grid cells, incidence and abundance.
 #' `full`: objective 1, all cells, scenarios and data types (docs/PLANO_SIMULACAO.md).
+#' `axes`: as `full`, without PCC, adding the GLM with Procrustes and the RDA on
+#' PCPS axes 1-2 (diagnosis of S2sigma, analysis/09_diag_s2sigma.R).
+#' `extra_axes` defaults to FALSE in all other profiles.
 #' @param name profile name; defaults to the environment variable PCPS_PROFILE.
 design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
   all_cells <- as.vector(outer(paste0("g_", c("yule", "mid", "low")),
@@ -35,6 +38,13 @@ design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
       n_spp = c(50, 100, 200), scenarios = scenarios_layerA()$scenario,
       data_types = c("incidence", "abundance"), reps = 1000L, chunk = 50L,
       methods = c("pfw", "glm", "pcc"), nperm = 999L, nperm_pcc = 999L, k_trees = 1000L
+    ),
+    axes = list(
+      name = name, cells = all_cells,
+      n_spp = c(50, 100, 200), scenarios = scenarios_layerA()$scenario,
+      data_types = c("incidence", "abundance"), reps = 1000L, chunk = 50L,
+      methods = c("pfw", "glm"), nperm = 999L, nperm_pcc = 999L, k_trees = 1000L,
+      extra_axes = TRUE
     ),
     stop("unknown profile: ", name)
   )
@@ -111,7 +121,8 @@ run_chunk <- function(design_row, cell_trees, profile) {
       trees[[r]], design_row$lambda, design_row$sigma_signal, design_row$h_signal,
       design_row$env_original, incidence = design_row$data_type == "incidence"
     )
-    analyse_metacommunity(mc, profile$methods, profile$nperm, profile$nperm_pcc) |>
+    analyse_metacommunity(mc, profile$methods, profile$nperm, profile$nperm_pcc,
+                          extra_axes = isTRUE(profile$extra_axes)) |>
       dplyr::mutate(rep = r)
   }) |>
     dplyr::bind_rows() |>

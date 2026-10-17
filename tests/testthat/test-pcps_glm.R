@@ -35,3 +35,21 @@ test_that("test_dp_all gives the same observed statistics as the separate tests"
   expect_equal(joint$stat, sep$stat, tolerance = 1e-8)
   expect_true(all(joint$p_max >= joint$p_site & joint$p_max >= joint$p_taxa))
 })
+
+test_that("extra axis tests: Procrustes and RDA", {
+  set.seed(3)
+  base <- test_dp_all(comm, tree, env, nperm = 19)
+  set.seed(3)
+  ext <- test_dp_all(comm, tree, env, nperm = 19, extra_axes = TRUE)
+  # the extra tests use no random numbers, so the original tests are unchanged
+  expect_equal(ext[seq_len(nrow(base)), ], base)
+  expect_equal(ext$test[-seq_len(nrow(base))],
+               c("glm_pcps1_proc", "glm_pcps2_proc", "rda_pcps"))
+  # observed Procrustes F equals the plain F, and so do the site-shuffle p
+  expect_equal(ext$stat[5:6], ext$stat[3:4], tolerance = 1e-8)
+  expect_equal(ext$p_site[5:6], ext$p_site[3:4])
+  # RDA F matches vegan::rda on the same axes
+  y <- pcps_axes(comm, phylo_q(tree), 1:2)
+  a <- anova(vegan::rda(y ~ env), permutations = 0)
+  expect_equal(ext$stat[7], a$F[1], tolerance = 1e-8)
+})

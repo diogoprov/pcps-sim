@@ -82,11 +82,14 @@ sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_origin
 
 #' Run all methods on one metacommunity
 #' @param methods subset of c("pfw", "glm", "pcc").
+#' @param extra_axes passed to [test_dp_all()] (Procrustes GLM and RDA on the
+#'   PCPS axes; needs both "pfw" and "glm").
 analyse_metacommunity <- function(mc, methods = c("pfw", "glm", "pcc"),
-                                  nperm = 999, nperm_pcc = nperm) {
+                                  nperm = 999, nperm_pcc = nperm, extra_axes = FALSE) {
   out <- list()
   if (all(c("pfw", "glm") %in% methods)) {
-    out$dp <- test_dp_all(mc$comm, mc$tree, mc$env, axes = 1:2, nperm = nperm)
+    out$dp <- test_dp_all(mc$comm, mc$tree, mc$env, axes = 1:2, nperm = nperm,
+                          extra_axes = extra_axes)
   } else if ("pfw" %in% methods) {
     out$pfw <- test_pfw(mc$comm, mc$tree, mc$env, nperm = nperm, sqrt_adonis = TRUE)
   } else if ("glm" %in% methods) {
