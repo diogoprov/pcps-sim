@@ -444,3 +444,23 @@ Próximos passos sugeridos:
 - [ ] Mini-piloto do GLM (perfil pilot_glm: 3 células, 8 cenários, incidência e
   abundância, 100 réplicas; ~35–40 min com 16 workers) **agendado para quando os
   jobs do japan-microcosm (PIDs 5814 e 7391) terminarem.**
+
+## AWS (2026-10-17)
+
+- Conta ACCOUNT_ID. O CLI usa o perfil `pcps` (SSO do IAM Identity Center em
+  us-east-2, usuário `diogo-cli`, permission set `iam-claude-code`). As máquinas
+  rodam em **us-east-1**. O login SSO expira; para renovar, rodar
+  `aws sso login --profile pcps`.
+- O permission set **não** tem `servicequotas:GetServiceQuota` nem
+  `ssm:GetParameters`. Por isso a AMI é resolvida com `ec2 describe-images`. A cota
+  spot de vCPU ainda não foi verificada; o Diogo vai conferir no console ou
+  acrescentar `ServiceQuotasReadOnlyAccess`.
+- Recursos criados com aprovação do Diogo:
+  - bucket `pcps-sim-ACCOUNT_ID`: privado, AES256, logs expiram em 90 dias,
+    multipart incompleto é abortado em 7 dias;
+  - role e instance profile `pcps-sim-ec2`: só o EC2 os assume, com acesso apenas
+    a esse bucket.
+- Preço spot em 2026-10-17 (us-east-1): c7a.48xlarge a US$ 3,27–4,07/h e
+  c7a.2xlarge a US$ 0,18–0,24/h. O custo estimado foi aprovado pelo Diogo.
+- **Bench** lançado em 2026-10-17: `i-00194c3103455d319` (c7a.2xlarge spot,
+  8 workers, limite de 2 h), código no commit 8645914.
