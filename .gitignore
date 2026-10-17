@@ -7,6 +7,7 @@ references/
 .RData
 .Rproj.user/
 _targets/
+_targets_*/
 renv/library/
 renv/staging/
 
