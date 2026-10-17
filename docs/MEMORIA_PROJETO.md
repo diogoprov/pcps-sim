@@ -478,3 +478,27 @@ Próximos passos sugeridos:
     vCPU (a cota atual), ~35 h pelo mesmo custo.
   - Cota spot atual: 32 vCPU nas duas regiões; pedidos de 192 abertos em us-east-1
     e us-east-2.
+  - Cotas de 192 vCPU spot aprovadas nas duas regiões (2026-10-17).
+- **Mini-piloto GLM na AWS (2026-10-17, `i-0fed4d6774cc56ace`, c7a.48xlarge spot,
+  us-east-2c, 190 workers, commit 17d41f5): OK.**
+  - 3 células (Yule; γ baixo; Colless alto) × N 50/100/200 × 8 cenários ×
+    incidência/abundância × 100 réplicas = 14.400 réplicas; ADONIS, Mantel,
+    GLM PCPS1 e PCPS2 (sqrt-BC, 999 permutações), sem PCC. Nenhum p ausente.
+  - Wall: 15,4 min de pipeline, ~21 min de instância (≈ US$ 1). CPU: 29,5 h,
+    ≈ 7,4 s por réplica.
+  - Resultados em `data/derived/pilot_glm/results.csv` (fora do git) e no S3.
+  - **Erro tipo I do teste max** (α = 0,05):
+    - S0 e S1: conservador em todos (0,006–0,026).
+    - S2 e S2h: nominal em todos (0,049–0,054).
+    - S2sigma: ADONIS, Mantel e GLM PCPS1 conservadores (~0,027), mas **GLM
+      PCPS2 inflado: 0,103**. Cresce com N (0,062/0,110/0,138) e chega a 0,152
+      na célula de γ baixo. O taxa shuffle no PCPS2 não controla o sinal
+      filogenético em σ (amplitude de nicho).
+  - **Poder do teste max** (S3a/S3b/S3sigma): ADONIS 0,51/0,73/0,67; Mantel
+    0,50/0,66/0,57; GLM PCPS1 0,35/0,45/0,35; GLM PCPS2 ~0,01–0,03.
+    - γ baixo derruba o poder do GLM PCPS1 em S3b (0,23 vs 0,56 em Yule); no
+      ADONIS o efeito é pequeno (0,73 vs 0,77).
+    - Abundância tem menos poder que incidência, sobretudo no GLM (0,28 vs 0,62 em
+      S3b).
+  - Espécies descartadas por ausência: em média 0,5/0,9/1,7 por N; nenhum sítio
+    vazio.
