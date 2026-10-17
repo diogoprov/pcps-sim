@@ -522,3 +522,12 @@ Próximos passos sugeridos:
     os gira. No taxa shuffle essa estrutura some, então o PCPS2 nulo não é o
     mesmo eixo que o PCPS2 observado. O problema é a **identidade dos eixos**
     no teste eixo a eixo sem rotação, e não uma associação real com o ambiente.
+- **Histórico do git reescrito (2026-10-17)** com `git filter-repo`, antes de
+  tornar o repositório público. Saíram de todos os commits: `legacy/`
+  (manuscritos e dados não publicados, material de terceiros), a árvore
+  `data/raw/portik2023_timetree.tre` (licença não verificada) e o número da conta
+  da AWS (`ACCOUNT_ID`). Os dois arquivos continuam locais e estão no
+  `.gitignore`; `aws/pack_code.sh` acrescenta a árvore ao tarball. **Os hashes de
+  commit citados acima são anteriores à reescrita.** Backup do histórico antigo:
+  `~/Github/pcps-sim_pre-filter_20261017.bundle`.
+- Licenças: MIT (código) e CC BY 4.0 (texto, figuras, resultados); `CITATION.cff`.

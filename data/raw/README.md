@@ -7,3 +7,8 @@
   SHA-256 d871f3643575709e846f167ce297834a63afe21743296902d1548db4b4691e90.
   Single (point-estimate) tree; the posterior sample of dated trees is still to be
   obtained.
+
+  The tree file is not redistributed in this repository (it is listed in
+  `.gitignore`). Obtain it from the authors' data release
+  [CITAR: OSF repository of Portik et al. 2023] and check the SHA-256 above
+  before running the pipeline.

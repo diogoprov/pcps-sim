@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this code or these results, please cite them as below."
+title: "pcps-sim: simulation study of inference on phylogeny-weighted species composition (PCPS) and tree shape"
+type: software
+authors:
+  - family-names: Provete
+    given-names: Diogo B.
+repository-code: "https://github.com/diogoprov/pcps-sim"
+license: MIT
+version: 0.1.0
+date-released: 2026-10-17
+keywords:
+  - phylogenetic fuzzy weighting
+  - PCPS
+  - metacommunity
+  - phylogenetic signal
+  - tree shape
+  - simulation study

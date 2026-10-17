@@ -38,7 +38,7 @@ pcps-sim/
 ├── _targets.R                     targets pipeline (profiles: smoke, bench, pilot_glm, full)
 ├── tests/testthat/                unit tests
 ├── data/
-│   ├── raw/                       immutable inputs (Portik et al. 2023 amphibian timetree)
+│   ├── raw/                       immutable inputs (Portik et al. 2023 timetree; not redistributed, see data/raw/README.md)
 │   ├── published/                 rejection rates transcribed from published tables
 │   └── derived/                   simulation outputs (not tracked)
 ├── aws/                           scripts to run the pipeline on an EC2 spot instance
@@ -46,11 +46,14 @@ pcps-sim/
 ├── renv.lock                      package versions
 ├── docs/                          simulation plan, project log, method specifications
 ├── manuscript/                    Quarto manuscript (in preparation)
-├── legacy/                        material from the 2012–2016 version of the project (read-only)
+├── legacy/                        material from the 2012–2016 version of the project (not tracked)
 └── references/                    literature (not tracked)
 ```
 
 ## Reproducing the analyses
+
+Place the Portik et al. (2023) timetree in `data/raw/` first (see
+`data/raw/README.md`).
 
 ```r
 renv::restore()
@@ -62,3 +65,12 @@ system("Rscript analysis/run_pipeline.R full 16")
 
 Outputs are written to `data/derived/<profile>/results.csv`, and the targets store
 to `_targets_<profile>/`.
+
+## License
+
+Code is released under the MIT License (`LICENSE`). Text, figures and simulation
+outputs are released under CC BY 4.0 (`LICENSE.md`).
+
+## Citation
+
+See `CITATION.cff`.
