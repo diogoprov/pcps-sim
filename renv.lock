@@ -9,6 +9,66 @@
     ]
   },
   "Packages": {
+    "BH": {
+      "Package": "BH",
+      "Version": "1.90.0-1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Boost C++ Header Files",
+      "Date": "2025-12-13",
+      "Authors@R": "c(person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"John W.\", \"Emerson\", role = \"aut\"),  person(\"Michael J.\", \"Kane\", role = \"aut\",  comment = c(ORCID = \"0000-0003-1899-6662\")))",
+      "Description": "Boost provides free peer-reviewed portable C++ source  libraries.  A large part of Boost is provided as C++ template code which is resolved entirely at compile-time without linking.  This  package aims to provide the most useful subset of Boost libraries  for template use among CRAN packages. By placing these libraries in  this package, we offer a more efficient distribution system for CRAN  as replication of this code in the sources of other packages is  avoided. As of release 1.84.0-0, the following Boost libraries are included: 'accumulators' 'algorithm' 'align' 'any' 'atomic' 'beast' 'bimap' 'bind' 'circular_buffer' 'compute' 'concept' 'config' 'container' 'date_time' 'detail' 'dynamic_bitset' 'exception' 'flyweight' 'foreach' 'functional' 'fusion' 'geometry' 'graph' 'heap' 'icl' 'integer' 'interprocess' 'intrusive' 'io' 'iostreams' 'iterator' 'lambda2' 'math' 'move' 'mp11' 'mpl' 'multiprecision' 'numeric' 'pending' 'phoenix' 'polygon' 'preprocessor' 'process' 'propery_tree' 'qvm' 'random' 'range' 'scope_exit' 'smart_ptr' 'sort' 'spirit' 'tuple' 'type_traits' 'typeof' 'unordered' 'url' 'utility' 'uuid'.",
+      "License": "BSL-1.0",
+      "URL": "https://github.com/eddelbuettel/bh, https://dirk.eddelbuettel.com/code/bh.html",
+      "BugReports": "https://github.com/eddelbuettel/bh/issues",
+      "NeedsCompilation": "no",
+      "Author": "Dirk Eddelbuettel [aut, cre] (ORCID: <https://orcid.org/0000-0001-6419-907X>), John W. Emerson [aut], Michael J. Kane [aut] (ORCID: <https://orcid.org/0000-0003-1899-6662>)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
+    "DDD": {
+      "Package": "DDD",
+      "Version": "5.2.5",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Diversity-Dependent Diversification",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "deSolve",
+        "ape",
+        "phytools",
+        "subplex",
+        "DEoptim",
+        "pso",
+        "Matrix",
+        "expm",
+        "SparseM",
+        "Rcpp (>= 1.0.10)"
+      ],
+      "LinkingTo": [
+        "Rcpp (>= 1.0.10)",
+        "RcppEigen",
+        "BH (>= 1.81.0-1)"
+      ],
+      "Suggests": [
+        "testthat (>= 3.0.0)",
+        "testit",
+        "igraph"
+      ],
+      "Authors@R": "c( person(given = \"Rampal S.\", family = \"Etienne\", email = \"r.s.etienne@rug.nl\", role = c(\"aut\", \"cre\"), comment = c(ORCID = \"0000-0003-2142-7612\")), person(given = \"Bart\", family = \"Haegeman\", email = \"bart.haegeman@sete.cnrs.fr\", role = c(\"aut\"), comment = c(ORCID = \"0000-0003-2325-4727\")), person(given = \"Hanno\", family = \"Hildenbrandt\", email = \"h.hildenbrandt@rug.nl\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0002-6784-1037\")), person(given = \"Giovanni\", family = \"Laudanno\", email = \"glaudanno@gmail.com\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0002-2952-3345\")) )",
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "Description": "Implements maximum likelihood and bootstrap methods based on the diversity-dependent birth-death process to test whether speciation or extinction are diversity-dependent, under various models including various types of key innovations. See Etienne et al. 2012, Proc. Roy. Soc. B 279: 1300-1309, <DOI:10.1098/rspb.2011.1439>, Etienne & Haegeman 2012, Am. Nat. 180: E75-E89, <DOI:10.1086/667574>, Etienne et al. 2016. Meth. Ecol. Evol. 7: 1092-1099, <DOI:10.1111/2041-210X.12565> and Laudanno et al. 2021. Syst. Biol. 70: 389–407, <DOI:10.1093/sysbio/syaa048>. Also contains functions to simulate the diversity-dependent process.",
+      "RoxygenNote": "7.3.3",
+      "Config/testthat/edition": "3",
+      "URL": "https://rsetienne.github.io/DDD/",
+      "NeedsCompilation": "yes",
+      "Author": "Rampal S. Etienne [aut, cre] (ORCID: <https://orcid.org/0000-0003-2142-7612>), Bart Haegeman [aut] (ORCID: <https://orcid.org/0000-0003-2325-4727>), Hanno Hildenbrandt [ctb] (ORCID: <https://orcid.org/0000-0002-6784-1037>), Giovanni Laudanno [ctb] (ORCID: <https://orcid.org/0000-0002-2952-3345>)",
+      "Maintainer": "Rampal S. Etienne <r.s.etienne@rug.nl>",
+      "Repository": "CRAN"
+    },
     "DEoptim": {
       "Package": "DEoptim",
       "Version": "2.2-8",
@@ -168,6 +228,41 @@
       "Maintainer": "Winston Chang <winston@posit.co>",
       "Repository": "CRAN"
     },
+    "RSpectra": {
+      "Package": "RSpectra",
+      "Version": "0.16-2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Solvers for Large-Scale Eigenvalue and SVD Problems",
+      "Date": "2024-07-18",
+      "Authors@R": "c( person(\"Yixuan\", \"Qiu\", , \"yixuan.qiu@cos.name\", c(\"aut\", \"cre\")), person(\"Jiali\", \"Mei\", , \"vermouthmjl@gmail.com\", \"aut\", comment = \"Function interface of matrix operation\"), person(\"Gael\", \"Guennebaud\", , \"gael.guennebaud@inria.fr\", \"ctb\", comment = \"Eigenvalue solvers from the 'Eigen' library\"), person(\"Jitse\", \"Niesen\", , \"jitse@maths.leeds.ac.uk\", \"ctb\", comment = \"Eigenvalue solvers from the 'Eigen' library\") )",
+      "Description": "R interface to the 'Spectra' library <https://spectralib.org/> for large-scale eigenvalue and SVD problems. It is typically used to compute a few eigenvalues/vectors of an n by n matrix, e.g., the k largest eigenvalues, which is usually more efficient than eigen() if k << n. This package provides the 'eigs()' function that does the similar job as in 'Matlab', 'Octave', 'Python SciPy' and 'Julia'. It also provides the 'svds()' function to calculate the largest k singular values and corresponding singular vectors of a real matrix. The matrix to be computed on can be dense, sparse, or in the form of an operator defined by the user.",
+      "License": "MPL (>= 2)",
+      "URL": "https://github.com/yixuan/RSpectra",
+      "BugReports": "https://github.com/yixuan/RSpectra/issues",
+      "Depends": [
+        "R (>= 3.0.2)"
+      ],
+      "Imports": [
+        "Matrix (>= 1.1-0)",
+        "Rcpp (>= 0.11.5)"
+      ],
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "prettydoc"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppEigen (>= 0.3.3.3.0)"
+      ],
+      "VignetteBuilder": "knitr, rmarkdown",
+      "RoxygenNote": "7.1.2",
+      "NeedsCompilation": "yes",
+      "Author": "Yixuan Qiu [aut, cre], Jiali Mei [aut] (Function interface of matrix operation), Gael Guennebaud [ctb] (Eigenvalue solvers from the 'Eigen' library), Jitse Niesen [ctb] (Eigenvalue solvers from the 'Eigen' library)",
+      "Maintainer": "Yixuan Qiu <yixuan.qiu@cos.name>",
+      "Repository": "CRAN"
+    },
     "Rcpp": {
       "Package": "Rcpp",
       "Version": "1.1.2",
@@ -240,6 +335,43 @@
       "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
       "Repository": "CRAN"
     },
+    "RcppEigen": {
+      "Package": "RcppEigen",
+      "Version": "0.3.4.0.2",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "'Rcpp' Integration for the 'Eigen' Templated Linear Algebra Library",
+      "Date": "2024-08-23",
+      "Authors@R": "c(person(\"Doug\", \"Bates\", role = \"aut\", comment = c(ORCID = \"0000-0001-8316-9503\")), person(\"Dirk\", \"Eddelbuettel\", role = c(\"aut\", \"cre\"), email = \"edd@debian.org\", comment = c(ORCID = \"0000-0001-6419-907X\")), person(\"Romain\", \"Francois\", role = \"aut\", comment = c(ORCID = \"0000-0002-2444-4226\")), person(\"Yixuan\", \"Qiu\", role = \"aut\", comment = c(ORCID = \"0000-0003-0109-6692\")), person(\"Authors of\", \"Eigen\", role = \"cph\", comment = \"Authorship and copyright in included Eigen library as detailed in inst/COPYRIGHTS\"))",
+      "Copyright": "See the file COPYRIGHTS for various Eigen copyright details",
+      "Description": "R and 'Eigen' integration using 'Rcpp'. 'Eigen' is a C++ template library for linear algebra: matrices, vectors, numerical solvers and related algorithms.  It supports dense and sparse matrices on integer, floating point and complex numbers, decompositions of such matrices, and solutions of linear systems. Its performance on many algorithms is comparable with some of the best implementations based on 'Lapack' and level-3 'BLAS'. The 'RcppEigen' package includes the header files from the 'Eigen' C++ template library. Thus users do not need to install 'Eigen' itself in order to use 'RcppEigen'. Since version 3.1.1, 'Eigen' is licensed under the Mozilla Public License (version 2); earlier version were licensed under the GNU LGPL version 3 or later. 'RcppEigen' (the 'Rcpp' bindings/bridge to 'Eigen') is licensed under the GNU GPL version 2 or later, as is the rest of 'Rcpp'.",
+      "License": "GPL (>= 2) | file LICENSE",
+      "LazyLoad": "yes",
+      "Depends": [
+        "R (>= 3.6.0)"
+      ],
+      "LinkingTo": [
+        "Rcpp"
+      ],
+      "Imports": [
+        "Rcpp (>= 0.11.0)",
+        "stats",
+        "utils"
+      ],
+      "Suggests": [
+        "Matrix",
+        "inline",
+        "tinytest",
+        "pkgKitten",
+        "microbenchmark"
+      ],
+      "URL": "https://github.com/RcppCore/RcppEigen, https://dirk.eddelbuettel.com/code/rcpp.eigen.html",
+      "BugReports": "https://github.com/RcppCore/RcppEigen/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Doug Bates [aut] (<https://orcid.org/0000-0001-8316-9503>), Dirk Eddelbuettel [aut, cre] (<https://orcid.org/0000-0001-6419-907X>), Romain Francois [aut] (<https://orcid.org/0000-0002-2444-4226>), Yixuan Qiu [aut] (<https://orcid.org/0000-0003-0109-6692>), Authors of Eigen [cph] (Authorship and copyright in included Eigen library as detailed in inst/COPYRIGHTS)",
+      "Maintainer": "Dirk Eddelbuettel <edd@debian.org>",
+      "Repository": "CRAN"
+    },
     "RcppProgress": {
       "Package": "RcppProgress",
       "Version": "0.4.2",
@@ -291,6 +423,33 @@
       "Collate": "'CollectNames.R' 'ProgressBAR.R' 'belonging.R' 'cent.norm.R' 'coinertia.partial.syncsa.R' 'coinertia.syncsa.R' 'cor.matrix.R' 'cor.matrix.bf.R' 'cor.matrix.partial.R' 'cor.matrix.rao.R' 'matmult.syncsa.R' 'matrix.p.R' 'matrix.t.R' 'matrix.w.transformation.R' 'matrix.x.R' 'optimal.R' 'organize.syncsa.R' 'part.cor.R' 'pca.R' 'permut.row.matrix.R' 'permut.vector.R' 'plot.pcasyncsa.R' 'print.optimal.R' 'syncsa.R' 'print.syncsa.R' 'pro.matrix.R' 'pro.matrix.bf.R' 'pro.matrix.partial.R' 'pro.matrix.rao.R' 'procrustes.syncsa.R' 'procrustes.partial.syncsa.R' 'rao.diversity.R' 'rv.matrix.R' 'rv.matrix.bf.R' 'rv.matrix.partial.R' 'rv.matrix.rao.R' 'startup.R' 'syncsa.obs.R' 'var.dummy.R' 'var.type.R'",
       "NeedsCompilation": "no",
       "Author": "Vanderlei Julio Debastiani [aut, cre]",
+      "Repository": "CRAN"
+    },
+    "SparseM": {
+      "Package": "SparseM",
+      "Version": "1.84-2",
+      "Source": "Repository",
+      "Authors@R": "c( person(\"Roger\", \"Koenker\",  role = c(\"cre\",\"aut\"), email =  \"rkoenker@uiuc.edu\"), person(c(\"Pin\", \"Tian\"), \"Ng\",  role = c(\"ctb\"), comment = \"Contributions to Sparse QR code\", email =  \"pin.ng@nau.edu\") , person(\"Yousef\", \"Saad\",  role = c(\"ctb\"), comment = \"author of sparskit2\") , person(\"Ben\", \"Shaby\", role = c(\"ctb\"), comment = \"author of chol2csr\") , person(\"Martin\", \"Maechler\", role = \"ctb\", comment = c(\"chol() tweaks; S4\", ORCID = \"0000-0002-8685-9910\")) )",
+      "Maintainer": "Roger Koenker <rkoenker@uiuc.edu>",
+      "Depends": [
+        "R (>= 2.15)",
+        "methods"
+      ],
+      "Imports": [
+        "graphics",
+        "stats",
+        "utils"
+      ],
+      "VignetteBuilder": "knitr",
+      "Suggests": [
+        "knitr"
+      ],
+      "Description": "Some basic linear algebra functionality for sparse matrices is provided:  including Cholesky decomposition and backsolving as well as standard R subsetting and Kronecker products.",
+      "License": "GPL (>= 2)",
+      "Title": "Sparse Linear Algebra",
+      "URL": "http://www.econ.uiuc.edu/~roger/research/sparse/sparse.html",
+      "NeedsCompilation": "yes",
+      "Author": "Roger Koenker [cre, aut], Pin Tian Ng [ctb] (Contributions to Sparse QR code), Yousef Saad [ctb] (author of sparskit2), Ben Shaby [ctb] (author of chol2csr), Martin Maechler [ctb] (chol() tweaks; S4, <https://orcid.org/0000-0002-8685-9910>)",
       "Repository": "CRAN"
     },
     "abind": {
@@ -478,6 +637,32 @@
       "NeedsCompilation": "yes",
       "Author": "Michael Chirico [aut, cre], Jens Oehlschlägel [aut], Leonardo Silvestri [ctb], Ofek Shilon [ctb], Christian Ullerich [ctb]",
       "Maintainer": "Michael Chirico <michaelchirico4@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "cachem": {
+      "Package": "cachem",
+      "Version": "1.1.0",
+      "Source": "Repository",
+      "Title": "Cache R Objects with Automatic Pruning",
+      "Description": "Key-value stores with automatic pruning. Caches can limit either their total size or the age of the oldest object (or both), automatically pruning objects to maintain the constraints.",
+      "Authors@R": "c( person(\"Winston\", \"Chang\", , \"winston@posit.co\", c(\"aut\", \"cre\")), person(family = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")))",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "ByteCompile": "true",
+      "URL": "https://cachem.r-lib.org/, https://github.com/r-lib/cachem",
+      "Imports": [
+        "rlang",
+        "fastmap (>= 1.2.0)"
+      ],
+      "Suggests": [
+        "testthat"
+      ],
+      "RoxygenNote": "7.2.3",
+      "Config/Needs/routine": "lobstr",
+      "Config/Needs/website": "pkgdown",
+      "NeedsCompilation": "yes",
+      "Author": "Winston Chang [aut, cre], Posit Software, PBC [cph, fnd]",
+      "Maintainer": "Winston Chang <winston@posit.co>",
       "Repository": "CRAN"
     },
     "cli": {
@@ -980,6 +1165,26 @@
       "Maintainer": "Martin Maechler <maechler@stat.math.ethz.ch>",
       "Repository": "CRAN"
     },
+    "fastmap": {
+      "Package": "fastmap",
+      "Version": "1.2.0",
+      "Source": "Repository",
+      "Title": "Fast Data Structures",
+      "Authors@R": "c( person(\"Winston\", \"Chang\", email = \"winston@posit.co\", role = c(\"aut\", \"cre\")), person(given = \"Posit Software, PBC\", role = c(\"cph\", \"fnd\")), person(given = \"Tessil\", role = \"cph\", comment = \"hopscotch_map library\") )",
+      "Description": "Fast implementation of data structures, including a key-value store, stack, and queue. Environments are commonly used as key-value stores in R, but every time a new key is used, it is added to R's global symbol table, causing a small amount of memory leakage. This can be problematic in cases where many different keys are used. Fastmap avoids this memory leak issue by implementing the map using data structures in C++.",
+      "License": "MIT + file LICENSE",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.2.3",
+      "Suggests": [
+        "testthat (>= 2.1.1)"
+      ],
+      "URL": "https://r-lib.github.io/fastmap/, https://github.com/r-lib/fastmap",
+      "BugReports": "https://github.com/r-lib/fastmap/issues",
+      "NeedsCompilation": "yes",
+      "Author": "Winston Chang [aut, cre], Posit Software, PBC [cph, fnd], Tessil [cph] (hopscotch_map library)",
+      "Maintainer": "Winston Chang <winston@posit.co>",
+      "Repository": "CRAN"
+    },
     "fastmatch": {
       "Package": "fastmatch",
       "Version": "1.1-8",
@@ -1287,6 +1492,35 @@
       "NeedsCompilation": "yes",
       "Author": "Jim Hester [aut] (ORCID: <https://orcid.org/0000-0002-2739-7082>), Jennifer Bryan [aut, cre] (ORCID: <https://orcid.org/0000-0002-6983-2759>), Posit Software, PBC [cph, fnd] (ROR: <https://ror.org/03wc8by49>)",
       "Maintainer": "Jennifer Bryan <jenny@posit.co>",
+      "Repository": "CRAN"
+    },
+    "gmp": {
+      "Package": "gmp",
+      "Version": "0.7-5.1",
+      "Source": "Repository",
+      "Date": "2024-08-23",
+      "Title": "Multiple Precision Arithmetic",
+      "Authors@R": "c(person(\"Antoine\",\"Lucas\",role = c(\"aut\",\"cre\"), email = \"antoinelucas@gmail.com\", comment = c(ORCID=\"0000-0002-8059-9767\")), person(\"Immanuel\",\"Scholz\", role= \"aut\"), person(\"Rainer\",\"Boehme\", role = \"ctb\", email= \"rb-gmp@reflex-studio.de\"), person(\"Sylvain\",\"Jasson\", role = \"ctb\", email= \"Sylvain.Jasson@inrae.fr\"), person(\"Martin\", \"Maechler\", role = \"ctb\", email=\"maechler@stat.math.ethz.ch\"))",
+      "Maintainer": "Antoine Lucas <antoinelucas@gmail.com>",
+      "Description": "Multiple Precision Arithmetic (big integers and rationals, prime number tests, matrix computation), \"arithmetic without limitations\" using the C library GMP (GNU Multiple Precision Arithmetic).",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "methods"
+      ],
+      "Suggests": [
+        "Rmpfr",
+        "MASS",
+        "round"
+      ],
+      "SystemRequirements": "gmp (>= 4.2.3)",
+      "License": "GPL (>= 2)",
+      "BuildResaveData": "no",
+      "LazyDataNote": "not available, as we use data/*.R *and* our classes",
+      "NeedsCompilation": "yes",
+      "URL": "https://forgemia.inra.fr/sylvain.jasson/gmp",
+      "Author": "Antoine Lucas [aut, cre] (ORCID: <https://orcid.org/0000-0002-8059-9767>), Immanuel Scholz [aut], Rainer Boehme [ctb], Sylvain Jasson [ctb], Martin Maechler [ctb]",
       "Repository": "CRAN"
     },
     "hms": {
@@ -1638,6 +1872,36 @@
       "Author": "Richard A. Becker [aut] (Original S code), Allan R. Wilks [aut] (Original S code), Ray Brownrigg [trl, aut] (R version), Thomas P. Minka [aut] (Enhancements), Alex Deckmyn [aut, cre] (ORCID: <https://orcid.org/0009-0002-2010-8310>)",
       "Maintainer": "Alex Deckmyn <alex.deckmyn@meteo.be>"
     },
+    "memoise": {
+      "Package": "memoise",
+      "Version": "2.0.1",
+      "Source": "Repository",
+      "Title": "'Memoisation' of Functions",
+      "Authors@R": "c(person(given = \"Hadley\", family = \"Wickham\", role = \"aut\", email = \"hadley@rstudio.com\"), person(given = \"Jim\", family = \"Hester\", role = \"aut\"), person(given = \"Winston\", family = \"Chang\", role = c(\"aut\", \"cre\"), email = \"winston@rstudio.com\"), person(given = \"Kirill\", family = \"Müller\", role = \"aut\", email = \"krlmlr+r@mailbox.org\"), person(given = \"Daniel\", family = \"Cook\", role = \"aut\", email = \"danielecook@gmail.com\"), person(given = \"Mark\", family = \"Edmondson\", role = \"ctb\", email = \"r@sunholo.com\"))",
+      "Description": "Cache the results of a function so that when you call it again with the same arguments it returns the previously computed value.",
+      "License": "MIT + file LICENSE",
+      "URL": "https://memoise.r-lib.org, https://github.com/r-lib/memoise",
+      "BugReports": "https://github.com/r-lib/memoise/issues",
+      "Imports": [
+        "rlang (>= 0.4.10)",
+        "cachem"
+      ],
+      "Suggests": [
+        "digest",
+        "aws.s3",
+        "covr",
+        "googleAuthR",
+        "googleCloudStorageR",
+        "httr",
+        "testthat"
+      ],
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.1.2",
+      "NeedsCompilation": "no",
+      "Author": "Hadley Wickham [aut], Jim Hester [aut], Winston Chang [aut, cre], Kirill Müller [aut], Daniel Cook [aut], Mark Edmondson [ctb]",
+      "Maintainer": "Winston Chang <winston@rstudio.com>",
+      "Repository": "CRAN"
+    },
     "mgcv": {
       "Package": "mgcv",
       "Version": "1.9-4",
@@ -1765,6 +2029,33 @@
       "NeedsCompilation": "yes",
       "Author": "José Pinheiro [aut] (S version), Douglas Bates [aut] (up to 2007), Saikat DebRoy [ctb] (up to 2002), Deepayan Sarkar [ctb] (up to 2005), EISPACK authors [ctb] (src/rs.f), Siem Heisterkamp [ctb] (Author fixed sigma), Bert Van Willigen [ctb] (Programmer fixed sigma), Johannes Ranke [ctb] (varConstProp()), R Core Team [aut, cre] (ROR: <https://ror.org/02zz1nj61>)",
       "Maintainer": "R Core Team <R-core@R-project.org>",
+      "Repository": "CRAN"
+    },
+    "nloptr": {
+      "Package": "nloptr",
+      "Version": "2.2.1",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "R Interface to NLopt",
+      "Authors@R": "c(person(\"Jelmer\", \"Ypma\", role = \"aut\", email = \"uctpjyy@ucl.ac.uk\"), person(c(\"Steven\", \"G.\"), \"Johnson\", role = \"aut\", comment = \"author of the NLopt C library\"), person(\"Aymeric\", \"Stamm\", role = c(\"ctb\", \"cre\"), email = \"aymeric.stamm@cnrs.fr\", comment = c(ORCID = \"0000-0002-8725-3654\")), person(c(\"Hans\", \"W.\"), \"Borchers\", role = \"ctb\", email = \"hwborchers@googlemail.com\"), person(\"Dirk\", \"Eddelbuettel\", role = \"ctb\", email = \"edd@debian.org\"), person(\"Brian\", \"Ripley\", role = \"ctb\", comment = \"build process on multiple OS\"), person(\"Kurt\", \"Hornik\", role = \"ctb\", comment = \"build process on multiple OS\"), person(\"Julien\", \"Chiquet\", role = \"ctb\"), person(\"Avraham\", \"Adler\", role = \"ctb\",  email = \"Avraham.Adler@gmail.com\", comment = c(ORCID = \"0000-0002-3039-0703\")), person(\"Xiongtao\", \"Dai\", role = \"ctb\"), person(\"Jeroen\", \"Ooms\", role = \"ctb\", email = \"jeroen@berkeley.edu\"), person(\"Tomas\", \"Kalibera\", role = \"ctb\"), person(\"Mikael\", \"Jagan\", role = \"ctb\"))",
+      "Description": "Solve optimization problems using an R interface to NLopt. NLopt is a  free/open-source library for nonlinear optimization, providing a common interface for a number of different free optimization routines available online as well as original implementations of various other algorithms. See <https://nlopt.readthedocs.io/en/latest/NLopt_Algorithms/> for more information on the available algorithms. Building from included sources  requires 'CMake'. On Linux and 'macOS', if a suitable system build of  NLopt (2.7.0 or later) is found, it is used; otherwise, it is built  from included sources via 'CMake'. On Windows, NLopt is obtained through  'rwinlib' for 'R <= 4.1.x' or grabbed from the appropriate toolchain for 'R >= 4.2.0'.",
+      "License": "LGPL (>= 3)",
+      "SystemRequirements": "cmake (>= 3.2.0) which is used only on Linux or macOS systems when no system build of nlopt (>= 2.7.0) can be found.",
+      "Encoding": "UTF-8",
+      "RoxygenNote": "7.3.2",
+      "Suggests": [
+        "knitr",
+        "rmarkdown",
+        "covr",
+        "tinytest"
+      ],
+      "VignetteBuilder": "knitr",
+      "URL": "https://github.com/astamm/nloptr, https://astamm.github.io/nloptr/",
+      "BugReports": "https://github.com/astamm/nloptr/issues",
+      "NeedsCompilation": "yes",
+      "UseLTO": "yes",
+      "Author": "Jelmer Ypma [aut], Steven G. Johnson [aut] (author of the NLopt C library), Aymeric Stamm [ctb, cre] (<https://orcid.org/0000-0002-8725-3654>), Hans W. Borchers [ctb], Dirk Eddelbuettel [ctb], Brian Ripley [ctb] (build process on multiple OS), Kurt Hornik [ctb] (build process on multiple OS), Julien Chiquet [ctb], Avraham Adler [ctb] (<https://orcid.org/0000-0002-3039-0703>), Xiongtao Dai [ctb], Jeroen Ooms [ctb], Tomas Kalibera [ctb], Mikael Jagan [ctb]",
+      "Maintainer": "Aymeric Stamm <aymeric.stamm@cnrs.fr>",
       "Repository": "CRAN"
     },
     "numDeriv": {
@@ -2150,6 +2441,27 @@
       "NeedsCompilation": "no",
       "Author": "Gábor Csárdi [aut, cre], Rich FitzJohn [aut], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "pso": {
+      "Package": "pso",
+      "Version": "1.0.4",
+      "Source": "Repository",
+      "Date": "2022-04-12",
+      "Title": "Particle Swarm Optimization",
+      "Author": "Claus Bendtsen <papyrus.bendtsen@gmail.com>.",
+      "Maintainer": "Claus Bendtsen <papyrus.bendtsen@gmail.com>",
+      "Depends": [
+        "R (>= 2.10.0)",
+        "methods"
+      ],
+      "Suggests": [
+        "numDeriv",
+        "stats"
+      ],
+      "Description": "Provides an implementation of particle swarm optimisation consistent with the standard PSO 2007/2011 by Maurice Clerc. Additionally a number of ancillary routines are provided for easy testing and graphics.",
+      "License": "LGPL-3",
+      "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
     "purrr": {
@@ -2705,6 +3017,90 @@
       "NeedsCompilation": "yes",
       "Author": "Lionel Henry [aut, cre], Hadley Wickham [aut], Posit Software, PBC [cph, fnd]",
       "Maintainer": "Lionel Henry <lionel@posit.co>",
+      "Repository": "CRAN"
+    },
+    "treebalance": {
+      "Package": "treebalance",
+      "Version": "1.2.2",
+      "Source": "Repository",
+      "Title": "Computation of Tree (Im)Balance Indices",
+      "Description": "The aim of the 'R' package 'treebalance' is to provide functions for the computation of  a large variety of (im)balance indices for rooted trees. The package accompanies the book  ''Tree Balance Indices - A Comprehensive Survey'' by M. Fischer, L. Herbst, S. Kersting, L. Kuehn and K. Wicke (2023) <doi:10.1007/978-3-031-39800-1>, which gives a precise definition for the terms 'balance index' and 'imbalance index' (Chapter 4) and provides an overview of the terminology in this manual (Chapter 2). For further information on (im)balance indices, see also Fischer et al. (2021) <https://treebalance.wordpress.com>. Considering both established and new (im)balance indices, 'treebalance' provides (among  others) functions for calculating the following 18 established indices and index families: the  average leaf depth, the B1 and B2 index, the Colijn-Plazzotta rank, the normal, corrected,  quadratic and equal weights Colless index, the family of Colless-like indices, the family of  I-based indices, the Rogers J index, the Furnas rank, the rooted quartet index, the s-shape  statistic, the Sackin index, the symmetry nodes index, the total cophenetic index and the  variance of leaf depths. Additionally, we include 6 tree shape statistics that satisfy the  definition of an (im)balance index but have not been thoroughly analyzed in terms of tree  balance in the literature yet. These are: the maximum width, the modified maximum difference in widths, the maximum depth, the maximum width over maximum depth, the stairs1 and the stairs2  index.  As input, most functions of 'treebalance' require a rooted (phylogenetic) tree in 'phylo' format  (as introduced in 'ape' 1.9 in November 2006). 'phylo' is used to store (phylogenetic) trees  with no vertices of out-degree one. For further information on the format we kindly refer the  reader to E. Paradis (2012) <https://emmanuelparadis.github.io/misc/FormatTreeR_24Oct2012.pdf>.",
+      "Authors@R": "c( person(\"Mareike\", \"Fischer\", role = \"aut\", comment = c(ORCID = \"0000-0002-9429-0859\")), person(\"Lina\", \"Herbst\", role = \"aut\", comment = c(ORCID = \"0000-0001-9169-0948\")), person(\"Sophie\", \"Kersting\", role = c(\"aut\", \"cre\"), email = \"treebalanceindices@gmail.com\", comment = c(ORCID = \"0000-0002-1038-9246\")), person(\"Luise\", \"Kuehn\", role = \"aut\", comment = c(ORCID = \"0000-0002-0158-8286\")), person(\"Kristina\", \"Wicke\", role = \"aut\", comment = c(ORCID = \"0000-0002-4275-5546\")))",
+      "Depends": [
+        "R (>= 3.5.0)"
+      ],
+      "Imports": [
+        "ape",
+        "memoise",
+        "gmp"
+      ],
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "LazyData": "true",
+      "NeedsCompilation": "no",
+      "Config/roxygen2/version": "8.1.0",
+      "Author": "Mareike Fischer [aut] (ORCID: <https://orcid.org/0000-0002-9429-0859>), Lina Herbst [aut] (ORCID: <https://orcid.org/0000-0001-9169-0948>), Sophie Kersting [aut, cre] (ORCID: <https://orcid.org/0000-0002-1038-9246>), Luise Kuehn [aut] (ORCID: <https://orcid.org/0000-0002-0158-8286>), Kristina Wicke [aut] (ORCID: <https://orcid.org/0000-0002-4275-5546>)",
+      "Maintainer": "Sophie Kersting <treebalanceindices@gmail.com>",
+      "Repository": "CRAN"
+    },
+    "treestats": {
+      "Package": "treestats",
+      "Version": "1.71.13",
+      "Source": "Repository",
+      "Type": "Package",
+      "Title": "Phylogenetic Tree Statistics",
+      "Authors@R": "c(person(given = \"Thijs\", family = \"Janzen\", email = \"thijsjanzen@gmail.com\", role = c(\"cre\", \"aut\"), comment = c(ORCID = \"0000-0002-4162-1140\")))",
+      "Maintainer": "Thijs Janzen <thijsjanzen@gmail.com>",
+      "Description": "Collection of phylogenetic tree statistics, collected throughout the literature. All functions have been  written to maximize computation speed. The package includes  umbrella functions to calculate all statistics, all balance  associated statistics, or all branching time related statistics.  Furthermore, the 'treestats' package supports summary statistic  calculations on Ltables, provides speed-improved coding of  branching times, Ltable conversion and includes algorithms to create intermediately balanced trees. Full description can be found in Janzen (2024) <doi:10.1016/j.ympev.2024.108168>.",
+      "License": "GPL-3",
+      "Encoding": "UTF-8",
+      "Depends": [
+        "Rcpp"
+      ],
+      "LinkingTo": [
+        "Rcpp",
+        "RcppArmadillo",
+        "nloptr"
+      ],
+      "Imports": [
+        "ape",
+        "nloptr",
+        "treebalance",
+        "DDD",
+        "RSpectra"
+      ],
+      "Suggests": [
+        "phytools",
+        "phyloTop",
+        "testthat",
+        "geiger",
+        "nLTT",
+        "castor",
+        "adephylo",
+        "ggplot2",
+        "tibble",
+        "dplyr",
+        "tidyr",
+        "picante",
+        "lintr",
+        "rmarkdown",
+        "knitr",
+        "igraph",
+        "Matrix",
+        "pheatmap",
+        "ggdendro",
+        "dendextend",
+        "Matrix",
+        "TreeSim",
+        "nlme"
+      ],
+      "BugReports": "https://github.com/thijsjanzen/treestats/issues",
+      "URL": "https://thijsjanzen.github.io/treestats/",
+      "VignetteBuilder": "knitr",
+      "SystemRequirements": "C++17",
+      "Config/roxygen2/version": "8.0.0",
+      "NeedsCompilation": "yes",
+      "Author": "Thijs Janzen [cre, aut] (ORCID: <https://orcid.org/0000-0002-4162-1140>)",
       "Repository": "CRAN"
     },
     "tzdb": {

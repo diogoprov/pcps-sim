@@ -309,3 +309,32 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
 | Demais referências da seção "Busca bibliográfica ampla" | metadados verificados (OpenAlex/Crossref), status indicado em cada item; textos não lidos |
 | Peres-Neto et al. 2012; Dray & Legendre 2008; Duarte 2011 | citados nos manuscritos; não verifiquei |
 | Leprieur et al. 2012 PLoS ONE 7: e42760 | o resumo não trata de tree balance; irrelevante para o formato da árvore |
+
+## Passo 4: árvores (2026-10-17)
+
+- [x] Gerador com γ e Colless independentes (`R/trees.R`). Detalhes em
+  PLANO_SIMULACAO.md, seção 2b. Testes em `tests/testthat/test-trees.R`; 18
+  expectativas passam no total.
+- [x] Referência empírica (`analysis/05_tree_shape_empirical.R`). Árvore de Portik,
+  Streicher & Wiens 2023 *MPE* (doi:10.1016/j.ympev.2023.107907; DOI verificado no
+  OpenAlex). Cópia em `data/raw/` com SHA-256, vinda do compêndio dos girinos; é
+  uma árvore só, não o posterior.
+  - Anura tem 5.242 pontas.
+  - Clados de 40–250 pontas: γ q10/q50/q90 = −5,6/−3,8/−1,5 (~50 spp.) até
+    −8,9/−6,2/−4,3 (~200 spp.). Colless normalizado pelo Yule: q50 de 0,9 a 1,4;
+    q90 de 2,4 a 3,0.
+  - Subconjuntos aleatórios de espécies dão γ ainda mais negativo (efeito da
+    amostragem incompleta).
+- [x] Grade 3×3 × N (`analysis/06_tree_grid.R 200 12`, ~1 min com 12 workers).
+  São 27 células com 200 árvores cada, em
+  `data/derived/trees/tree_grid_k200.rds` (fora do git; regenerar com a seed
+  20261017). As médias batem com os alvos e a correlação γ × Colless dentro das
+  células fica ≈ 0.
+- Rodado em paralelo com o Hmsc do japan-microcosm-bacteria (4 núcleos); a pedido
+  do Diogo, usamos 12 workers.
+- [ ] Obter o posterior de árvores datadas de Portik et al. 2023, para a incerteza
+  dos quantis.
+- [ ] Pools regionais (ex.: espécies do Brasil, do banco de girinos) como
+  referência alternativa aos clados.
+- [ ] Piloto: 3 células (Yule×Yule, γ low × Colless yule, γ yule × Colless high),
+  com PFW (Mantel/ADONIS) e PCC nos cenários de H0. Confirmar o tempo antes.

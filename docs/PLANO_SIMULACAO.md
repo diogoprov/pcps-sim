@@ -137,6 +137,48 @@ faixas realistas.
    grade cobre o espaço real.
 4. **Tamanho do pool (N):** 50, 100 e 200 spp., como em Duarte et al. 2016, para comparação direta.
 
+### 2b. Implementação (2026-10-17; desvia do item 1)
+
+Em vez da biblioteca de vários geradores com amostragem estratificada, usamos um
+gerador com dois controles separados (`R/trees.R`). O γ depende só dos intervalos
+entre nós; o Colless, só da topologia. Por isso, sorteá-los de processos
+independentes dá controle independente por construção:
+- **Topologia:** beta-splitting de Aldous (β = 0 é Yule; β menor dá mais
+  desbalanço).
+- **Tempos:** pure-birth em que cada linhagem diversifica à taxa k^c, com k
+  linhagens. c = 0 é Yule; c < 0 é desaceleração, tipo diversity-dependence, e dá
+  γ < 0.
+- **Ranking dos nós:** uma extensão linear uniforme da ordem da árvore, que é a
+  implicada pelo Yule dada a topologia.
+- **Profundidade da raiz:** 1.
+
+Isso é uma escolha de desenho minha, não um modelo publicado.
+
+**Níveis da grade, por N** (`R/tree_grid.R`, `analysis/05` e `analysis/06`):
+- γ ∈ {0 (Yule), mediana, q10}; Colless (normalizado pelo Yule) ∈ {0 (Yule),
+  mediana, q90}.
+- Os quantis vêm dos clados de anuros com 40–250 pontas da árvore de Portik et al.
+  2023. A célula Yule×Yule reproduz os desenhos publicados (Duarte et al. 2016;
+  Peres-Neto & Kembel 2015).
+- c e β são calibrados separadamente por curvas de média.
+- As árvores são aceitas só se |γ − alvo| ≤ 0,5 e |Colless − alvo| ≤ 0,5.
+  Aceitação de 9–25%.
+- Nenhuma célula fica vazia: o gerador cobre todo o espaço empírico.
+
+Alvos (γ mid/low; Colless mid/high):
+
+| N | γ mid | γ low | Colless mid | Colless high |
+|---|---|---|---|---|
+| 50 | −3,79 | −5,58 | 0,94 | 2,39 |
+| 100 | −4,94 | −6,54 | 1,31 | 2,74 |
+| 200 | −6,20 | −8,92 | 1,36 | 2,98 |
+
+**Observação para a discussão:** nos anuros, o γ é sempre negativo (q90 dos clados
+de −1,5 a −4,3) e o Colless fica acima do Yule. As validações publicadas (todas
+com árvores Yule) ficam na borda do espaço empírico. Isso é inferência minha a
+partir de uma única árvore (point estimate); falta repetir com o posterior de
+árvores datadas.
+
 ## 3. Metacomunidades
 
 O núcleo é o protocolo de Peres-Neto, Leibold & Dray 2012, usado tanto por Duarte
