@@ -233,10 +233,13 @@ está indexada no OpenAlex. Se o capítulo estiver nela, a tese é publicação 
     (0,831/0,887/0,905 contra 0,840/0,884/0,906).
     **Discrepância:** o R² do ADONIS publicado só é reproduzido com Bray–Curtis
     **sem** raiz (0,830 contra 0,819 publicado; com raiz, 0,505), embora os Métodos
-    digam "square-rooted". O Mantel bate com a raiz. Interpretação minha: o ADONIS
-    deles provavelmente foi rodado como `adonis(P ~ E, method = "bray")`. Confirmar
-    no Appendix S3. Agora o código tem a opção `sqrt_adonis` (padrão TRUE; FALSE na
-    validação).
+    digam "square-rooted". O Mantel bate com a raiz. **Confirmado no Appendix S3**
+    (`references/appendices/Duarte_etal_2016_AppendixS3.doc`, 2026-10-17):
+    `matrix.p.adonis` chama `adonis(p.matrix ~ envir)` com o `method = "bray"`
+    padrão, sem raiz; só `matrix.p.mantel` tem `squareroot = TRUE`. O taxa shuffle
+    deles é `picante::taxaShuffle` na matriz de distâncias, equivalente ao nosso.
+    O site shuffle do ADONIS são as permutações do próprio `adonis`. A opção
+    `sqrt_adonis` fica (padrão TRUE no estudo novo; FALSE para reproduzir Duarte).
     A conferir com 1000 réplicas: taxa shuffle do ADONIS em phylo_only, ~0,045
     contra 0,018–0,027 publicado.
   - Peres-Neto & Kembel 2015, Tabela 1 (PCC): bate com −½·PD sem quadrado, como

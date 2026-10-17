@@ -16,3 +16,4 @@ data/derived/*
 
 # OS
 .DS_Store
+logs/

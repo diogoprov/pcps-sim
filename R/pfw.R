@@ -64,8 +64,8 @@ perm_p <- function(obs, null) (sum(null >= obs) + 1) / (length(null) + 1)
 #' across the tips of the tree (rows and columns of Q), keeping W fixed, and
 #' recomputes P and D_P (Pillar & Duarte 2010; Duarte et al. 2016).
 #' @param sqrt_adonis square-root the Bray-Curtis matrix used in the ADONIS test.
-#'   Duarte et al. 2016 state sqrt for both tests, but their published ADONIS R2
-#'   is only reproduced with plain Bray-Curtis (docs/MEMORIA_PROJETO.md).
+#'   Duarte et al. 2016 state sqrt for both tests, but their ADONIS
+#'   used plain Bray-Curtis in their code (Appendix S3: `adonis(P ~ E)`).
 #'   The Mantel test always uses sqrt(Bray-Curtis).
 #' @return tibble with statistic, observed value and p-values (site, taxa, max).
 test_pfw <- function(comm, tree, env, nperm = 999, sqrt_adonis = TRUE) {
