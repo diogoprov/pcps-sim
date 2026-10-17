@@ -79,3 +79,15 @@ tree_shape <- function(tree) {
   c(gamma = treestats::gamma_statistic(tree),
     colless = treestats::colless(tree, normalization = "yule"))
 }
+
+#' All `treestats` summary statistics for one tree, raw and normalized
+#'
+#' `treestats::calc_all_stats()`; normalized versions (suffix `_norm`) are given
+#' only for the statistics that `treestats` normalizes (size-standardized).
+#' @return one-row tibble.
+tree_stats_all <- function(tree) {
+  raw <- unlist(treestats::calc_all_stats(tree, normalize = FALSE))
+  nrm <- unlist(treestats::calc_all_stats(tree, normalize = TRUE))
+  changed <- names(nrm)[abs(nrm - raw) > 1e-12 * pmax(1, abs(raw))]
+  tibble::as_tibble(as.list(c(raw, stats::setNames(nrm[changed], paste0(changed, "_norm")))))
+}
