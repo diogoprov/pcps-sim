@@ -10,7 +10,9 @@ reps <- if (length(args) >= 2) as.integer(args[[2]]) else 10L
 
 for (f in list.files("R", full.names = TRUE)) source(f)
 future::plan(future::multisession, workers = workers)
-opts <- furrr::furrr_options(seed = 20261017L, globals = TRUE,
+# one job at a time: the cost varies a lot among jobs (target 200, mass
+# effects), and static chunks leave most workers idle at the end
+opts <- furrr::furrr_options(seed = 20261017L, globals = TRUE, scheduling = Inf,
                              packages = c("dplyr", "tibble"))
 out_dir <- file.path("data", "derived", "layerB")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
