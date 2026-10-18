@@ -118,14 +118,18 @@ archetypes_layerB <- function() {
 }
 
 #' Mean number of species left after the dynamics, for a pool of `n_pool` tips
-#' (Yule trees, one per replicate)
-#' @param arch one row of [archetypes_layerB()].
-#' @param sc one row of [scenarios_layerA()].
-realized_richness <- function(n_pool, arch, sc, reps = 10, n_steps = 1000) {
-  mean(vapply(seq_len(reps), \(r) {
+#'
+#' Yule trees, one per replicate: the calibration assumes that realized
+#' richness depends little on tree shape (to be checked in the grid cells,
+#' where the realized N of each replicate is recorded).
+#' @param arch list or row with `dispersal` and `competition` ([archetypes_layerB()]).
+#' @param sc list or row with `lambda`, `sigma_signal` and `h_signal` ([scenarios_layerA()]).
+#' @param reps number of replicate metacommunities.
+realized_richness <- function(n_pool, arch, sc, reps = 10) {
+  mean(vapply(seq_len(reps), \(i) {
     mc <- sim_metacommunity_B(sim_tree_shape(n_pool), sc$lambda, sc$sigma_signal,
-                              sc$h_signal, TRUE, dispersal = arch$dispersal,
-                              competition = arch$competition, n_steps = n_steps)
+                              sc$h_signal, env_original = TRUE,
+                              dispersal = arch$dispersal, competition = arch$competition)
     ncol(mc$comm)
   }, 0))
 }
@@ -133,17 +137,19 @@ realized_richness <- function(n_pool, arch, sc, reps = 10, n_steps = 1000) {
 #' Pool size whose realized richness after the dynamics is close to `target`
 #'
 #' Starts at n = target and rescales n by target / realized until the mean
-#' realized richness is within `tol` (relative) of the target.
-#' @return tibble with the pool size, its mean realized richness and the
-#'   number of iterations.
+#' realized richness is within `tol` (relative) of the target, for at most
+#' `max_iter` simulated pool sizes.
+#' @return tibble with the last simulated pool size, its mean realized
+#'   richness, the number of iterations and whether it converged.
 calibrate_pool_size <- function(target, arch, sc, reps = 10, tol = 0.05,
                                 max_iter = 5) {
   n <- target
   for (it in seq_len(max_iter)) {
     m <- realized_richness(n, arch, sc, reps)
-    if (abs(m - target) / target <= tol) break
-    n <- round(n * target / m)
+    converged <- abs(m - target) / target <= tol
+    if (converged || it == max_iter) break
+    n <- round(n * target / max(m, 1))
   }
-  tibble::tibble(target = target, n_pool = n, realized = m, iterations = it)
+  tibble::tibble(target = target, n_pool = n, realized = m, iterations = it,
+                 converged = converged)
 }
-

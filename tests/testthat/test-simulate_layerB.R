@@ -53,3 +53,14 @@ test_that("sim_metacommunity_B returns the layer-A structure", {
   expect_equal(ncol(mc$comm) + mc$n_dropped_spp, 40)
   expect_true(all(rowSums(mc$comm) > 0))
 })
+
+test_that("calibrate_pool_size returns the last pool size it simulated", {
+  set.seed(8)
+  arch <- list(dispersal = 0.01, competition = "phylo")
+  sc <- list(lambda = 1, sigma_signal = FALSE, h_signal = FALSE)
+  # tol = 0 cannot be met: the pool size must stay at the one simulated
+  cal <- calibrate_pool_size(20, arch, sc, reps = 1, tol = 0, max_iter = 1)
+  expect_equal(cal$n_pool, 20)
+  expect_false(cal$converged)
+  expect_equal(nrow(archetypes_layerB()), 4)
+})

@@ -20,11 +20,9 @@ traits <- scenarios_layerA() |>
 jobs <- tidyr::crossing(archetypes_layerB(), traits, target = c(50, 100, 200))
 
 t0 <- Sys.time()
-cal <- furrr::future_pmap(jobs, \(archetype, regime, dispersal, competition,
-                                  lambda, sigma_signal, h_signal, target) {
-  arch <- list(dispersal = dispersal, competition = competition)
-  sc <- list(lambda = lambda, sigma_signal = sigma_signal, h_signal = h_signal)
-  calibrate_pool_size(target, arch, sc, reps = reps)
+cal <- furrr::future_pmap(jobs, \(...) {
+  job <- list(...)  # one row: archetype (dispersal, competition) and traits
+  calibrate_pool_size(job$target, arch = job, sc = job, reps = reps)
 }, .options = opts) |>
   dplyr::bind_rows()
 message("Calibration: ", format(Sys.time() - t0))
@@ -32,8 +30,9 @@ message("Calibration: ", format(Sys.time() - t0))
 pool_sizes <- dplyr::bind_cols(jobs, dplyr::select(cal, -target)) |>
   dplyr::inner_join(scenarios_layerA(), by = c("lambda", "sigma_signal", "h_signal"),
                     relationship = "many-to-many") |>
-  dplyr::select(archetype, scenario, target, n_pool, realized, iterations,
+  dplyr::select(archetype, scenario, target, n_pool, realized, iterations, converged,
                 dplyr::everything())
 readr::write_csv(pool_sizes, file.path(out_dir, "pool_sizes.csv"))
 print(as.data.frame(dplyr::distinct(pool_sizes, archetype, lambda, sigma_signal,
-                                    h_signal, target, n_pool, realized, iterations)))
+                                    h_signal, target, n_pool, realized, iterations,
+                                    converged)))
