@@ -55,14 +55,15 @@ competition_matrix <- function(tree, type = c("none", "random", "phylo"),
 #' redistributed multinomially among sites with probabilities proportional to
 #' the number of emigrants from the other sites (Thompson et al. 2020 with a
 #' uniform kernel), so an individual may return to its own site.
+#'
+#' Species absent from every site after the last seeding step can never come
+#' back, so from then on they are dropped from the computations (the product
+#' with alpha dominates the cost and is quadratic in the number of species).
 #' @param r sites x species matrix of density-independent growth rates.
 #' @param alpha species x species competition matrix ([competition_matrix()]).
 #' @param dispersal emigration probability, one value or one per species.
 #' @param seed_steps steps at which Poisson(seed_mean) individuals of every
 #'   species are added to every site (initial colonisation).
-#' Species absent from every site after the last seeding step can never come
-#' back, so from then on they are dropped from the computations (the product
-#' with alpha dominates the cost and is quadratic in the number of species).
 #' @return sites x species abundances at the last step.
 mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
                         seed_steps = seq(10, 100, 10), seed_mean = 0.5) {
@@ -70,23 +71,23 @@ mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
   k <- ncol(r)
   dispersal <- rep_len(dispersal, k)
   alive <- seq_len(k)
-  r_full <- r
+  r_alive <- r
   p_em <- rep(dispersal, each = m)
   at <- t(alpha)
   n <- matrix(stats::rpois(m * k, seed_mean), m, k)
   last_seed <- max(c(0, seed_steps))
   for (step in seq_len(n_steps)) {
     if (step %in% seed_steps) n <- n + stats::rpois(m * k, seed_mean)
-    if (step > last_seed && any(colSums(n) == 0)) {
-      keep <- colSums(n) > 0
+    keep <- colSums(n) > 0
+    if (step > last_seed && !all(keep)) {
       alive <- alive[keep]
       n <- n[, keep, drop = FALSE]
-      r <- r[, keep, drop = FALSE]
+      r_alive <- r_alive[, keep, drop = FALSE]
       at <- at[keep, keep, drop = FALSE]
       k <- length(alive)
       p_em <- rep(dispersal[alive], each = m)
     }
-    lam <- r * n / (1 + n %*% at)
+    lam <- r_alive * n / (1 + n %*% at)
     n <- matrix(stats::rpois(m * k, lam), m, k)
     em <- matrix(stats::rbinom(m * k, n, p_em), m, k)
     tot <- colSums(em)
@@ -97,7 +98,7 @@ mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
       n <- n - em + imm
     }
   }
-  out <- matrix(0, m, ncol(r_full), dimnames = dimnames(r_full))
+  out <- matrix(0L, m, ncol(r), dimnames = dimnames(r))
   out[, alive] <- n
   out
 }
