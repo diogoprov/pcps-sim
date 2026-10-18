@@ -644,3 +644,22 @@ Próximos passos sugeridos:
     −3,5 com phylo; ≈ 0 sem competição). Forma da árvore e arquétipo estão
     confundidos na camada B; as células de forma precisam controlar a árvore
     *depois* da poda, ou registrar γ realizado como covariável.
+- **Rodada full na AWS (2026-10-17 21:3x → 2026-10-18 03:17; i-0fd983111cb9e7873).**
+  432.000 réplicas completas (8 cenários × 9 células de forma × N 50/100/200 ×
+  abundância/incidência; ADONIS, Mantel, GLM PCPS1/2, PCC; 5 testes). Arquivo:
+  `data/derived/full/results.csv` (fora do git) e no S3. O token SSO expirou
+  ~03:00 e o monitor ficou cego; a instância encerrada some do describe
+  ("None"), e o loop esperava "terminated" — monitor novo trata os dois casos.
+  - Erro tipo I (max test): S2 e S2h nominais em todos os testes (0,046–0,055);
+    S0/S1 conservadores (0,004–0,033).
+  - **S2sigma: GLM PCPS2 0,12** (abund. 0,09, incid. 0,15), **cresce com N**
+    (0,07 / 0,11 / 0,18) e com γ baixo (0,15 em g_low vs 0,075 em Yule).
+    **PCC também infla em S2sigma** (0,08; incidência 0,11; N 200 0,10), mais
+    em árvores Yule (0,09–0,096). ADONIS, Mantel e GLM PCPS1 ficam ≤ 0,04.
+  - Poder: ADONIS 0,50/0,73/0,67 (S3a/b/σ), Mantel 0,46/0,64/0,55, PCC
+    0,40/0,81/0,84, GLM PCPS1 0,28/0,38/0,28, PCPS2 ≈ 0,01. Incidência > abundância
+    para ADONIS/Mantel/GLM. γ baixo derruba o GLM PCPS1 (S3b 0,21 vs 0,58 Yule) e
+    o PCC (0,68 vs 0,94); ADONIS quase não muda (0,71–0,75). Colless sem efeito
+    visível.
+- **Rodada axes lançada 2026-10-18 08:58** (i-056c0789ae71860bc, commit 861e862),
+  ~5 h.
