@@ -26,6 +26,7 @@ RUN R -q -e 'renv::restore(repos = getOption("repos"), prompt = FALSE)'
 COPY R/ R/
 COPY analysis/ analysis/
 COPY data/raw/ data/raw/
+COPY data/calibrated/ data/calibrated/
 COPY _targets.R dependencies.R ./
 
 CMD ["Rscript", "analysis/run_pipeline.R", "full"]

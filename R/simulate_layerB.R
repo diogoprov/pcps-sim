@@ -171,3 +171,28 @@ calibrate_pool_size <- function(target, arch, sc, reps = 10, tol = 0.05,
   tibble::tibble(target = target, n_pool = n, realized = m, iterations = it,
                  converged = converged)
 }
+
+#' Calibrated pool sizes of the feasible cells
+#'
+#' Reads the table written by analysis/10_calibrate_layerB.R and drops the cells
+#' whose mean realized richness is more than `tol` (relative) off the target
+#' (decision of 2026-10-18: mass effects with phylogenetic competition levels
+#' off at ~150 species for pools of 2300-2900 tips, so N = 200 is infeasible
+#' there). Cells within `tol` are kept although not converged, with their
+#' realized N recorded per replicate.
+#' @return tibble archetype, scenario, target, n_pool.
+feasible_pools <- function(path, tol = 0.15) {
+  pools <- readr::read_csv(path, show_col_types = FALSE) |>
+    dplyr::mutate(feasible = abs(realized - target) / target <= tol)
+  dropped <- dplyr::filter(pools, !feasible)
+  if (nrow(dropped) > 0)
+    message("Dropped as infeasible (realized N more than ", 100 * tol,
+            "% off target): ", nrow(dropped), " rows, ",
+            paste(unique(paste(dropped$archetype, dropped$target)), collapse = ", "),
+            "; realized ", paste(round(range(dropped$realized)), collapse = "-"))
+  pools <- dplyr::filter(pools, feasible)
+  if (!all(pools$converged))
+    message("Kept although not converged (within ", 100 * tol, "% of target): ",
+            sum(!pools$converged), " rows")
+  dplyr::select(pools, archetype, scenario, target, n_pool)
+}

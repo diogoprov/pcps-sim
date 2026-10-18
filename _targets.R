@@ -1,5 +1,7 @@
-# Simulation pipeline (layer A). Profile and workers come from the environment:
-#   PCPS_PROFILE = pilot_glm | full   (R/pipeline.R, design_profile())
+# Simulation pipeline (layers A and B). Profile and workers come from the
+# environment:
+#   PCPS_PROFILE = pilot_glm | full | axes | layerB | ...   (R/pipeline.R,
+#   design_profile(); profiles with layer = "B" run the layer-B branch)
 #   PCPS_WORKERS = number of crew workers (default: cores - 1)
 # Run with analysis/run_pipeline.R, which also selects a store per profile.
 
@@ -22,7 +24,7 @@ tar_option_set(
   error = "continue"
 )
 
-list(
+shape_targets <- list(
   tar_target(portik_file, "data/raw/portik2023_timetree.tre", format = "file"),
   tar_target(empirical_shapes, empirical_clade_shapes(portik_file)),
   tar_target(
@@ -33,7 +35,21 @@ list(
       targets::tar_group(),
     iteration = "group"
   ),
-  tar_target(cells_calibrated, calibrate_cells(levels_by_n), pattern = map(levels_by_n)),
+  tar_target(cells_calibrated, calibrate_cells(levels_by_n), pattern = map(levels_by_n))
+)
+
+results_csv_target <- tar_target(
+  results_csv,
+  {
+    path <- file.path("data", "derived", profile$name, "results.csv")
+    dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+    readr::write_csv(results, path)
+    path
+  },
+  format = "file"
+)
+
+layer_a <- list(
   tar_target(
     cells_used,
     cells_calibrated |>
@@ -53,18 +69,28 @@ list(
   ),
   tar_target(results, run_chunk(design, tree_grid, profile),
              pattern = cross(tree_grid, design)),
-  tar_target(
-    results_csv,
-    {
-      path <- file.path("data", "derived", profile$name, "results.csv")
-      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-      readr::write_csv(results, path)
-      path
-    },
-    format = "file"
-  ),
+  results_csv_target,
   tar_target(
     rejection,
     rejection_rates(results, test, scenario, cell, n_spp, data_type)
   )
 )
+
+layer_b <- list(
+  tar_target(pool_file, profile$pool_file, format = "file"),
+  tar_target(
+    design_B,
+    design_table_B(profile, cells_calibrated, pool_file) |>
+      dplyr::group_by(cell, archetype, scenario, target, chunk) |>
+      targets::tar_group(),
+    iteration = "group"
+  ),
+  tar_target(results, run_chunk_B(design_B, profile), pattern = map(design_B)),
+  results_csv_target,
+  tar_target(
+    rejection,
+    rejection_rates(results, test, scenario, archetype, cell, n_spp)
+  )
+)
+
+c(shape_targets, if (identical(profile$layer, "B")) layer_b else layer_a)

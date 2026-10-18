@@ -10,6 +10,11 @@
 #' `full`: objective 1, all cells, scenarios and data types (docs/PLANO_SIMULACAO.md).
 #' `axes`: as `full`, without PCC, adding the GLM with Procrustes and the RDA on
 #' PCPS axes 1-2 (diagnosis of S2sigma, analysis/09_diag_s2sigma.R).
+#' `layerB`: layer B (process-based dynamics) on the four corner cells and the
+#' centre of the grid, the four archetypes and the eight scenarios, incidence
+#' only; the cell sets the (beta, c) of the pool tree (option B of 2026-10-18,
+#' docs/MEMORIA_PROJETO.md), and the shape of the pruned tree is recorded.
+#' `smoke_B`: tiny layer-B run.
 #' `extra_axes` defaults to FALSE in all other profiles.
 #' @param name profile name; defaults to the environment variable PCPS_PROFILE.
 design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
@@ -42,6 +47,21 @@ design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
     full = full,
     axes = utils::modifyList(full, list(name = name, methods = c("pfw", "glm"),
                                         extra_axes = TRUE)),
+    layerB = utils::modifyList(full, list(
+      name = name, layer = "B",
+      cells = c("g_yule__c_yule", "g_low__c_yule", "g_yule__c_high", "g_low__c_high",
+                "g_mid__c_mid"),
+      archetypes = archetypes_layerB()$archetype, data_types = "incidence",
+      extra_axes = TRUE, pool_file = "data/calibrated/layerB_pool_sizes.csv"
+    )),
+    smoke_B = list(
+      name = name, layer = "B", cells = c("g_yule__c_yule", "g_low__c_high"),
+      n_spp = 50, scenarios = c("S0", "S3b"),
+      archetypes = c("sorting__phylo", "mass_effects__none"), data_types = "incidence",
+      reps = 4L, chunk = 2L, methods = c("pfw", "glm", "pcc"), nperm = 19L,
+      nperm_pcc = 19L, extra_axes = TRUE,
+      pool_file = "data/calibrated/layerB_pool_sizes.csv"
+    ),
     stop("unknown profile: ", name)
   )
 }
@@ -125,5 +145,53 @@ run_chunk <- function(design_row, cell_trees, profile) {
     dplyr::mutate(scenario = design_row$scenario, cell = cell_trees$cell,
                   n_spp = cell_trees$n, data_type = design_row$data_type,
                   .before = 1) |>
+    dplyr::mutate(chunk_seconds = as.numeric(Sys.time() - t0, units = "secs"))
+}
+
+#' Layer-B design table: one row per (cell, archetype, scenario, target N,
+#' chunk of replicates), with the archetype, scenario and calibrated pool size
+#' (feasible cells only, [feasible_pools()]) and the (beta, c) of the cell for
+#' that N (`cells`: output of [calibrate_cells()]).
+design_table_B <- function(profile, cells, pool_file = profile$pool_file) {
+  feasible_pools(pool_file) |>
+    dplyr::filter(archetype %in% profile$archetypes, scenario %in% profile$scenarios,
+                  target %in% profile$n_spp) |>
+    dplyr::inner_join(archetypes_layerB(), by = "archetype") |>
+    dplyr::inner_join(scenarios_layerA(), by = "scenario") |>
+    dplyr::inner_join(dplyr::select(dplyr::filter(cells, cell %in% profile$cells),
+                                    n, cell, beta, c),
+                      by = c(target = "n"), relationship = "many-to-many") |>
+    tidyr::crossing(chunk = seq_len(ceiling(profile$reps / profile$chunk)))
+}
+
+#' Run one chunk of layer-B replicates
+#'
+#' Each replicate draws a new pool tree with the (beta, c) of its cell and the
+#' calibrated pool size, so the cell describes the process that generated the
+#' regional pool; the shapes of the pool tree and of the tree pruned by the
+#' dynamics (the one analysed) are recorded as covariates.
+#' @param design_row one row of [design_table_B()].
+run_chunk_B <- function(design_row, profile) {
+  reps <- seq((design_row$chunk - 1) * profile$chunk + 1,
+              min(design_row$chunk * profile$chunk, profile$reps))
+  t0 <- Sys.time()
+  purrr::map(reps, \(r) {
+    pool <- sim_tree_shape(design_row$n_pool, beta = design_row$beta, c = design_row$c)
+    mc <- sim_metacommunity_B(pool, design_row$lambda, design_row$sigma_signal,
+                              design_row$h_signal, design_row$env_original,
+                              dispersal = design_row$dispersal,
+                              competition = design_row$competition)
+    shape_pool <- tree_shape(pool)
+    shape_obs <- tree_shape(mc$tree)
+    analyse_metacommunity(mc, profile$methods, profile$nperm, profile$nperm_pcc,
+                          extra_axes = isTRUE(profile$extra_axes)) |>
+      dplyr::mutate(rep = r, n_realized = ncol(mc$comm),
+                    gamma_pool = shape_pool[["gamma"]], colless_pool = shape_pool[["colless"]],
+                    gamma = shape_obs[["gamma"]], colless = shape_obs[["colless"]])
+  }) |>
+    dplyr::bind_rows() |>
+    dplyr::mutate(scenario = design_row$scenario, archetype = design_row$archetype,
+                  cell = design_row$cell, n_spp = design_row$target,
+                  n_pool = design_row$n_pool, data_type = "incidence", .before = 1) |>
     dplyr::mutate(chunk_seconds = as.numeric(Sys.time() - t0, units = "secs"))
 }

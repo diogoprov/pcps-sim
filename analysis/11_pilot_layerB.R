@@ -4,14 +4,14 @@
 # realized richness is close to N (analysis/10_calibrate_layerB.R). Yule trees,
 # a new one for each replicate; the realized N and the shape of the pruned
 # tree are recorded.
-# Usage: Rscript analysis/11_pilot_layerB.R <n_reps> <workers> <nperm> [pool_sizes.csv]
+# Usage: Rscript analysis/11_pilot_layerB.R <n_reps> <workers> <nperm> [pool sizes csv]
 
 args <- commandArgs(trailingOnly = TRUE)
 n_reps <- if (length(args) >= 1) as.integer(args[[1]]) else 50L
 workers <- if (length(args) >= 2) as.integer(args[[2]]) else 6L
 nperm <- if (length(args) >= 3) as.integer(args[[3]]) else 499L
 pool_file <- if (length(args) >= 4) args[[4]] else
-  file.path("data", "derived", "layerB", "pool_sizes.csv")
+  file.path("data", "calibrated", "layerB_pool_sizes.csv")
 
 for (f in list.files("R", full.names = TRUE)) source(f)
 future::plan(future::multisession, workers = workers)
@@ -21,25 +21,7 @@ opts <- furrr::furrr_options(seed = 20261018L, globals = TRUE, scheduling = Inf,
 out_dir <- file.path("data", "derived", "pilot_layerB")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-pools <- readr::read_csv(pool_file, show_col_types = FALSE)
-# cells whose target richness is out of reach are dropped (decision of
-# 2026-10-18: mass effects with phylogenetic competition levels off at ~150
-# species for pools of 2300-2900 tips, so N = 200 is infeasible there); a cell
-# within tol_feasible of its target is kept, with its realized N recorded per
-# replicate
-tol_feasible <- 0.15
-pools <- dplyr::mutate(pools, feasible = abs(realized - target) / target <= tol_feasible)
-dropped <- dplyr::filter(pools, !feasible)
-if (nrow(dropped) > 0)
-  message("Dropped as infeasible (realized N more than ", 100 * tol_feasible,
-          "% off target): ", nrow(dropped), " rows, ",
-          paste(unique(paste(dropped$archetype, dropped$target)), collapse = ", "),
-          "; realized ", paste(round(range(dropped$realized)), collapse = "-"))
-pools <- dplyr::filter(pools, feasible)
-if ("converged" %in% names(pools) && !all(pools$converged))
-  warning("kept although not converged (within ", 100 * tol_feasible, "% of target): ",
-          sum(!pools$converged), " rows")
-pools <- dplyr::select(pools, archetype, scenario, target, n_pool)
+pools <- feasible_pools(pool_file)
 jobs <- pools |>
   dplyr::inner_join(archetypes_layerB(), by = "archetype") |>
   dplyr::inner_join(scenarios_layerA(), by = "scenario") |>

@@ -64,3 +64,14 @@ test_that("calibrate_pool_size returns the last pool size it simulated", {
   expect_false(cal$converged)
   expect_equal(nrow(archetypes_layerB()), 4)
 })
+
+test_that("feasible_pools drops only cells more than tol off target", {
+  path <- tempfile(fileext = ".csv")
+  readr::write_csv(tibble::tibble(
+    archetype = c("a", "a", "b"), scenario = "S0", target = c(100, 200, 100),
+    n_pool = c(110, 2500, 480), realized = c(99, 150, 88), converged = c(TRUE, FALSE, FALSE)
+  ), path)
+  out <- suppressMessages(feasible_pools(path))
+  expect_equal(out$n_pool, c(110, 480))
+  expect_named(out, c("archetype", "scenario", "target", "n_pool"))
+})
