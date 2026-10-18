@@ -21,6 +21,17 @@ out_dir <- file.path("data", "derived", "pilot_layerB")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 pools <- readr::read_csv(pool_file, show_col_types = FALSE)
+# cells whose target richness is out of reach are dropped (decision of
+# 2026-10-18: mass effects with phylogenetic competition levels off at ~150
+# species whatever the pool size, so N = 200 is infeasible there); a cell
+# within 15% of its target is kept, with its realized N recorded per replicate
+infeasible <- abs(pools$realized - pools$target) / pools$target > 0.15
+if (any(infeasible)) {
+  message("Dropped as infeasible: ",
+          paste(unique(paste(pools$archetype[infeasible], pools$target[infeasible])),
+                collapse = ", "))
+  pools <- pools[!infeasible, ]
+}
 if ("converged" %in% names(pools) && !all(pools$converged))
   warning("pool sizes not converged for ", sum(!pools$converged), " rows")
 pools <- dplyr::select(pools, archetype, scenario, target, n_pool)
