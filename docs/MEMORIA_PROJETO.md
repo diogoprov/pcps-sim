@@ -609,3 +609,17 @@ Próximos passos sugeridos:
     (pool 150, competição phylo).
   - Pendente: OpenBLAS no Docker (`libopenblas-dev` +
     `OPENBLAS_NUM_THREADS=1`), a testar num bench depois da rodada `axes`.
+- **Calibração da camada B (2026-10-17, 23:33–23:55, 16 workers, 10 réplicas,
+  commit 7df9a16).** 66/72 jobs convergiram (±5%). Pool necessário:
+  sorting/none = N; mass_effects/none ≈ 1,07 N; sorting/phylo ≈ 1,3 N (50),
+  1,7–1,9 N (100), 2,6–3 N (200); mass_effects/phylo ≈ 2–2,4 N (50), 4,2–5 N
+  (100; 4/6 sem convergir, realizado 88–97) e, para N = 200, pools de 2.348–2.857
+  pontas dão só 148–161 espécies: **teto de coexistência regional** (dispersão
+  alta homogeneiza os sítios; mais pool = mais parentes próximos competindo;
+  interpretação não testada). Pools tão podados também afastam a árvore
+  analisada da Yule.
+- **Decisão (Diogo, 2026-10-18): opção 1** — retirar só a célula
+  mass_effects/phylo × N = 200 (desenho desbalanceado em uma célula; a
+  inviabilidade é resultado). No piloto, regra geral: cai a célula com N
+  realizado a mais de 15% do alvo (hoje, exatamente essas 8 linhas); as N = 100
+  não convergidas ficam, com o N realizado registrado por réplica.

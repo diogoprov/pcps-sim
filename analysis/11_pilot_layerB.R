@@ -23,17 +23,21 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 pools <- readr::read_csv(pool_file, show_col_types = FALSE)
 # cells whose target richness is out of reach are dropped (decision of
 # 2026-10-18: mass effects with phylogenetic competition levels off at ~150
-# species whatever the pool size, so N = 200 is infeasible there); a cell
-# within 15% of its target is kept, with its realized N recorded per replicate
-infeasible <- abs(pools$realized - pools$target) / pools$target > 0.15
-if (any(infeasible)) {
-  message("Dropped as infeasible: ",
-          paste(unique(paste(pools$archetype[infeasible], pools$target[infeasible])),
-                collapse = ", "))
-  pools <- pools[!infeasible, ]
-}
+# species for pools of 2300-2900 tips, so N = 200 is infeasible there); a cell
+# within tol_feasible of its target is kept, with its realized N recorded per
+# replicate
+tol_feasible <- 0.15
+pools <- dplyr::mutate(pools, feasible = abs(realized - target) / target <= tol_feasible)
+dropped <- dplyr::filter(pools, !feasible)
+if (nrow(dropped) > 0)
+  message("Dropped as infeasible (realized N more than ", 100 * tol_feasible,
+          "% off target): ", nrow(dropped), " rows, ",
+          paste(unique(paste(dropped$archetype, dropped$target)), collapse = ", "),
+          "; realized ", paste(round(range(dropped$realized)), collapse = "-"))
+pools <- dplyr::filter(pools, feasible)
 if ("converged" %in% names(pools) && !all(pools$converged))
-  warning("pool sizes not converged for ", sum(!pools$converged), " rows")
+  warning("kept although not converged (within ", 100 * tol_feasible, "% of target): ",
+          sum(!pools$converged), " rows")
 pools <- dplyr::select(pools, archetype, scenario, target, n_pool)
 jobs <- pools |>
   dplyr::inner_join(archetypes_layerB(), by = "archetype") |>
