@@ -691,3 +691,13 @@ Próximos passos sugeridos:
   bootstraps datados com TreePL) e dos ICs dos nós. Pendente (confirmar com o
   Diogo): baixar os bootstraps e recalcular os quantis empíricos de γ e Colless
   com a incerteza. `data/raw/README.md` atualizado (sai o `[CITAR: ...]`).
+- **BLAS no Docker (2026-10-18, `analysis/12_bench_blas.R`, Docker arm64 no Mac).**
+  Correção: o rocker/r-ver 4.6.1 **já liga o R ao OpenBLAS pthread** (arm64 e
+  amd64; `libopenblas0-pthread`), não à BLAS de referência como eu tinha dito.
+  Sem limite de threads, cada worker do crew dispara threads do OpenBLAS que
+  competem com os outros workers. Com `OPENBLAS_NUM_THREADS=1`, por réplica:
+  dinâmica B 1,27 → 1,18 s, `test_dp_all` (extras, 999) 6,94 → 3,14 s,
+  `test_pcc` (999) 4,08 → 1,24 s; estatísticas e p-valores **idênticos**.
+  Dockerfile agora fixa `OPENBLAS_NUM_THREADS=1` e `OMP_NUM_THREADS=1`. Na AWS,
+  com 190 workers, o ganho deve ser igual ou maior (não medido lá). O R nativo do
+  Mac usa a BLAS de referência (libRblas).
