@@ -45,13 +45,16 @@ test_that("extra axis tests: Procrustes and RDA", {
   expect_equal(ext[seq_len(nrow(base)), names(base)], base)
   expect_equal(ext$test[-seq_len(nrow(base))],
                c("glm_pcps1_proc", "glm_pcps2_proc", "rda_pcps"))
+  row <- \(x) match(x, ext$test)
+  plain <- row(c("glm_pcps1", "glm_pcps2"))
+  proc <- row(c("glm_pcps1_proc", "glm_pcps2_proc"))
   # observed Procrustes F equals the plain F, and so do the site-shuffle p
-  expect_equal(ext$stat[5:6], ext$stat[3:4], tolerance = 1e-8)
-  expect_equal(ext$p_site[5:6], ext$p_site[3:4])
+  expect_equal(ext$stat[proc], ext$stat[plain], tolerance = 1e-8)
+  expect_equal(ext$p_site[proc], ext$p_site[plain])
   # RDA F matches vegan::rda on the same axes
   y <- pcps_axes(comm, phylo_q(tree), 1:2)
   a <- anova(vegan::rda(y ~ env), permutations = 0)
-  expect_equal(ext$stat[7], a$F[1], tolerance = 1e-8)
+  expect_equal(ext$stat[row("rda_pcps")], a$F[1], tolerance = 1e-8)
   # eigenvalue shares match a full eigen decomposition
   ev <- eigen(gower_centre(d_p(matrix_p(comm, phylo_q(tree)), sqrt = TRUE)))$values
   expect_equal(c(ext$eig_share1[1], ext$eig_share2[1]), ev[1:2] / sum(ev), tolerance = 1e-8)

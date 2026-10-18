@@ -41,17 +41,14 @@ rank_to_marginal <- function(x, target) {
   stats::setNames(sort(target)[rank(x, ties.method = "random")], names(x))
 }
 
-#' One layer-A metacommunity
+#' Species traits of layers A and B
 #'
-#' L_ij = h_j exp(-(E_i - u_j)^2 / (2 sigma_j^2)), Poisson counts.
 #' u_j: BM with Pagel's lambda, rescaled to [-1, 101]. sigma_j ~ N(mu_tol, 10)
-#' truncated at > 0; h_j ~ U(0, 30); either drawn independently or ranked by a BM
-#' trait. Empty sites are dropped, and species absent from all sites are dropped
-#' and pruned from the tree (as `PCPS` does and as with real data).
-#' @return list with comm (sites x species, tip order), tree, env (analysed),
-#'   n_dropped_sites, n_dropped_spp, and traits (u, sigma, h of the species kept).
-sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_original,
-                                incidence = TRUE, n_sites = 100, mu_tol = 10) {
+#' truncated at > 0; h_j ~ U(h_range); sigma and h either drawn independently or
+#' ranked by a BM trait.
+#' @return data.frame (u, sigma, h), one row per tip in tip order.
+sim_species_traits <- function(tree, lambda, sigma_signal, h_signal, mu_tol = 10,
+                               h_range = c(0, 30)) {
   k <- ape::Ntip(tree)
   u <- rescale_to(sim_trait_lambda(tree, lambda))
   sigma <- numeric(0)
@@ -60,24 +57,45 @@ sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_origin
     sigma <- c(sigma, s[s > 0])
   }
   sigma <- sigma[seq_len(k)]
-  h <- stats::runif(k, 0, 30)
+  h <- stats::runif(k, h_range[1], h_range[2])
   if (sigma_signal) sigma <- rank_to_marginal(sim_trait_lambda(tree, 1), sigma)
   if (h_signal) h <- rank_to_marginal(sim_trait_lambda(tree, 1), h)
+  data.frame(u = u, sigma = sigma, h = h)
+}
 
-  env <- stats::runif(n_sites, 0, 100)
-  lambda_ij <- sweep(outer(env, u, "-")^2, 2, 2 * sigma^2, "/")
-  lambda_ij <- sweep(exp(-lambda_ij), 2, h, "*")
-  comm <- matrix(stats::rpois(length(lambda_ij), lambda_ij), nrow = n_sites,
-                 dimnames = list(NULL, tree$tip.label))
-  if (incidence) comm <- (comm > 0) * 1
-
-  env_used <- if (env_original) env else stats::runif(n_sites, 0, 100)
+#' Metacommunity as analysed, for layers A and B
+#'
+#' The environment analysed is the one that generated `comm` or, if not
+#' `env_original`, a new U(0, 100) draw. Empty sites are dropped, and species
+#' absent from all sites are dropped and pruned from the tree (as `PCPS` does
+#' and as with real data).
+#' @return list with comm (sites x species, tip order), tree, env (analysed),
+#'   n_dropped_sites, n_dropped_spp, and traits of the species kept.
+finish_metacommunity <- function(comm, tree, env, env_original, traits) {
+  env_used <- if (env_original) env else stats::runif(length(env), 0, 100)
   ok <- drop_empty_sites(comm, env_used)
   present <- colSums(ok$comm) > 0
   tree_obs <- if (all(present)) tree else ape::keep.tip(tree, tree$tip.label[present])
   list(comm = ok$comm[, tree_obs$tip.label, drop = FALSE], tree = tree_obs,
        env = ok$env, n_dropped_sites = ok$n_dropped, n_dropped_spp = sum(!present),
-       traits = data.frame(u = u, sigma = sigma, h = h)[present, ])
+       traits = traits[present, ])
+}
+
+#' One layer-A metacommunity
+#'
+#' L_ij = h_j exp(-(E_i - u_j)^2 / (2 sigma_j^2)), Poisson counts, with traits
+#' from [sim_species_traits()] and E ~ U(0, 100) on `n_sites` sites.
+#' @return see [finish_metacommunity()].
+sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_original,
+                                incidence = TRUE, n_sites = 100, mu_tol = 10) {
+  tr <- sim_species_traits(tree, lambda, sigma_signal, h_signal, mu_tol)
+  env <- stats::runif(n_sites, 0, 100)
+  lambda_ij <- sweep(outer(env, tr$u, "-")^2, 2, 2 * tr$sigma^2, "/")
+  lambda_ij <- sweep(exp(-lambda_ij), 2, tr$h, "*")
+  comm <- matrix(stats::rpois(length(lambda_ij), lambda_ij), nrow = n_sites,
+                 dimnames = list(NULL, tree$tip.label))
+  if (incidence) comm <- (comm > 0) * 1
+  finish_metacommunity(comm, tree, env, env_original, tr)
 }
 
 #' Run all methods on one metacommunity
@@ -86,6 +104,7 @@ sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_origin
 #'   PCPS axes; needs both "pfw" and "glm").
 analyse_metacommunity <- function(mc, methods = c("pfw", "glm", "pcc"),
                                   nperm = 999, nperm_pcc = nperm, extra_axes = FALSE) {
+  stopifnot(!extra_axes || all(c("pfw", "glm") %in% methods))
   out <- list()
   if (all(c("pfw", "glm") %in% methods)) {
     out$dp <- test_dp_all(mc$comm, mc$tree, mc$env, axes = 1:2, nperm = nperm,

@@ -15,6 +15,12 @@
 design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
   all_cells <- as.vector(outer(paste0("g_", c("yule", "mid", "low")),
                                paste0("c_", c("yule", "mid", "high")), paste, sep = "__"))
+  full <- list(
+    name = name, cells = all_cells,
+    n_spp = c(50, 100, 200), scenarios = scenarios_layerA()$scenario,
+    data_types = c("incidence", "abundance"), reps = 1000L, chunk = 50L,
+    methods = c("pfw", "glm", "pcc"), nperm = 999L, nperm_pcc = 999L, k_trees = 1000L
+  )
   switch(name,
     smoke = list(
       name = name, cells = c("g_yule__c_yule", "g_low__c_high"), n_spp = 50,
@@ -33,19 +39,9 @@ design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
       data_types = c("incidence", "abundance"), reps = 100L, chunk = 25L,
       methods = c("pfw", "glm"), nperm = 999L, nperm_pcc = 999L, k_trees = 200L
     ),
-    full = list(
-      name = name, cells = all_cells,
-      n_spp = c(50, 100, 200), scenarios = scenarios_layerA()$scenario,
-      data_types = c("incidence", "abundance"), reps = 1000L, chunk = 50L,
-      methods = c("pfw", "glm", "pcc"), nperm = 999L, nperm_pcc = 999L, k_trees = 1000L
-    ),
-    axes = list(
-      name = name, cells = all_cells,
-      n_spp = c(50, 100, 200), scenarios = scenarios_layerA()$scenario,
-      data_types = c("incidence", "abundance"), reps = 1000L, chunk = 50L,
-      methods = c("pfw", "glm"), nperm = 999L, nperm_pcc = 999L, k_trees = 1000L,
-      extra_axes = TRUE
-    ),
+    full = full,
+    axes = utils::modifyList(full, list(name = name, methods = c("pfw", "glm"),
+                                        extra_axes = TRUE)),
     stop("unknown profile: ", name)
   )
 }

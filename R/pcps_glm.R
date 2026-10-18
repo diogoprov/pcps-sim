@@ -7,7 +7,11 @@
 #' of the axes is irrelevant for the F statistic.
 #' @param axes which axes to return.
 pcps_axes <- function(comm, q, axes = 1:2) {
-  g <- gower_centre(d_p(matrix_p(comm, q), sqrt = TRUE))
+  pcoa_axes(gower_centre(d_p(matrix_p(comm, q), sqrt = TRUE)), axes)
+}
+
+#' Leading PCoA axes of a Gower-centred matrix, scaled by sqrt(eigenvalue)
+pcoa_axes <- function(g, axes) {
   # leading eigenpairs only (Lanczos); ~10x faster than eigen() for n = 100
   eig <- RSpectra::eigs_sym(g, max(axes))
   sweep(eig$vectors[, axes, drop = FALSE], 2, sqrt(pmax(eig$values[axes], 0)), "*")
@@ -86,14 +90,11 @@ test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
   q <- phylo_q(tree)
   comm <- comm[, tree$tip.label, drop = FALSE]
   de <- as.matrix(stats::dist(env))
-  pcoa_axes <- function(g) {
-    eig <- RSpectra::eigs_sym(g, max(axes))
-    sweep(eig$vectors[, axes, drop = FALSE], 2, sqrt(pmax(eig$values[axes], 0)), "*")
-  }
   dp <- d_p(matrix_p(comm, q), sqrt = TRUE)
   g <- gower_centre(dp)
-  y <- pcoa_axes(g)
-  stats_dp <- function(dp, x, de_x, g = gower_centre(dp), y_null = pcoa_axes(g)) {
+  y <- pcoa_axes(g, axes)
+  # statistics for one (possibly permuted) D_P; the site shuffle reuses g and y
+  stats_dp <- function(dp, x, de_x, g = gower_centre(dp), y_null = pcoa_axes(g, axes)) {
     out <- c(db_stat(g, x)[["F"]], mantel_stat(dp, de_x), f_axes(y_null, x))
     if (extra_axes) {
       y_proc <- stats::fitted(vegan::procrustes(y, y_null, symmetric = TRUE))
@@ -105,9 +106,7 @@ test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
 
   site <- replicate(nperm, {
     i <- sample.int(length(env))
-    out <- c(db_stat(g, env[i])[["F"]], mantel_stat(dp, de[i, i]), f_axes(y, env[i]))
-    if (extra_axes) out <- c(out, f_axes(y, env[i]), f_rda(y, env[i]))
-    out
+    stats_dp(dp, env[i], de[i, i], g, y)
   })
   k <- ncol(comm)
   taxa <- replicate(nperm, {
@@ -128,7 +127,8 @@ test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
   if (extra_axes) {
     # share of each PCPS in the total variation of D_P (the eigenvalue share of
     # the old tree-shape design, legacy notes 2012); trace(G) is the sum of
-    # the eigenvalues, all non-negative for sqrt Bray-Curtis
+    # the eigenvalues, all non-negative for sqrt Bray-Curtis. One value per
+    # replicate, repeated on every row.
     share <- colSums(y^2) / sum(diag(g))
     for (a in seq_along(axes)) out[[paste0("eig_share", axes[a])]] <- share[a]
   }

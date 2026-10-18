@@ -5,15 +5,15 @@ test_that("a species alone converges to N* = (r - 1) / alpha", {
 })
 
 test_that("dispersal moves individuals without creating or losing them", {
-  set.seed(4)
-  # no growth limitation: r = 1 and no competition keeps E[N] constant, so
-  # check the redistribution step directly on one step with seeding off
+  # one step without seeding: the same seed gives the same N before dispersal
   r <- matrix(1, 20, 3)
-  a <- diag(3) * 0
-  set.seed(9); n1 <- mc_dynamics(r, a, dispersal = 0, n_steps = 1, seed_steps = integer(0),
-                                 seed_mean = 3)
-  set.seed(9); n2 <- mc_dynamics(r, a, dispersal = 0.5, n_steps = 1, seed_steps = integer(0),
-                                 seed_mean = 3)
+  a <- matrix(0, 3, 3)
+  set.seed(9)
+  n1 <- mc_dynamics(r, a, dispersal = 0, n_steps = 1, seed_steps = integer(0),
+                    seed_mean = 3)
+  set.seed(9)
+  n2 <- mc_dynamics(r, a, dispersal = 0.5, n_steps = 1, seed_steps = integer(0),
+                    seed_mean = 3)
   expect_equal(colSums(n1), colSums(n2))
   expect_false(isTRUE(all.equal(n1, n2)))
 })
@@ -26,8 +26,10 @@ test_that("competition matrices: symmetric, unit diagonal, phylo ordered by rela
     expect_true(isSymmetric(unname(a)))
     expect_equal(unname(diag(a)), rep(0.05, 30))
   }
-  set.seed(3); ar <- competition_matrix(tr, "random")
-  set.seed(3); ap <- competition_matrix(tr, "phylo")
+  set.seed(3)
+  ar <- competition_matrix(tr, "random")
+  set.seed(3)
+  ap <- competition_matrix(tr, "phylo")
   up <- upper.tri(ar)
   expect_equal(sort(ar[up]), sort(ap[up]))
   s <- (1 - ape::cophenetic.phylo(tr) / max(ape::cophenetic.phylo(tr)))[tr$tip.label, tr$tip.label]

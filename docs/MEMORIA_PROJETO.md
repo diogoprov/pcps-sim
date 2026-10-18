@@ -580,3 +580,21 @@ Próximos passos sugeridos:
     - sem competição: 89–99
     Com dispersão alta (a = 0,5) perdem-se mais espécies. O N efetivo deixa de
     ser o tamanho da árvore. Decisão pendente com o Diogo.
+- **Revisão de código (2026-10-17, skill code-review em duas frentes, 4b69fdc..6d941a8)
+  e correções.**
+  - Traits e finalização compartilhados entre as camadas A e B
+    (`sim_species_traits`, `finish_metacommunity`), `pcoa_axes` compartilhado, o
+    site shuffle de `test_dp_all` reusa `stats_dp`, o perfil `axes` é derivado de
+    `full` com `modifyList`, `stopifnot` quando `extra_axes` não tem pfw + glm, e
+    a dispersão uniforme é calculada sem `disp_mat`.
+  - Verificado: camada A, `test_dp_all` (com e sem extras) e `test_pcps_glm` dão
+    resultados **idênticos** aos de antes com a mesma semente. A camada B só muda
+    pela normalização dos pesos da multinomial: com os pesos antigos, fica idêntica.
+  - Ponto não verificado: a ordem dentro do passo (Poisson, depois a dispersão,
+    como no mcomsimr). No artigo, a dispersão pode estar dentro da Poisson.
+    Precisa do PDF de Thompson et al. 2020, que não está em `references/`.
+- **Decisões da camada B (Diogo, 2026-10-17):** competição fraca (inter_max
+  0,05–0,1) e **calibrar o tamanho da árvore** para que o N depois da exclusão
+  fique ≈ 50/100/200 (caminho 2). Zenodo 10.5281/zenodo.3833035 (código de
+  Thompson, v2.0): licença "Other (Open)", sem descrição; não é uma licença de
+  reuso definida.
