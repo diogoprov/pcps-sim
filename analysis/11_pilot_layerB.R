@@ -15,7 +15,8 @@ pool_file <- if (length(args) >= 4) args[[4]] else
 
 for (f in list.files("R", full.names = TRUE)) source(f)
 future::plan(future::multisession, workers = workers)
-opts <- furrr::furrr_options(seed = 20261018L, globals = TRUE,
+# one job at a time, as in the calibration: the cost varies ~5x among cells
+opts <- furrr::furrr_options(seed = 20261018L, globals = TRUE, scheduling = Inf,
                              packages = c("dplyr", "tibble"))
 out_dir <- file.path("data", "derived", "pilot_layerB")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
