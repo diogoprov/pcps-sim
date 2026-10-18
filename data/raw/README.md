@@ -5,10 +5,14 @@
   including non-anuran outgroups). Copied on 2026-10-17 from the author's compendium
   `~/GitHub/brazilian-tadpole-knowledge-gaps/data/portik2023_timetree.tre`.
   SHA-256 d871f3643575709e846f167ce297834a63afe21743296902d1548db4b4691e90.
-  Single (point-estimate) tree; the posterior sample of dated trees is still to be
-  obtained.
+  Single (point-estimate) tree. It is byte-identical to
+  `TreePL-Rooted_Anura_bestTree.tre` in the authors' OSF component "Final Trees"
+  (https://osf.io/qgcf2/, part of https://osf.io/3cbsh/; licence GPL-3.0,
+  copyright Daniel Portik 2023; checked 2026-10-18). The same component holds
+  the time-calibrated bootstrap trees (`TreePL-Rooted_Anura_bootstraps.tre`) and
+  the node confidence intervals; there is no Bayesian posterior.
 
   The tree file is not redistributed in this repository (it is listed in
-  `.gitignore`). Obtain it from the authors' data release
-  [CITAR: OSF repository of Portik et al. 2023] and check the SHA-256 above
-  before running the pipeline.
+  `.gitignore`). Download it from https://osf.io/download/akupm/, save it as
+  `data/raw/portik2023_timetree.tre` and check the SHA-256 above before running
+  the pipeline.

@@ -683,3 +683,11 @@ Próximos passos sugeridos:
   - Leitura: entre os testes nos eixos, a RDA é a alternativa válida; o GLM por
     eixo isolado não é recomendável para o PCPS2. ADONIS segue o mais poderoso e
     o mais insensível à forma da árvore.
+- **OSF de Portik et al. 2023 conferido (2026-10-18).** Componente "Final Trees"
+  (osf.io/qgcf2, dentro de osf.io/3cbsh), **licença GPL-3.0** (copyright Daniel
+  Portik 2023). `TreePL-Rooted_Anura_bestTree.tre` (osf.io/download/akupm) tem o
+  **mesmo SHA-256** de `data/raw/portik2023_timetree.tre`. Não há posterior
+  bayesiano: a incerteza vem de `TreePL-Rooted_Anura_bootstraps.tre` (22,9 MB,
+  bootstraps datados com TreePL) e dos ICs dos nós. Pendente (confirmar com o
+  Diogo): baixar os bootstraps e recalcular os quantis empíricos de γ e Colless
+  com a incerteza. `data/raw/README.md` atualizado (sai o `[CITAR: ...]`).
