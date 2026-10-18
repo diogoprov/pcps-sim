@@ -623,3 +623,24 @@ Próximos passos sugeridos:
   inviabilidade é resultado). No piloto, regra geral: cai a célula com N
   realizado a mais de 15% do alvo (hoje, exatamente essas 8 linhas); as N = 100
   não convergidas ficam, com o N realizado registrado por réplica.
+- **Piloto da camada B (2026-10-18, 00:10–00:59, 16 workers, commit 61cb68f).**
+  100 réplicas × 88 células (11 arquétipo × N, 8 cenários), nperm 499, árvores
+  Yule; 8.800 réplicas, nenhuma falha, nenhum sítio vazio. Arquivo:
+  `data/derived/pilot_layerB/pilot_layerB_reps100_perm499.csv`. EP Monte Carlo de
+  uma taxa de 0,05 com 300 réplicas ≈ 0,013.
+  - Erro tipo I (max test): ≤ nominal em S0, S1, S2 e S2h, exceto Mantel em S2h
+    (0,07; ~1,8 EP). **S2sigma só infla em mass_effects/none**: ADONIS 0,09,
+    GLM PCPS1 0,083, RDA 0,083, Mantel 0,07. sorting/phylo é muito conservador
+    em S2sigma/S2h (≤ 0,017).
+  - A inflação do GLM PCPS2 em S2sigma da camada A (0,10) **não se repete**
+    (0,037–0,07). O Procrustes continua mais conservador.
+  - O site shuffle sozinho infla muito em S2sigma/S2h (até 1,0); o taxa shuffle
+    controla, e o max test herda isso.
+  - Poder (S3a/S3b/S3sigma): sorting 0,49–0,91 (Mantel o maior), mass effects
+    0,11–0,36 (ADONIS o maior). Sobe com N (S3b ADONIS 0,46 → 0,73 de 50 para
+    200). GLM PCPS2 quase sem poder (≤ 0,19).
+  - **Confundimento:** a exclusão por competição filogenética poda parentes
+    próximos e torna a árvore analisada fortemente negativa em γ (γ médio −0,6 a
+    −3,5 com phylo; ≈ 0 sem competição). Forma da árvore e arquétipo estão
+    confundidos na camada B; as células de forma precisam controlar a árvore
+    *depois* da poda, ou registrar γ realizado como covariável.
