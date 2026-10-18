@@ -553,3 +553,30 @@ Próximos passos sugeridos:
     Pode servir de referência empírica para a composição das metacomunidades.
   - Os três PDFs `Grafico_*phylo_5_10_10_4_6_500.pdf` (~7 MB cada) não foram
     abertos.
+- **Camada B, primeira versão (2026-10-17, `R/simulate_layerB.R`).**
+  - Laço próprio, escrito a partir das equações de Thompson et al. 2020, sem
+    copiar código: nem o Julia (`plthompson/Meta_com_framework`) nem o mcomsimr
+    têm licença.
+    - O mcomsimr também tem `rbind` dentro do laço, um bug com `max_r` vetorial e
+      um ambiente padrão sem gradiente espacial.
+  - Modelo: crescimento Gaussiano em E, com σ = DP (σ = √2·σ_Thompson);
+    Beverton–Holt com α[j,k] = efeito de k sobre j; Poisson; emigração binomial;
+    redistribuição multinomial ∝ `disp_mat %*% emigrantes`, uniforme por padrão
+    (sítios permutáveis); ambiente estático U(0, 100); semeadura Poisson(0,5) nos
+    passos 10–100; só o estado final é guardado.
+  - Traits como na camada A: u por Pagel λ; σ e r_max (no papel de h, U(2, 8))
+    com ou sem sinal, impostos por ranks.
+  - Competição: `none`, `random` U(0, inter_max)·0,05, e `phylo`, com os mesmos
+    valores atribuídos por rank de similaridade filogenética.
+  - Velocidade: 1–2 s por metacomunidade (100 sítios × 100 espécies × 1000
+    passos) no M5. Riqueza e número de espécies já estabilizam em 500 passos.
+  - Equilíbrio de uma espécie sozinha: 79,5 (esperado 80). 17 testes passam.
+  - **Problema aberto: a competição extingue muitas espécies.** Para N = 100,
+    espécies restantes (média de 3 árvores, λ = 1):
+    - inter_max = 0,05: 61–77
+    - inter_max = 0,1: 45–66
+    - inter_max = 0,2: 29–59
+    - inter_max = 0,5 (Thompson): 15–40
+    - sem competição: 89–99
+    Com dispersão alta (a = 0,5) perdem-se mais espécies. O N efetivo deixa de
+    ser o tamanho da árvore. Decisão pendente com o Diogo.

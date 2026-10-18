@@ -1,0 +1,53 @@
+test_that("a species alone converges to N* = (r - 1) / alpha", {
+  set.seed(2)
+  n <- mc_dynamics(matrix(5, 50, 1), matrix(0.05), dispersal = 0, n_steps = 300)
+  expect_equal(mean(n), 80, tolerance = 0.05)
+})
+
+test_that("dispersal moves individuals without creating or losing them", {
+  set.seed(4)
+  # no growth limitation: r = 1 and no competition keeps E[N] constant, so
+  # check the redistribution step directly on one step with seeding off
+  r <- matrix(1, 20, 3)
+  a <- diag(3) * 0
+  set.seed(9); n1 <- mc_dynamics(r, a, dispersal = 0, n_steps = 1, seed_steps = integer(0),
+                                 seed_mean = 3)
+  set.seed(9); n2 <- mc_dynamics(r, a, dispersal = 0.5, n_steps = 1, seed_steps = integer(0),
+                                 seed_mean = 3)
+  expect_equal(colSums(n1), colSums(n2))
+  expect_false(isTRUE(all.equal(n1, n2)))
+})
+
+test_that("competition matrices: symmetric, unit diagonal, phylo ordered by relatedness", {
+  set.seed(1)
+  tr <- sim_tree_shape(30)
+  for (type in c("none", "random", "phylo")) {
+    a <- competition_matrix(tr, type)
+    expect_true(isSymmetric(unname(a)))
+    expect_equal(unname(diag(a)), rep(0.05, 30))
+  }
+  set.seed(3); ar <- competition_matrix(tr, "random")
+  set.seed(3); ap <- competition_matrix(tr, "phylo")
+  up <- upper.tri(ar)
+  expect_equal(sort(ar[up]), sort(ap[up]))
+  s <- (1 - ape::cophenetic.phylo(tr) / max(ape::cophenetic.phylo(tr)))[tr$tip.label, tr$tip.label]
+  # pairs that share the same MRCA tie on s; across distinct s values the
+  # coefficients are monotone
+  rng <- tapply(ap[up], s[up], range)
+  lo <- vapply(rng, `[`, 0, 1)
+  hi <- vapply(rng, `[`, 0, 2)
+  expect_true(all(lo[-1] >= hi[-length(hi)]))
+})
+
+test_that("sim_metacommunity_B returns the layer-A structure", {
+  set.seed(6)
+  tr <- sim_tree_shape(40)
+  mc <- sim_metacommunity_B(tr, 1, TRUE, TRUE, TRUE, dispersal = 0.01,
+                            competition = "phylo", n_steps = 200)
+  expect_named(mc, c("comm", "tree", "env", "n_dropped_sites", "n_dropped_spp", "traits"))
+  expect_identical(colnames(mc$comm), mc$tree$tip.label)
+  expect_equal(nrow(mc$comm), length(mc$env))
+  expect_true(all(mc$comm %in% c(0, 1)))
+  expect_equal(ncol(mc$comm) + mc$n_dropped_spp, 40)
+  expect_true(all(rowSums(mc$comm) > 0))
+})
