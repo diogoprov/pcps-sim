@@ -663,3 +663,23 @@ Próximos passos sugeridos:
     visível.
 - **Rodada axes lançada 2026-10-18 08:58** (i-056c0789ae71860bc, commit 861e862),
   ~5 h.
+- **Rodada axes (2026-10-18 08:58 → 15:36, ~6,6 h; i-056c0789ae71860bc).**
+  432.000 réplicas completas (1000 por célula; 7 testes: ADONIS, Mantel, GLM
+  PCPS1/2, GLM PCPS1/2 com Procrustes, RDA nos eixos 1–2). Arquivo:
+  `data/derived/axes/results.csv` (fora do git) e no S3.
+  - Repete o full: GLM PCPS2 em S2sigma 0,116 (até 0,21 com incidência e
+    N 200; ~0,14 com γ baixo, ~0,075 em Yule).
+  - **Procrustes:** elimina a inflação (PCPS2 0,002 em S2sigma), mas é
+    **conservador demais em toda parte** (PCPS2 0,002 em S2/S2h, PCPS1 0,024 em
+    S2) e custa poder (S3b PCPS1 0,29 vs 0,38 sem Procrustes).
+  - **RDA nos eixos 1–2:** controla o erro tipo I (S2 0,050, S2h 0,049, S2sigma
+    0,024, S0/S1 ≤ 0,011) e tem poder intermediário (S3a/b/σ 0,41/0,57/0,41),
+    abaixo do ADONIS (0,50/0,73/0,67) e acima do GLM PCPS1. Também perde
+    poder com γ baixo (S3b 0,51 vs 0,66 em Yule).
+  - **eig_share1 depende de γ** (S0: 0,29 em γ baixo vs 0,36 em Yule; S3b: 0,37
+    vs 0,52); eig_share2 ≈ 0,14–0,15 em todas as células. Reproduz, na grade
+    completa, o efeito de γ no autovalor da PCPS1 do rascunho de 2012
+    (Debastiani & Provete) e explica a perda de poder do GLM PCPS1 com γ baixo.
+  - Leitura: entre os testes nos eixos, a RDA é a alternativa válida; o GLM por
+    eixo isolado não é recomendável para o PCPS2. ADONIS segue o mais poderoso e
+    o mais insensível à forma da árvore.
