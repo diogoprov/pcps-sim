@@ -1,0 +1,39 @@
+# Pool sizes of layer B: tree size whose richness after the dynamics is close
+# to N = 50/100/200, for each archetype x scenario (decision of 2026-10-17).
+# Scenarios that differ only in env_original have the same dynamics, so they
+# share one calibration.
+# Usage: Rscript analysis/10_calibrate_layerB.R <workers> <reps>
+
+args <- commandArgs(trailingOnly = TRUE)
+workers <- if (length(args) >= 1) as.integer(args[[1]]) else 6L
+reps <- if (length(args) >= 2) as.integer(args[[2]]) else 10L
+
+for (f in list.files("R", full.names = TRUE)) source(f)
+future::plan(future::multisession, workers = workers)
+opts <- furrr::furrr_options(seed = 20261017L, globals = TRUE,
+                             packages = c("dplyr", "tibble"))
+out_dir <- file.path("data", "derived", "layerB")
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+traits <- scenarios_layerA() |>
+  dplyr::distinct(lambda, sigma_signal, h_signal)
+jobs <- tidyr::crossing(archetypes_layerB(), traits, target = c(50, 100, 200))
+
+t0 <- Sys.time()
+cal <- furrr::future_pmap(jobs, \(archetype, regime, dispersal, competition,
+                                  lambda, sigma_signal, h_signal, target) {
+  arch <- list(dispersal = dispersal, competition = competition)
+  sc <- list(lambda = lambda, sigma_signal = sigma_signal, h_signal = h_signal)
+  calibrate_pool_size(target, arch, sc, reps = reps)
+}, .options = opts) |>
+  dplyr::bind_rows()
+message("Calibration: ", format(Sys.time() - t0))
+
+pool_sizes <- dplyr::bind_cols(jobs, dplyr::select(cal, -target)) |>
+  dplyr::inner_join(scenarios_layerA(), by = c("lambda", "sigma_signal", "h_signal"),
+                    relationship = "many-to-many") |>
+  dplyr::select(archetype, scenario, target, n_pool, realized, iterations,
+                dplyr::everything())
+readr::write_csv(pool_sizes, file.path(out_dir, "pool_sizes.csv"))
+print(as.data.frame(dplyr::distinct(pool_sizes, archetype, lambda, sigma_signal,
+                                    h_signal, target, n_pool, realized, iterations)))

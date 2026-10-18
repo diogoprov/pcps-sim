@@ -21,7 +21,9 @@
 #' Intraspecific coefficients 1, interspecific in [0, inter_max), times `scale`
 #' (0.05 in Thompson et al. 2020, so that a species alone at its optimum with
 #' r = 5 has N* = (5 - 1) / 0.05 = 80). `inter_max` is therefore relative to
-#' intraspecific competition. Symmetric.
+#' intraspecific competition. Symmetric. The default 0.1 is weaker than the
+#' "stabilising" scenario of Thompson et al. (0.5), which excludes most
+#' species of a 100-tip pool (docs/MEMORIA_PROJETO.md).
 #' - `none`: no interspecific competition.
 #' - `random`: interspecific coefficients ~ U(0, inter_max).
 #' - `phylo`: the same U(0, inter_max) values, assigned by rank of phylogenetic
@@ -29,7 +31,7 @@
 #'   (competition-relatedness) with the same distribution of coefficients as
 #'   `random`, whatever the tree.
 competition_matrix <- function(tree, type = c("none", "random", "phylo"),
-                               inter_max = 0.5, scale = 0.05) {
+                               inter_max = 0.1, scale = 0.05) {
   type <- match.arg(type)
   k <- ape::Ntip(tree)
   a <- matrix(0, k, k, dimnames = list(tree$tip.label, tree$tip.label))
@@ -105,3 +107,43 @@ sim_metacommunity_B <- function(tree, lambda, sigma_signal, h_signal, env_origin
   if (incidence) comm <- (comm > 0) * 1
   finish_metacommunity(comm, tree, env, env_original, tr)
 }
+
+#' Layer-B archetypes: dispersal regime x competition
+archetypes_layerB <- function() {
+  tidyr::crossing(
+    tibble::tibble(regime = c("sorting", "mass_effects"), dispersal = c(0.01, 0.5)),
+    competition = c("none", "phylo")
+  ) |>
+    dplyr::mutate(archetype = paste(regime, competition, sep = "__"), .before = 1)
+}
+
+#' Mean number of species left after the dynamics, for a pool of `n_pool` tips
+#' (Yule trees, one per replicate)
+#' @param arch one row of [archetypes_layerB()].
+#' @param sc one row of [scenarios_layerA()].
+realized_richness <- function(n_pool, arch, sc, reps = 10, n_steps = 1000) {
+  mean(vapply(seq_len(reps), \(r) {
+    mc <- sim_metacommunity_B(sim_tree_shape(n_pool), sc$lambda, sc$sigma_signal,
+                              sc$h_signal, TRUE, dispersal = arch$dispersal,
+                              competition = arch$competition, n_steps = n_steps)
+    ncol(mc$comm)
+  }, 0))
+}
+
+#' Pool size whose realized richness after the dynamics is close to `target`
+#'
+#' Starts at n = target and rescales n by target / realized until the mean
+#' realized richness is within `tol` (relative) of the target.
+#' @return tibble with the pool size, its mean realized richness and the
+#'   number of iterations.
+calibrate_pool_size <- function(target, arch, sc, reps = 10, tol = 0.05,
+                                max_iter = 5) {
+  n <- target
+  for (it in seq_len(max_iter)) {
+    m <- realized_richness(n, arch, sc, reps)
+    if (abs(m - target) / target <= tol) break
+    n <- round(n * target / m)
+  }
+  tibble::tibble(target = target, n_pool = n, realized = m, iterations = it)
+}
+
