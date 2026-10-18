@@ -10,6 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /project
+# rocker/r-ver links R to multithreaded OpenBLAS; with one crew worker per core,
+# its threads only compete with the other workers (single-thread OpenBLAS is
+# 2-3x faster on the tests, analysis/12_bench_blas.R)
+ENV OPENBLAS_NUM_THREADS=1 \
+    OMP_NUM_THREADS=1
 ENV RENV_PATHS_LIBRARY=/opt/renv/library \
     RENV_CONFIG_SANDBOX_ENABLED=FALSE \
     MAKEFLAGS="-j8"
