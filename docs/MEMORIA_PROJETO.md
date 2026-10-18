@@ -644,7 +644,7 @@ Próximos passos sugeridos:
     −3,5 com phylo; ≈ 0 sem competição). Forma da árvore e arquétipo estão
     confundidos na camada B; as células de forma precisam controlar a árvore
     *depois* da poda, ou registrar γ realizado como covariável.
-- **Rodada full na AWS (2026-10-17 21:3x → 2026-10-18 03:17; i-0fd983111cb9e7873).**
+- **Rodada full na AWS (2026-10-17 ~19:05 → 2026-10-18 03:17, ~8 h; i-0fd983111cb9e7873).**
   432.000 réplicas completas (8 cenários × 9 células de forma × N 50/100/200 ×
   abundância/incidência; ADONIS, Mantel, GLM PCPS1/2, PCC; 5 testes). Arquivo:
   `data/derived/full/results.csv` (fora do git) e no S3. O token SSO expirou
