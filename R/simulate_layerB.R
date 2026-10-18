@@ -172,6 +172,9 @@ calibrate_pool_size <- function(target, arch, sc, reps = 10, tol = 0.05,
                  converged = converged)
 }
 
+#' Path of the calibrated pool sizes (written by analysis/10_calibrate_layerB.R)
+layerB_pool_file <- function() file.path("data", "calibrated", "layerB_pool_sizes.csv")
+
 #' Calibrated pool sizes of the feasible cells
 #'
 #' Reads the table written by analysis/10_calibrate_layerB.R and drops the cells

@@ -701,3 +701,28 @@ Próximos passos sugeridos:
   Dockerfile agora fixa `OPENBLAS_NUM_THREADS=1` e `OMP_NUM_THREADS=1`. Na AWS,
   com 190 workers, o ganho deve ser igual ou maior (não medido lá). O R nativo do
   Mac usa a BLAS de referência (libRblas).
+- **Opção B para o γ na camada B (Diogo, 2026-10-18).** A célula da grade define o
+  pool: a árvore do pool, com o tamanho calibrado, é sorteada com os alvos de γ
+  e Colless da célula para o N alvo, com (β, c) **recalibrados para cada tamanho
+  de pool** e a mesma rejeição por tolerância da camada A (sem rejeição pela
+  árvore podada). A revisão de especificação mostrou que usar os (β, c) de N num
+  pool maior dava γ −17,7 em vez de −5,6 com 450 pontas, recriando o
+  confundimento com o arquétipo. Sem competição (pool ≈ N), o pool equivale a uma
+  árvore da camada A. Pools independentes entre cenários (sem o pareamento da
+  camada A). Cada réplica
+  registra `gamma_pool`, `colless_pool`, `gamma` e `colless` da árvore podada e
+  `n_realized`; a análise vai modelar a rejeição em função do γ realizado
+  (ex.: rejeição ~ s(γ) + arquétipo + N + cenário). A pergunta causal sobre γ
+  fica com a camada A. Implementado em `R/pipeline.R` (`design_table_B`,
+  `run_chunk_B`), perfis `layerB` (5 células: 4 quinas + centro; 4 arquétipos;
+  8 cenários; N 50/100/200 sem mass_effects/phylo × 200; incidência; 1000
+  réplicas; PFW, GLM, PCC e extras) e `smoke_B`. Tamanhos de pool agora em
+  `data/calibrated/layerB_pool_sizes.csv` (rastreado e copiado para a imagem).
+  O aviso de "não convergido" virou `message()` em `feasible_pools()`: as células
+  ficam de propósito.
+- **Revista-alvo: Methods in Ecology and Evolution** (Diogo, 2026-10-18). Conferir
+  as normas de figura da MEE antes da submissão (não verificadas).
+- **Figura 1** (2026-10-18): esquema em `manuscript/figures/fig1_schematic.*`,
+  gerado por `analysis/13_fig1_schematic.R`. Aprovada pelo Diogo. Pendências de
+  desenho: painel 5 é ilustrativo; "999 permutações" e "×1000" valem para full e
+  axes.

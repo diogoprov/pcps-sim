@@ -10,10 +10,10 @@ args <- commandArgs(trailingOnly = TRUE)
 n_reps <- if (length(args) >= 1) as.integer(args[[1]]) else 50L
 workers <- if (length(args) >= 2) as.integer(args[[2]]) else 6L
 nperm <- if (length(args) >= 3) as.integer(args[[3]]) else 499L
-pool_file <- if (length(args) >= 4) args[[4]] else
-  file.path("data", "calibrated", "layerB_pool_sizes.csv")
+pool_file <- if (length(args) >= 4) args[[4]] else NULL
 
 for (f in list.files("R", full.names = TRUE)) source(f)
+if (is.null(pool_file)) pool_file <- layerB_pool_file()
 future::plan(future::multisession, workers = workers)
 # one job at a time, as in the calibration: the cost varies ~5x among cells
 opts <- furrr::furrr_options(seed = 20261018L, globals = TRUE, scheduling = Inf,

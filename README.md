@@ -23,6 +23,7 @@ pcps-sim/
 │   ├── tree_grid.R                calibration of the gamma x Colless grid
 │   ├── simulate_static.R          static Gaussian-niche metacommunities (validation)
 │   ├── simulate_layerA.R          layer A scenarios (Pagel's lambda; signal in niche breadth and height)
+│   ├── simulate_layerB.R          layer B process-based dynamics (Thompson et al. 2020), pool calibration
 │   ├── validation.R               replication of published simulations
 │   └── pipeline.R                 design profiles and replicate chunks for targets
 ├── analysis/                      numbered scripts, run in order
@@ -34,18 +35,24 @@ pcps-sim/
 │   ├── 06_tree_grid.R             simulated tree grid
 │   ├── 07_pilot_tree_shape.R      tree-shape pilot
 │   ├── 08_tree_stats.R            treestats statistics for grid and empirical trees
+│   ├── 09_diag_s2sigma.R          diagnosis of the GLM inflation in scenario S2sigma
+│   ├── 10_calibrate_layerB.R      layer B pool sizes giving realized N = 50/100/200
+│   ├── 11_pilot_layerB.R          layer B pilot
+│   ├── 12_bench_blas.R            BLAS timing (Docker)
+│   ├── 13_fig1_schematic.R        Figure 1 (simulation schematic)
 │   └── run_pipeline.R             runs the targets pipeline for one design profile
-├── _targets.R                     targets pipeline (profiles: smoke, bench, pilot_glm, full)
+├── _targets.R                     targets pipeline, layers A and B (profiles in R/pipeline.R)
 ├── tests/testthat/                unit tests
 ├── data/
 │   ├── raw/                       immutable inputs (Portik et al. 2023 timetree; not redistributed, see data/raw/README.md)
 │   ├── published/                 rejection rates transcribed from published tables
+│   ├── calibrated/                calibrated design inputs (layer B pool sizes)
 │   └── derived/                   simulation outputs (not tracked)
 ├── aws/                           scripts to run the pipeline on an EC2 spot instance
 ├── Dockerfile                     container used on AWS (rocker/r-ver + renv)
 ├── renv.lock                      package versions
 ├── docs/                          simulation plan, project log, method specifications
-├── manuscript/                    Quarto manuscript (in preparation)
+├── manuscript/                    Quarto manuscript (in preparation) and figures
 ├── legacy/                        material from the 2012–2016 version of the project (not tracked)
 └── references/                    literature (not tracked)
 ```

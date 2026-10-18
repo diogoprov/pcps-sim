@@ -52,15 +52,14 @@ design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
       cells = c("g_yule__c_yule", "g_low__c_yule", "g_yule__c_high", "g_low__c_high",
                 "g_mid__c_mid"),
       archetypes = archetypes_layerB()$archetype, data_types = "incidence",
-      extra_axes = TRUE, pool_file = "data/calibrated/layerB_pool_sizes.csv"
+      extra_axes = TRUE, pool_file = layerB_pool_file()
     )),
     smoke_B = list(
       name = name, layer = "B", cells = c("g_yule__c_yule", "g_low__c_high"),
       n_spp = 50, scenarios = c("S0", "S3b"),
       archetypes = c("sorting__phylo", "mass_effects__none"), data_types = "incidence",
       reps = 4L, chunk = 2L, methods = c("pfw", "glm", "pcc"), nperm = 19L,
-      nperm_pcc = 19L, extra_axes = TRUE,
-      pool_file = "data/calibrated/layerB_pool_sizes.csv"
+      nperm_pcc = 19L, extra_axes = TRUE, pool_file = layerB_pool_file()
     ),
     stop("unknown profile: ", name)
   )
@@ -120,6 +119,11 @@ grid_cell_trees <- function(cell_row, k) {
                  acceptance = attr(tr, "acceptance"))
 }
 
+#' Replicate numbers of one chunk
+chunk_reps <- function(chunk, profile) {
+  seq((chunk - 1) * profile$chunk + 1, min(chunk * profile$chunk, profile$reps))
+}
+
 #' Run one chunk of replicates
 #'
 #' Replicate r uses tree r of its cell, so the same tree is shared across
@@ -129,8 +133,7 @@ grid_cell_trees <- function(cell_row, k) {
 #' @param cell_trees one row of the tree grid (n, cell, trees).
 run_chunk <- function(design_row, cell_trees, profile) {
   trees <- cell_trees$trees[[1]]
-  reps <- seq((design_row$chunk - 1) * profile$chunk + 1,
-              min(design_row$chunk * profile$chunk, profile$reps))
+  reps <- chunk_reps(design_row$chunk, profile)
   t0 <- Sys.time()
   purrr::map(reps, \(r) {
     mc <- sim_metacommunity_A(
@@ -148,35 +151,60 @@ run_chunk <- function(design_row, cell_trees, profile) {
     dplyr::mutate(chunk_seconds = as.numeric(Sys.time() - t0, units = "secs"))
 }
 
-#' Layer-B design table: one row per (cell, archetype, scenario, target N,
-#' chunk of replicates), with the archetype, scenario and calibrated pool size
-#' (feasible cells only, [feasible_pools()]) and the (beta, c) of the cell for
-#' that N (`cells`: output of [calibrate_cells()]).
-design_table_B <- function(profile, cells, pool_file = profile$pool_file) {
+#' Layer-B feasible pools of the profile ([feasible_pools()])
+pools_B <- function(profile, pool_file) {
   feasible_pools(pool_file) |>
     dplyr::filter(archetype %in% profile$archetypes, scenario %in% profile$scenarios,
-                  target %in% profile$n_spp) |>
+                  target %in% profile$n_spp)
+}
+
+#' Shape targets of the profile cells for each layer-B pool size
+#'
+#' Tree shape statistics change with the number of tips for fixed (beta, c), so
+#' each pool size gets its own calibration (option B of 2026-10-18,
+#' docs/MEMORIA_PROJETO.md): a pool of `n_pool` tips for target N is drawn with
+#' the gamma and Colless targets of the cell at N, as layer-A trees of N tips.
+#' @param levels output of [shape_levels()]; `pools` output of [pools_B()].
+#' @return one row per (target, n_pool, cell), with `n = n_pool`, ready for
+#'   [calibrate_cells()] grouped by (target, n).
+pool_levels_B <- function(levels, pools, profile) {
+  levels |>
+    dplyr::filter(paste0("g_", gamma_level, "__c_", colless_level) %in% profile$cells) |>
+    dplyr::rename(target = n) |>
+    dplyr::inner_join(dplyr::distinct(pools, target, n_pool), by = "target",
+                      relationship = "many-to-many") |>
+    dplyr::mutate(n = n_pool)
+}
+
+#' Layer-B design table: one row per (cell, archetype, scenario, target N,
+#' chunk of replicates), with the archetype, scenario, calibrated pool size and
+#' the (beta, c) and shape targets of the cell for that pool size.
+#' @param pool_cells output of [calibrate_cells()] on [pool_levels_B()].
+design_table_B <- function(profile, pools, pool_cells) {
+  stopifnot(!anyNA(pool_cells$beta), !anyNA(pool_cells$c))
+  pool_cells <- dplyr::select(pool_cells, target, n_pool, cell, beta, c, gamma_target,
+                              colless_target)
+  pools |>
     dplyr::inner_join(archetypes_layerB(), by = "archetype") |>
     dplyr::inner_join(scenarios_layerA(), by = "scenario") |>
-    dplyr::inner_join(dplyr::select(dplyr::filter(cells, cell %in% profile$cells),
-                                    n, cell, beta, c),
-                      by = c(target = "n"), relationship = "many-to-many") |>
+    dplyr::inner_join(pool_cells, by = c("target", "n_pool"),
+                      relationship = "many-to-many") |>
     tidyr::crossing(chunk = seq_len(ceiling(profile$reps / profile$chunk)))
 }
 
 #' Run one chunk of layer-B replicates
 #'
-#' Each replicate draws a new pool tree with the (beta, c) of its cell and the
-#' calibrated pool size, so the cell describes the process that generated the
-#' regional pool; the shapes of the pool tree and of the tree pruned by the
-#' dynamics (the one analysed) are recorded as covariates.
+#' Each replicate draws a new pool tree of the calibrated pool size within the
+#' shape tolerance of its cell ([sim_tree_cell()], as in layer A), so the cell
+#' describes the regional pool; the shapes of the pool tree and of the tree
+#' pruned by the dynamics (the one analysed) are recorded as covariates.
 #' @param design_row one row of [design_table_B()].
 run_chunk_B <- function(design_row, profile) {
-  reps <- seq((design_row$chunk - 1) * profile$chunk + 1,
-              min(design_row$chunk * profile$chunk, profile$reps))
+  reps <- chunk_reps(design_row$chunk, profile)
   t0 <- Sys.time()
   purrr::map(reps, \(r) {
-    pool <- sim_tree_shape(design_row$n_pool, beta = design_row$beta, c = design_row$c)
+    pool <- sim_tree_cell(1, design_row$n_pool, design_row$beta, design_row$c,
+                          design_row$gamma_target, design_row$colless_target)[[1]]
     mc <- sim_metacommunity_B(pool, design_row$lambda, design_row$sigma_signal,
                               design_row$h_signal, design_row$env_original,
                               dispersal = design_row$dispersal,

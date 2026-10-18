@@ -14,8 +14,8 @@ future::plan(future::multisession, workers = workers)
 # effects), and static chunks leave most workers idle at the end
 opts <- furrr::furrr_options(seed = 20261017L, globals = TRUE, scheduling = Inf,
                              packages = c("dplyr", "tibble"))
-out_dir <- file.path("data", "calibrated")  # tracked: an input of the layer-B design
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+# tracked: an input of the layer-B design
+dir.create(dirname(layerB_pool_file()), recursive = TRUE, showWarnings = FALSE)
 
 traits <- scenarios_layerA() |>
   dplyr::distinct(lambda, sigma_signal, h_signal)
@@ -34,7 +34,7 @@ pool_sizes <- dplyr::bind_cols(jobs, dplyr::select(cal, -target)) |>
                     relationship = "many-to-many") |>
   dplyr::select(archetype, scenario, target, n_pool, realized, iterations, converged,
                 dplyr::everything())
-readr::write_csv(pool_sizes, file.path(out_dir, "layerB_pool_sizes.csv"))
+readr::write_csv(pool_sizes, layerB_pool_file())
 print(as.data.frame(dplyr::distinct(pool_sizes, archetype, lambda, sigma_signal,
                                     h_signal, target, n_pool, realized, iterations,
                                     converged)))

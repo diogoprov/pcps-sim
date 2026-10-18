@@ -26,16 +26,7 @@ tar_option_set(
 
 shape_targets <- list(
   tar_target(portik_file, "data/raw/portik2023_timetree.tre", format = "file"),
-  tar_target(empirical_shapes, empirical_clade_shapes(portik_file)),
-  tar_target(
-    levels_by_n,
-    shape_levels(empirical_shapes) |>
-      dplyr::filter(n %in% profile$n_spp) |>
-      dplyr::group_by(n) |>
-      targets::tar_group(),
-    iteration = "group"
-  ),
-  tar_target(cells_calibrated, calibrate_cells(levels_by_n), pattern = map(levels_by_n))
+  tar_target(empirical_shapes, empirical_clade_shapes(portik_file))
 )
 
 results_csv_target <- tar_target(
@@ -50,6 +41,15 @@ results_csv_target <- tar_target(
 )
 
 layer_a <- list(
+  tar_target(
+    levels_by_n,
+    shape_levels(empirical_shapes) |>
+      dplyr::filter(n %in% profile$n_spp) |>
+      dplyr::group_by(n) |>
+      targets::tar_group(),
+    iteration = "group"
+  ),
+  tar_target(cells_calibrated, calibrate_cells(levels_by_n), pattern = map(levels_by_n)),
   tar_target(
     cells_used,
     cells_calibrated |>
@@ -78,9 +78,18 @@ layer_a <- list(
 
 layer_b <- list(
   tar_target(pool_file, profile$pool_file, format = "file"),
+  tar_target(pools, pools_B(profile, pool_file)),
+  tar_target(
+    pool_levels,
+    pool_levels_B(shape_levels(empirical_shapes), pools, profile) |>
+      dplyr::group_by(target, n) |>
+      targets::tar_group(),
+    iteration = "group"
+  ),
+  tar_target(pool_cells, calibrate_cells(pool_levels), pattern = map(pool_levels)),
   tar_target(
     design_B,
-    design_table_B(profile, cells_calibrated, pool_file) |>
+    design_table_B(profile, pools, pool_cells) |>
       dplyr::group_by(cell, archetype, scenario, target, chunk) |>
       targets::tar_group(),
     iteration = "group"
