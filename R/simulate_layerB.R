@@ -60,16 +60,32 @@ competition_matrix <- function(tree, type = c("none", "random", "phylo"),
 #' @param dispersal emigration probability, one value or one per species.
 #' @param seed_steps steps at which Poisson(seed_mean) individuals of every
 #'   species are added to every site (initial colonisation).
+#' Species absent from every site after the last seeding step can never come
+#' back, so from then on they are dropped from the computations (the product
+#' with alpha dominates the cost and is quadratic in the number of species).
 #' @return sites x species abundances at the last step.
 mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
                         seed_steps = seq(10, 100, 10), seed_mean = 0.5) {
   m <- nrow(r)
   k <- ncol(r)
-  p_em <- rep(rep_len(dispersal, k), each = m)
+  dispersal <- rep_len(dispersal, k)
+  alive <- seq_len(k)
+  r_full <- r
+  p_em <- rep(dispersal, each = m)
   at <- t(alpha)
   n <- matrix(stats::rpois(m * k, seed_mean), m, k)
+  last_seed <- max(c(0, seed_steps))
   for (step in seq_len(n_steps)) {
     if (step %in% seed_steps) n <- n + stats::rpois(m * k, seed_mean)
+    if (step > last_seed && any(colSums(n) == 0)) {
+      keep <- colSums(n) > 0
+      alive <- alive[keep]
+      n <- n[, keep, drop = FALSE]
+      r <- r[, keep, drop = FALSE]
+      at <- at[keep, keep, drop = FALSE]
+      k <- length(alive)
+      p_em <- rep(dispersal[alive], each = m)
+    }
     lam <- r * n / (1 + n %*% at)
     n <- matrix(stats::rpois(m * k, lam), m, k)
     em <- matrix(stats::rbinom(m * k, n, p_em), m, k)
@@ -81,8 +97,9 @@ mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
       n <- n - em + imm
     }
   }
-  dimnames(n) <- dimnames(r)
-  n
+  out <- matrix(0, m, ncol(r_full), dimnames = dimnames(r_full))
+  out[, alive] <- n
+  out
 }
 
 #' One layer-B metacommunity

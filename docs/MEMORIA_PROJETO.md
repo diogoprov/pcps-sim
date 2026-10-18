@@ -598,3 +598,14 @@ Próximos passos sugeridos:
   fique ≈ 50/100/200 (caminho 2). Zenodo 10.5281/zenodo.3833035 (código de
   Thompson, v2.0): licença "Other (Open)", sem descrição; não é uma licença de
   reuso definida.
+- **Eficiência (2026-10-17).** Profiling (Rprof): na dinâmica da camada B, 59% do
+  tempo vai no `%*%`; no `test_dp_all`, 32% vai no `vegan::vegdist`. O BLAS é o
+  de referência no Mac e também no Docker: o rocker/r-ver usa `libblas-dev`
+  (`install_R_source.sh`).
+  - `d_p`: Bray–Curtis como manhattan / (soma das linhas), 2,5× mais rápido que o
+    `vegdist`. Diferença ≤ 4e-12 nas estatísticas, p-valores idênticos.
+  - `mc_dynamics`: depois da última semeadura, as espécies extintas saem das
+    contas. Resultado **idêntico** com a mesma semente e ~35% mais rápido
+    (pool 150, competição phylo).
+  - Pendente: OpenBLAS no Docker (`libopenblas-dev` +
+    `OPENBLAS_NUM_THREADS=1`), a testar num bench depois da rodada `axes`.
