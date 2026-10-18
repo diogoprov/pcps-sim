@@ -20,16 +20,21 @@ opts <- furrr::furrr_options(seed = 20261018L, globals = TRUE,
 out_dir <- file.path("data", "derived", "pilot_layerB")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
-pools <- readr::read_csv(pool_file, show_col_types = FALSE) |>
-  dplyr::select(archetype, scenario, target, n_pool)
+pools <- readr::read_csv(pool_file, show_col_types = FALSE)
+if ("converged" %in% names(pools) && !all(pools$converged))
+  warning("pool sizes not converged for ", sum(!pools$converged), " rows")
+pools <- dplyr::select(pools, archetype, scenario, target, n_pool)
 jobs <- pools |>
   dplyr::inner_join(archetypes_layerB(), by = "archetype") |>
   dplyr::inner_join(scenarios_layerA(), by = "scenario") |>
   tidyr::crossing(rep = seq_len(n_reps))
 
 t0 <- Sys.time()
-res <- furrr::future_pmap(jobs, \(...) {
+# a failed replicate (e.g. too few species left) is dropped, not fatal; the
+# summary reports the number of replicates kept
+one_rep <- purrr::possibly(\(...) {
   job <- list(...)
+  t0 <- Sys.time()
   mc <- sim_metacommunity_B(sim_tree_shape(job$n_pool), job$lambda, job$sigma_signal,
                             job$h_signal, job$env_original, dispersal = job$dispersal,
                             competition = job$competition)
@@ -37,20 +42,22 @@ res <- furrr::future_pmap(jobs, \(...) {
   analyse_metacommunity(mc, c("pfw", "glm"), nperm, extra_axes = TRUE) |>
     dplyr::mutate(archetype = job$archetype, scenario = job$scenario,
                   target = job$target, n_pool = job$n_pool, rep = job$rep,
-                  n_realized = ncol(mc$comm),
-                  gamma = treestats::gamma_statistic(mc$tree),
-                  colless = treestats::colless(mc$tree, normalization = "yule"),
+                  n_realized = ncol(mc$comm), !!!as.list(tree_shape(mc$tree)),
+                  sim_seconds = as.numeric(t1 - t0, units = "secs"),
                   test_seconds = as.numeric(Sys.time() - t1, units = "secs"),
                   .before = 1)
-}, .options = opts) |>
+})
+res <- furrr::future_pmap(jobs, one_rep, .options = opts) |>
   dplyr::bind_rows()
 message("Pilot layer B: ", format(Sys.time() - t0))
-readr::write_csv(res, file.path(out_dir, "pilot_layerB.csv"))
+readr::write_csv(res, file.path(out_dir, sprintf("pilot_layerB_reps%d_perm%d.csv",
+                                                 n_reps, nperm)))
 
-res |>
-  dplyr::group_by(archetype, scenario, target, test) |>
-  dplyr::summarise(rej_max = mean(p_max <= 0.05), n_realized = mean(n_realized),
-                   .groups = "drop") |>
-  tidyr::pivot_wider(names_from = test, values_from = rej_max) |>
+rejection_rates(res, archetype, scenario, target, test) |>
+  dplyr::select(archetype, scenario, target, test, n, p_max) |>
+  tidyr::pivot_wider(names_from = test, values_from = p_max) |>
   as.data.frame() |>
   print(digits = 2)
+message("Seconds per replicate (mean): simulation ",
+        round(mean(res$sim_seconds[res$test == "adonis"]), 2), ", tests ",
+        round(mean(res$test_seconds[res$test == "adonis"]), 2))
