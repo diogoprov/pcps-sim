@@ -79,8 +79,8 @@ phylofactor_node_scores <- function(comm, tree, env) {
     )
     if (fit$converged) fit$deviance else NA_real_
   }
-  score <- vapply(tips, \(t) {
-    in_g <- colnames(comm) %in% t
+  score <- vapply(tips, \(clade) {
+    in_g <- colnames(comm) %in% clade
     y <- c(rowSums(comm[, in_g, drop = FALSE]), rowSums(comm[, !in_g, drop = FALSE]))
     n <- rep(c(sum(in_g), k - sum(in_g)), each = n_site)
     g <- rep(c(1, 0), each = n_site)
@@ -104,14 +104,14 @@ phylofactor_node_scores <- function(comm, tree, env) {
 #' positive data.
 phylofactor_ilr_node_scores <- function(comm, tree, env, pseudocount = 0.5) {
   comm <- comm[, tree$tip.label, drop = FALSE]
-  lg <- log(comm + pseudocount)
+  log_comm <- log(comm + pseudocount)
   tips <- clade_tips(tree)
-  score <- vapply(tips, \(t) {
-    in_g <- colnames(comm) %in% t
-    r <- sum(in_g)
-    s <- sum(!in_g)
-    y <- sqrt(r * s / (r + s)) *
-      (rowMeans(lg[, in_g, drop = FALSE]) - rowMeans(lg[, !in_g, drop = FALSE]))
+  score <- vapply(tips, \(clade) {
+    in_g <- colnames(comm) %in% clade
+    n_in <- sum(in_g)
+    n_out <- sum(!in_g)
+    y <- sqrt(n_in * n_out / (n_in + n_out)) *
+      (rowMeans(log_comm[, in_g, drop = FALSE]) - rowMeans(log_comm[, !in_g, drop = FALSE]))
     sum((stats::lm.fit(cbind(1, env), y)$fitted.values - mean(y))^2) / length(y)
   }, numeric(1))
   tibble::tibble(node = as.integer(names(tips)), score = unname(score))
@@ -136,4 +136,19 @@ recover_clade_all <- function(mc, incidence = TRUE) {
   )
   dplyr::bind_rows(lapply(scores, recovery_metrics, tree = tree,
                           planted_tips = mc$planted$tips), .id = "method")
+}
+
+#' One replicate of the planted-clade experiment
+#'
+#' @return [recover_clade_all()] output with the replicate descriptors: age and
+#'   size of the planted clade, species kept, shape of the analysed tree and
+#'   seconds taken.
+run_clade_rep <- function(tree, shift, depth, incidence = TRUE) {
+  t0 <- Sys.time()
+  mc <- sim_metacommunity_clade(tree, shift = shift, depth = depth, incidence = incidence)
+  recover_clade_all(mc, incidence = incidence) |>
+    dplyr::mutate(rel_age = mc$planted$rel_age,
+                  n_planted = sum(mc$tree$tip.label %in% mc$planted$tips),
+                  n_kept = ape::Ntip(mc$tree), !!!as.list(tree_shape(mc$tree)),
+                  seconds = as.numeric(Sys.time() - t0, units = "secs"))
 }

@@ -30,16 +30,8 @@ t0 <- Sys.time()
 res <- furrr::future_pmap(
   jobs,
   \(cell, n_spp, depth, shift, rep) {
-    t1 <- Sys.time()
-    tr <- tree_of(cell, n_spp, rep)
-    mc <- sim_metacommunity_clade(tr, shift = shift, depth = depth)
-    recover_clade_all(mc) |>
-      dplyr::mutate(cell = cell, n_spp = n_spp, depth = depth, shift = shift, rep = rep,
-                    rel_age = mc$planted$rel_age,
-                    n_planted = sum(mc$tree$tip.label %in% mc$planted$tips),
-                    n_kept = ape::Ntip(mc$tree),
-                    !!!as.list(tree_shape(mc$tree)),
-                    seconds = as.numeric(Sys.time() - t1, units = "secs"))
+    run_clade_rep(tree_of(cell, n_spp, rep), shift, depth) |>
+      dplyr::mutate(cell = cell, n_spp = n_spp, depth = depth, shift = shift, rep = rep)
   },
   .options = opts
 ) |> dplyr::bind_rows()

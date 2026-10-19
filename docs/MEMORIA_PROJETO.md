@@ -860,7 +860,8 @@ Próximos passos sugeridos:
     correlaciona com E. A 1ª versão combinava todos os autovetores pelos β, o
     que cancela a árvore (vira ranking das espécies por E); corrigido na
     revisão.
-  - evoPCA (`adiv::evopcahellinger`, abundance = FALSE): correlação das
+  - evoPCA (`adiv::evopcahellinger`, abundance = FALSE com incidência e TRUE
+    com abundância): correlação das
     colunas de espécie com o eixo. As colunas de ramo saturam com incidência
     (o ramo do clado está presente onde qualquer descendente está) e os
     `co` escalam com o comprimento do ramo; rejeitadas.
@@ -876,7 +877,19 @@ Próximos passos sugeridos:
     acerta mais clados antigos (coerente com a H3); o PCC, limitado a 4
     autovetores, quase não isola clados de 10–30% das pontas. Idade relativa
     média: old 0,67, young 0,49.
-  - Pendências: abundância no objetivo 2 (o plano previa incidência e
-    abundância com N = 100; o phylofactor binomial só serve para 0/1);
-    cronometrar cada método; validar o phylofactor contra o `gpf` em mais
-    sementes.
+  - Pendências: cronometrar cada método; validar o phylofactor contra o `gpf`
+    em mais sementes.
+- **Objetivo 2: rodada completa local** (decisões do Diogo, 2026-10-19: PCC só
+  com os 4 primeiros autovetores; `PhyloFactor` composicional para abundância;
+  deslocamentos 0,5/1/2; rodar local às 21h em vez da AWS).
+  `analysis/17_run_clade.R`: 9 células × N 50/100/200 × old/young × 3
+  deslocamentos × 1000 réplicas com incidência, mais abundância com N = 100:
+  216 blocos, 864 mil linhas (4 métodos). Fase 1 sorteia 1000 árvores **novas**
+  por célula e N com os (β, c) calibrados da camada A. Desenho pareado: a
+  réplica r usa a árvore r e uma semente por (árvore, profundidade, r), então
+  clado plantado, ótimos e gradiente são os mesmos entre deslocamentos e tipos
+  de dado. Arquivos com `n_reps` no nome, gravação atômica, retomável. Phylofactor
+  composicional (`phylofactor_ilr_node_scores`): variância explicada da
+  balance ILR de log(x + 0,5) regredida em E, igual ao `choice = "var"`; o
+  melhor nó bate com o `PhyloFactor` (teste). Bug achado na revisão: nó
+  verdadeiro sem escore (glm sem convergir) ficava com posto 1; agora NA.

@@ -91,3 +91,13 @@ test_that("recovery works on a tree that lost species", {
   m <- recovery_metrics(pruned, node_scores(pruned, sp), p$tips)
   expect_true(m$hit)
 })
+
+test_that("an unscored planted node gets no rank", {
+  set.seed(8)
+  p <- plant_clade(tree)
+  sp <- stats::setNames(rnorm(60), tree$tip.label)
+  s <- node_scores(tree, sp)
+  true_node <- ape::getMRCA(tree, p$tips)
+  s$score[s$node == true_node] <- NA
+  expect_true(is.na(recovery_metrics(tree, s, p$tips)$rank))
+})

@@ -98,7 +98,7 @@ node_scores <- function(tree, sp_score) {
 #' @return one-row tibble: `hit` (best clade is the planted split), `rank` of
 #'   the planted node among all nodes (1 = best) and `jaccard`; all NA when
 #'   fewer than two planted species remain, the planted clade became the root
-#'   or the scores are NA.
+#'   or the scores are NA; `rank` is NA if the planted node has no score.
 recovery_metrics <- function(tree, scores, planted_tips) {
   present <- intersect(planted_tips, tree$tip.label)
   if (length(present) < 2 || all(is.na(scores$score)))
@@ -112,6 +112,9 @@ recovery_metrics <- function(tree, scores, planted_tips) {
   jaccard <- function(a, b) length(intersect(a, b)) / length(union(a, b))
   j <- max(jaccard(best_tips, present),
            jaccard(best_tips, setdiff(tree$tip.label, present)))
-  rank <- sum(scores$score > scores$score[scores$node == true_node], na.rm = TRUE) + 1L
+  true_score <- scores$score[scores$node == true_node]
+  # nodes without a score (a fit that did not converge) cannot outrank it
+  rank <- if (is.na(true_score)) NA_integer_ else
+    sum(scores$score > true_score, na.rm = TRUE) + 1L
   tibble::tibble(hit = j == 1, rank = rank, jaccard = j)
 }
