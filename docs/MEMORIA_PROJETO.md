@@ -730,12 +730,18 @@ Próximos passos sugeridos:
   e6e5188): 8.800 chunks de 50 réplicas, ~490 s por chunk. Às 21:47, 254 dos
   ~3.700 chunks prontos tinham falhado com "subscript out of bounds":
   `sim_tree_cell()` não achava árvore de pool dentro da tolerância (±0,5 em γ e
-  Colless) nas 50 tentativas padrão. Taxa de aceitação estimada (100 árvores por
-  célula × n_pool): 1–12% em g_yule__c_high e g_low__c_high, 10–21% nas outras.
+  Colless) nas 50 tentativas padrão. Taxa de aceitação: ~8–12% nas piores
+  combinações célula × n_pool (g_yule__c_high, g_low__c_high; 2000 árvores
+  cada), 10–21% nas outras. Com 50 tentativas, ~0,5% das réplicas falham, e
+  basta uma para derrubar um chunk de 50.
   Corrigido com `max_tries = 5000` em `run_chunk_B()`, com
   `tar_cue(depend = FALSE)` nos `results` da camada B. Assim, só os chunks que
   falharam rodam de novo quando a instância for relançada sobre o store do S3,
   e os prontos ficam (testado num pipeline de brinquedo). Os chunks que deram
   certo não ficam viesados: aceitar na 1ª ou na 500ª tentativa tira árvores da
   mesma distribuição condicional. O cue precisa sair antes de qualquer mudança
-  que deva refazer todos os chunks.
+  que deva refazer todos os chunks: ele ignora mudanças em `profile` e nas
+  funções chamadas. **TODO:** reverter o cue num commit logo após a reexecução.
+  Passos da reexecução: esperar a instância atual terminar (ela sincroniza o
+  store), `aws/pack_code.sh` (a instância lê o código do S3, não do git) e
+  `aws/launch_spot.sh ... layerB`.

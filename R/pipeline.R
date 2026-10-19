@@ -197,17 +197,18 @@ design_table_B <- function(profile, pools, pool_cells) {
 #' Each replicate draws a new pool tree of the calibrated pool size within the
 #' shape tolerance of its cell ([sim_tree_cell()], as in layer A), so the cell
 #' describes the regional pool; the shapes of the pool tree and of the tree
-#' pruned by the dynamics (the one analysed) are recorded as covariates.
+#' pruned by the dynamics (the one analysed) are recorded as covariates. Up to
+#' 5000 tries per pool tree, since acceptance is only ~8-12% in some cells.
 #' @param design_row one row of [design_table_B()].
 run_chunk_B <- function(design_row, profile) {
   reps <- chunk_reps(design_row$chunk, profile)
   t0 <- Sys.time()
   purrr::map(reps, \(r) {
-    # acceptance is 1-12% in some cells, so the default of 50 tries failed
-    # whole chunks (run of 2026-10-18)
     pool <- sim_tree_cell(1, design_row$n_pool, design_row$beta, design_row$c,
                           design_row$gamma_target, design_row$colless_target,
-                          max_tries = 5000)[[1]]
+                          max_tries = 5000)
+    stopifnot(length(pool) == 1)
+    pool <- pool[[1]]
     mc <- sim_metacommunity_B(pool, design_row$lambda, design_row$sigma_signal,
                               design_row$h_signal, design_row$env_original,
                               dispersal = design_row$dispersal,
