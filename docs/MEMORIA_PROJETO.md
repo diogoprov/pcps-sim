@@ -813,11 +813,22 @@ Próximos passos sugeridos:
     incerteza dos quantis empíricos de γ e Colless.
   - Objetivo 2: **evoPCA e phylofactorization entram**. Diogo pediu mais
     detalhes sobre a métrica de recuperação de clados.
-  - **Segundo simulador para a camada B: sim.** Atenção: a camada B atual já é
-    o framework de Thompson et al. 2020 (o do `mcomsimr`), reimplementado.
-    O segundo simulador precisa ser outro modelo (a escolher).
-  - Pools regionais empíricos: sim, com os dados de literatura do mestrado do
-    Diogo, que estão no Box. Não baixar do Box: pedir ao Diogo uma cópia local.
+  - **Sem segundo simulador** (revisto no mesmo dia). A camada B já é o
+    framework de Thompson et al. 2020, que o Diogo considera suficiente e
+    padrão na área (ele cita artigos recentes de Peres-Neto que o usam; não
+    verificados aqui).
+  - **Recuperação de clados: clado plantado.** Sortear um nó com 10–30% das
+    pontas, deslocar o ótimo dessas espécies ao longo de E; profundidade do nó
+    como fator (H3). Escore por nó = |correlação| entre pertença ao clado e os
+    escores das espécies no eixo mais ligado a E (PCPS, evoPCA, PCC);
+    phylofactor dá a aresta. Métricas: acerto do nó, posto do nó plantado e
+    Jaccard entre o clado recuperado e o verdadeiro.
+  - Pools regionais empíricos: sim, com os dados de literatura do Diogo. Cópia
+    local em `~/Downloads/Capitulo X - NRI vs. PCPS/` (projeto NRI vs PCPS):
+    ~15 metacomunidades de girinos com composição e árvore datada. As árvores
+    têm só 9–34 espécies (γ −2,7 a 1,4; Colless normalizado −0,4 a 2,5), bem
+    abaixo do N = 50–200 do desenho; servem como referência de metacomunidades
+    locais ou caso empírico, não como pool de 50–200.
   - Figura 1: o painel 5 fica ilustrativo. Rótulos ajustados ("1000 time
     steps"; "×1000 replicates per cell") e o ícone da RDA virou um triplot
     (sítios, espécies como cruzes e a seta de E).
