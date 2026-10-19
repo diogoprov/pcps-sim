@@ -3,3 +3,5 @@
 library(qs2)        # targets format = "qs"
 library(crew)       # targets controller
 library(tarchetypes)
+library(BiocManager) # renv: Bioconductor dependencies of phylofactor (tests)
+library(data.table)  # long table for phylofactor::gpf (tests)
