@@ -726,3 +726,16 @@ Próximos passos sugeridos:
   gerado por `analysis/13_fig1_schematic.R`. Aprovada pelo Diogo. Pendências de
   desenho: painel 5 é ilustrativo; "999 permutações" e "×1000" valem para full e
   axes.
+- **Rodada layerB na AWS** (2026-10-18, 18:43, i-0c37dab3d146dd037, commit
+  e6e5188): 8.800 chunks de 50 réplicas, ~490 s por chunk. Às 21:47, 254 dos
+  ~3.700 chunks prontos tinham falhado com "subscript out of bounds":
+  `sim_tree_cell()` não achava árvore de pool dentro da tolerância (±0,5 em γ e
+  Colless) nas 50 tentativas padrão. Taxa de aceitação estimada (100 árvores por
+  célula × n_pool): 1–12% em g_yule__c_high e g_low__c_high, 10–21% nas outras.
+  Corrigido com `max_tries = 5000` em `run_chunk_B()`, com
+  `tar_cue(depend = FALSE)` nos `results` da camada B. Assim, só os chunks que
+  falharam rodam de novo quando a instância for relançada sobre o store do S3,
+  e os prontos ficam (testado num pipeline de brinquedo). Os chunks que deram
+  certo não ficam viesados: aceitar na 1ª ou na 500ª tentativa tira árvores da
+  mesma distribuição condicional. O cue precisa sair antes de qualquer mudança
+  que deva refazer todos os chunks.

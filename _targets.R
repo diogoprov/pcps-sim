@@ -94,7 +94,11 @@ layer_b <- list(
       targets::tar_group(),
     iteration = "group"
   ),
-  tar_target(results, run_chunk_B(design_B, profile), pattern = map(design_B)),
+  # depend = FALSE: the max_tries fix in run_chunk_B() reruns only the chunks
+  # that failed, keeping those already done (same code otherwise). Remove it
+  # before any change that should rerun all chunks.
+  tar_target(results, run_chunk_B(design_B, profile), pattern = map(design_B),
+             cue = tar_cue(depend = FALSE)),
   results_csv_target,
   tar_target(
     rejection,
