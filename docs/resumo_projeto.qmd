@@ -379,8 +379,83 @@ layerB |>
   (0,80–0,82). Com *mass effects*, o γ baixo reduz todos os testes sobre D_P.
 - O GLM PCPS2 segue sem poder (≤ 0,03 com *sorting*).
 - Uma tabulação pelo γ *realizado* fica confundida com N (os alvos de γ baixo
-  são mais negativos com N grande); o modelo com γ realizado como covariável
-  ainda precisa ser ajustado.
+  são mais negativos com N grande); por isso o GAM abaixo é ajustado dentro de
+  cada N.
+
+## GAM pelo γ da árvore analisada
+
+GAM binomial (`mgcv::gam`, REML) da rejeição sobre s(γ) + s(Colless) da
+árvore analisada, **um modelo por teste × cenário × arquétipo × N** (704
+modelos de 5000 réplicas; `analysis/14_gam_layerB.R`). Ajustar por estrato
+evita misturar *sorting* com *mass effects* e extrapolar γ entre N (o γ
+realizado fica mais negativo com N maior). Curvas condicionais à mediana do
+Colless, com IC de 95%, entre os quantis 2,5% e 97,5% do γ de cada estrato.
+
+O γ realizado se agrupa em torno das células do pool: dentro de um estrato, a
+correlação com o γ do pool vai de 0,83 a 0,9997 (> 0,99 sem competição). Por
+isso as curvas omitem os trechos sem dados (a mais de 0,25 de qualquer γ
+observado), e o contraste entre os extremos das curvas repete, em essência, o
+contraste entre células da tabela anterior. O que separa a árvore analisada do
+pool é a **inclinação do γ dentro das células**: uma regressão logística por
+estrato com a célula como fator, γ e Colless, que só usa a dispersão do γ em
+torno de cada árvore do pool, criada pela poda.
+
+```{r}
+#| label: layerB-gam
+gam_dir <- file.path(root, "data", "derived", "layerB_gam")
+gam_curves <- readr::read_csv(file.path(gam_dir, "gam_gamma_curves.csv"),
+                              show_col_types = FALSE)
+gam_curves |>
+  filter(scenario == "S3b", n_spp == 100, test %in% test_levels, !is.na(rate)) |>
+  mutate(test = factor(test, test_levels)) |>
+  group_by(archetype, test) |>
+  summarise(gamma_low = first(gamma), rate_low = first(rate),
+            gamma_high = last(gamma), rate_high = last(rate), .groups = "drop") |>
+  kable3(2)
+```
+
+```{r}
+#| label: fig-layerB-gam
+#| fig-cap: "Taxa de rejeição (N = 100) ao longo do γ da árvore analisada, por arquétipo (linhas) e cenário (colunas); faixas = IC 95%; tracejado = 0,05; lacunas = γ sem dados."
+knitr::include_graphics(file.path(gam_dir, "gam_gamma_curves_n100.png"))
+```
+
+```{r}
+#| label: layerB-within-cell
+# slope of the realized gamma within the pool cells, logit per unit of gamma
+readr::read_csv(file.path(gam_dir, "within_cell_gamma_slopes.csv"),
+                show_col_types = FALSE) |>
+  filter(scenario == "S3b", test %in% c("adonis", "mantel", "glm_pcps1", "rda_pcps", "pcc")) |>
+  mutate(slope = sprintf("%.2f [%.2f, %.2f]", slope, lower, upper)) |>
+  select(archetype, test, n_spp, slope) |>
+  pivot_wider(names_from = n_spp, values_from = slope) |>
+  knitr::kable()
+```
+
+- **Entre células**, o padrão da tabela anterior se mantém pelo γ da árvore
+  analisada. Em S3b com *sorting* sem competição e N = 100: GLM PCPS1
+  0,39 → 0,84, PCC 0,70 → 0,99, RDA 0,67 → 0,84; ADONIS (0,85) e Mantel
+  (0,84–0,91) quase planos. Com N = 200, o ADONIS e o Mantel até caem um
+  pouco com γ alto (0,97 → 0,90; 0,98 → 0,95), e o PCC quase não perde
+  (0,93 → 1,00).
+- **Dentro das células**, com *sorting* e competição filogenética (onde a
+  poda espalha o γ, DP ~0,6), o γ da árvore analisada tem efeito próprio e
+  positivo em todos os testes: 35 de 72 estratos de poder com IC acima de zero
+  e nenhum abaixo. O PCC é o mais sensível (0,44–0,64 no logit por unidade de
+  γ); o GLM PCPS1 e os testes sobre D_P ficam em 0,05–0,27. Sem competição a
+  dispersão do γ é pequena (DP ~0,3) e só N = 50 mostra efeito; com *mass
+  effects* nenhum. Nos cenários de erro tipo I, 23 de 440 estratos têm IC que
+  exclui zero (em ambos os sentidos), o esperado ao acaso.
+- Nas pontas das curvas, o erro tipo I passa do limite em dois casos: o GLM
+  PCPS2 em S2sigma (*sorting*) sobe com γ muito negativo (0,089 com N = 100;
+  0,13 com N = 200), e o PCC em S2h sobe com γ alto ou N = 200 (até
+  0,11–0,135).
+- O termo do Colless tem p < 0,01 em poucos modelos, sempre com efeito
+  pequeno.
+- **Limites:** em S0 e S1 a rejeição também cai com γ baixo (testes mais
+  conservadores), então parte da perda de poder pode ser calibração. O modelo
+  é aditivo em γ e Colless (sem `te()`), os IC são pontuais e há 704 modelos
+  sem correção para multiplicidade. Exploratório; o final será em `brms`.
 
 # Hipóteses: leitura preliminar
 
@@ -424,10 +499,9 @@ refaria quase tudo (o `results.csv` já é o final).
 
 **Imediatos**
 
-1. Camada B: modelar a rejeição em função do γ e do Colless realizados
-   (ex.: GAM binomial com s(γ) + arquétipo + N + cenário), separando o efeito
-   da poda do efeito do pool. Entender por que o PCC perde o poder sob *mass
-   effects*.
+1. Camada B: o GAM pelo γ realizado está feito (seção 5); falta entender por
+   que o PCC perde o poder sob *mass effects* e decidir se o modelo final
+   (`brms`) da camada B entra no artigo ou só a camada A.
 2. Análise formal da camada A conforme o plano: modelo binomial da taxa de
    rejeição com spline de γ × Colless, N, cenário, método e tipo de dado, em
    `mgcv` para explorar e `brms` (priors explícitos, R-hat, ESS, PPC) para o

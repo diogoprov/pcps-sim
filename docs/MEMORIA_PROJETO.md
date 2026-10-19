@@ -771,25 +771,33 @@ Próximos passos sugeridos:
   Diogo): estado, tabelas das três rodadas e próximos passos. HTML renderizado
   fica fora do git.
 - **GAM da camada B pelo γ realizado** (2026-10-19, `analysis/14_gam_layerB.R`,
-  `R/rejection_gam.R`): `bam` binomial, rejeição (p_max ≤ 0,05) ~ s(γ) +
-  s(Colless) da árvore analisada, **um modelo por teste × cenário × arquétipo ×
-  N** (704 modelos, 5000 réplicas cada, ~6 s). A 1ª versão (por teste × cenário,
-  arquétipo e N aditivos, média marginal) foi descartada na revisão: misturava
-  sorting e mass effects e extrapolava γ (o γ realizado cresce em módulo com N).
-  Curvas condicionais à mediana do Colless, IC 95%, γ entre os quantis 2,5–97,5%
-  do estrato. Saídas em `data/derived/layerB_gam/` (fora do git).
-  - A perda de poder com γ baixo **se mantém pelo γ realizado** dentro de cada
-    estrato. S3b sorting/none, N = 100 (γ −7,0 → 0,4): GLM PCPS1 0,39 → 0,84,
-    GLM PCPS1 Procrustes 0,18 → 0,77, PCC 0,70 → 0,99, RDA 0,67 → 0,84;
-    ADONIS (0,85) e Mantel (0,84–0,91) planos. Com N = 200 o PCC quase não perde
-    (0,93 → 1,00). Com mass effects, todos os testes (inclusive ADONIS) ganham
-    poder com γ maior; PCC segue sem poder.
-  - Erro tipo I nas pontas das curvas: GLM PCPS2 em S2sigma sorting/none sobe
-    com γ baixo (0,089 com N = 100; 0,13 com N = 200, IC inf. 0,12); PCC em S2h
-    sobe com γ alto ou N = 200 (até 0,11–0,135).
-  - Colless com p < 0,01 em 66 de 704 estratos (efeitos pequenos; n = 5000).
-  - Limites: γ realizado e γ do pool têm r ≈ 0,93, então o GAM não separa os
-    dois; `s(γ) + s(Colless)` aditivo (o plano pede γ × desbalanço, mas o
-    Colless quase não pesa); exploratório, o modelo final segue em `brms`.
-    Em S0/S1 a rejeição também cai com γ baixo (testes mais conservadores),
-    então parte da perda de poder pode ser calibração e não só poder.
+  `R/rejection_gam.R`): `mgcv::gam` (REML) binomial, rejeição (p_max ≤ 0,05)
+  ~ s(γ) + s(Colless) da árvore analisada, **um modelo por teste × cenário ×
+  arquétipo × N** (704 modelos de 5000 réplicas, ~30 s com 8 núcleos). Versões
+  descartadas nas revisões: (1) por teste × cenário com arquétipo e N aditivos
+  e média marginal (misturava sorting e mass effects e extrapolava γ entre N);
+  (2) curvas sobre todo o intervalo de γ (interpolavam nos buracos entre as
+  células do pool). Curvas condicionais à mediana do Colless, IC 95% pontual,
+  trechos a > 0,25 de qualquer γ observado ficam NA. Saídas em
+  `data/derived/layerB_gam/` (fora do git).
+  - O γ realizado se agrupa nas células do pool (r dentro do estrato
+    0,83–0,9997; > 0,99 sem competição), então o contraste entre extremos das
+    curvas repete o contraste entre células. S3b sorting/none N = 100: GLM PCPS1
+    0,39 → 0,84, PCC 0,70 → 0,99, RDA 0,67 → 0,84; ADONIS e Mantel quase
+    planos; com N = 200 ADONIS 0,97 → 0,90 e Mantel 0,98 → 0,95.
+  - **Inclinação dentro das células** (`within_cell_gamma_slope`: glm com
+    célula como fator + γ + Colless; separa a árvore analisada do pool): com
+    sorting/phylo (DP do γ ~0,6 por célula) o γ analisado tem efeito próprio e
+    positivo em todos os testes, 35 de 72 estratos de poder com IC > 0 e
+    nenhum < 0; PCC 0,44–0,64 logit/γ, demais 0,05–0,27. sorting/none (DP ~0,3)
+    só com N = 50; mass effects nenhum. Erro tipo I: 23 de 440 estratos com IC
+    excluindo zero, nos dois sentidos (o esperado ao acaso).
+  - Erro tipo I nas pontas das curvas: GLM PCPS2 em S2sigma sorting sobe com γ
+    baixo (0,089 com N = 100; 0,13 com N = 200, IC inf. 0,12); PCC em S2h sobe
+    com γ alto ou N = 200 (até 0,11–0,135).
+  - Colless com p < 0,01 em 67 de 704 modelos (efeitos pequenos). edf máx. 4,7
+    com k = 6 (k' = 5), apertado em poucos estratos; o γ tem só ~3 grupos.
+  - Limites: aditivo em γ e Colless (sem `te()`); IC pontuais, sem correção
+    para 704 modelos; em S0/S1 a rejeição também cai com γ baixo (testes mais
+    conservadores), então parte da perda de poder pode ser calibração.
+    Exploratório; o modelo final segue em `brms`.
