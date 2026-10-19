@@ -43,9 +43,9 @@ pcc_species_scores <- function(comm, tree, env, n_axes = 4) {
 #' branch above a planted clade saturates and small subclades always correlate
 #' better; and the loadings (`co`) scale with branch length, so long basal
 #' branches would dominate.
-evopca_species_scores <- function(comm, tree, env, n_axes = 4) {
+evopca_species_scores <- function(comm, tree, env, n_axes = 4, incidence = TRUE) {
   e <- adiv::evopcahellinger(tree, as.data.frame(comm), scannf = FALSE, nf = n_axes,
-                             abundance = FALSE)
+                             abundance = !incidence)
   a <- best_axis(as.matrix(e$li), env)
   stats::setNames(drop(stats::cor(as.matrix(e$tab)[, tree$tip.label], e$li[, a])),
                   tree$tip.label)
@@ -95,19 +95,44 @@ phylofactor_node_scores <- function(comm, tree, env) {
   tibble::tibble(node = as.integer(names(tips)), score = unname(score))
 }
 
+#' Compositional phylofactorization (abundance): objective of every split
+#'
+#' The objective of `phylofactor::PhyloFactor(choice = "var")` with
+#' Data ~ X: the explained variance (regression sum of squares over the number
+#' of sites) of the isometric log-ratio balance of the split regressed on E.
+#' Zeros are replaced by `pseudocount` before the log, as `PhyloFactor` needs
+#' positive data.
+phylofactor_ilr_node_scores <- function(comm, tree, env, pseudocount = 0.5) {
+  comm <- comm[, tree$tip.label, drop = FALSE]
+  lg <- log(comm + pseudocount)
+  tips <- clade_tips(tree)
+  score <- vapply(tips, \(t) {
+    in_g <- colnames(comm) %in% t
+    r <- sum(in_g)
+    s <- sum(!in_g)
+    y <- sqrt(r * s / (r + s)) *
+      (rowMeans(lg[, in_g, drop = FALSE]) - rowMeans(lg[, !in_g, drop = FALSE]))
+    sum((stats::lm.fit(cbind(1, env), y)$fitted.values - mean(y))^2) / length(y)
+  }, numeric(1))
+  tibble::tibble(node = as.integer(names(tips)), score = unname(score))
+}
+
 #' Recovery of the planted clade by every method
 #'
-#' @param mc output of [sim_metacommunity_clade()] (incidence data).
+#' @param mc output of [sim_metacommunity_clade()].
+#' @param incidence whether `mc$comm` is 0/1; phylofactorization is binomial
+#'   for incidence and compositional (log-ratio) for abundance.
 #' @return tibble with one row per method: `method`, `hit`, `rank`, `jaccard`.
-recover_clade_all <- function(mc) {
+recover_clade_all <- function(mc, incidence = TRUE) {
   comm <- mc$comm
   tree <- mc$tree
   env <- mc$env
   scores <- list(
     pcps = node_scores(tree, pcps_species_scores(comm, tree, env)),
     pcc = node_scores(tree, pcc_species_scores(comm, tree, env)),
-    evopca = node_scores(tree, evopca_species_scores(comm, tree, env)),
-    phylofactor = phylofactor_node_scores(comm, tree, env)
+    evopca = node_scores(tree, evopca_species_scores(comm, tree, env, incidence = incidence)),
+    phylofactor = if (incidence) phylofactor_node_scores(comm, tree, env)
+                  else phylofactor_ilr_node_scores(comm, tree, env)
   )
   dplyr::bind_rows(lapply(scores, recovery_metrics, tree = tree,
                           planted_tips = mc$planted$tips), .id = "method")

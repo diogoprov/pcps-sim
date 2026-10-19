@@ -59,3 +59,17 @@ test_that("a species constant across sites does not break the scores", {
   sp <- stats::setNames(c(NA, rnorm(11)), tree5$tip.label)
   expect_false(anyNA(node_scores(tree5, sp)$score))
 })
+
+test_that("the best log-ratio split matches phylofactor::PhyloFactor", {
+  skip_if_not_installed("phylofactor")
+  set.seed(32)
+  mca <- sim_metacommunity_clade(sim_tree_shape(40), shift = 3, incidence = FALSE)
+  pf <- suppressMessages(phylofactor::PhyloFactor(t(mca$comm) + 0.5, mca$tree, X = mca$env,
+                                                  nfactors = 1))
+  ref <- lapply(pf$groups[[1]], \(i) mca$tree$tip.label[i])
+  s <- phylofactor_ilr_node_scores(mca$comm, mca$tree, mca$env)
+  best <- ape::extract.clade(mca$tree, s$node[which.max(s$score)])$tip.label
+  expect_true(setequal(best, ref[[1]]) || setequal(best, ref[[2]]))
+  out <- recover_clade_all(mca, incidence = FALSE)
+  expect_false(anyNA(out$jaccard))
+})
