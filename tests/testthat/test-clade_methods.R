@@ -33,13 +33,14 @@ test_that("species scores are named by tip and follow the shifted clade", {
   }
 })
 
-test_that("a strong planted clade is recovered by PCC, evoPCA and phylofactor", {
+test_that("a strong planted clade is recovered by evoPCA and phylofactor", {
   out <- recover_clade_all(mc)
   expect_setequal(out$method, c("pcps", "pcc", "evopca", "phylofactor"))
   expect_false(anyNA(out$jaccard))
   # PCPS spreads the signal over related species through the fuzzy weights of
-  # P and here picks a larger clade, so it is not required to hit
-  expect_true(all(out$hit[out$method != "pcps"]))
+  # P, and the first PCC eigenvectors follow the deep splits, so both pick a
+  # larger clade here and are not required to hit this small recent clade
+  expect_true(all(out$hit[out$method %in% c("evopca", "phylofactor")]))
 })
 
 test_that("PCPS species scores are the correlations of PCPS::pcps", {
@@ -51,4 +52,10 @@ test_that("PCPS species scores are the correlations of PCPS::pcps", {
   # the axis is chosen by its correlation with E; signs of axes are arbitrary
   a <- which.max(abs(stats::cor(ref$vectors[, 1:4], mc$env)))
   expect_equal(abs(unname(sp)), abs(unname(ref$correlations[, a])), tolerance = 1e-8)
+})
+
+test_that("a species constant across sites does not break the scores", {
+  tree5 <- ape::rcoal(12)
+  sp <- stats::setNames(c(NA, rnorm(11)), tree5$tip.label)
+  expect_false(anyNA(node_scores(tree5, sp)$score))
 })

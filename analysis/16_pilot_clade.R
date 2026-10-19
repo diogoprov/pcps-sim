@@ -18,8 +18,8 @@ dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 grid <- readRDS(file.path("data", "derived", "trees", "tree_grid_k200.rds"))
 cells <- c("g_yule__c_yule", "g_low__c_yule", "g_yule__c_high")
-stopifnot(n_reps <= 200)
 trees <- dplyr::filter(grid, cell %in% cells)
+stopifnot(n_reps <= min(lengths(trees$trees)))
 
 jobs <- tidyr::crossing(cell = cells, n_spp = c(50, 100, 200), depth = c("old", "young"),
                         shift = c(1, 2), rep = seq_len(n_reps))
@@ -38,8 +38,7 @@ res <- furrr::future_pmap(
                     rel_age = mc$planted$rel_age,
                     n_planted = sum(mc$tree$tip.label %in% mc$planted$tips),
                     n_kept = ape::Ntip(mc$tree),
-                    gamma = treestats::gamma_statistic(tr),
-                    colless = treestats::colless(tr, normalization = "yule"),
+                    !!!as.list(tree_shape(mc$tree)),
                     seconds = as.numeric(Sys.time() - t1, units = "secs"))
   },
   .options = opts

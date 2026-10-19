@@ -851,3 +851,32 @@ Próximos passos sugeridos:
   primeiros também confere. Diferenças de desenho já documentadas: ambiente
   estático U(0, 100) em vez de autocorrelado no espaço e no tempo, kernel
   uniforme e sítios sem coordenadas.
+- **Objetivo 2: escores por método e piloto** (2026-10-19; `R/clade_methods.R`,
+  `analysis/16_pilot_clade.R`). Incidência. Cada método de ordenação escolhe,
+  entre os 4 primeiros eixos, o mais correlacionado com E:
+  - PCPS: correlação de cada espécie (coluna de P) com o eixo (igual a
+    `PCPS::pcps()$correlations`, testado).
+  - PCC: valores do autovetor filogenético cuja coluna PCC mais se
+    correlaciona com E. A 1ª versão combinava todos os autovetores pelos β, o
+    que cancela a árvore (vira ranking das espécies por E); corrigido na
+    revisão.
+  - evoPCA (`adiv::evopcahellinger`, abundance = FALSE): correlação das
+    colunas de espécie com o eixo. As colunas de ramo saturam com incidência
+    (o ramo do clado está presente onde qualquer descendente está) e os
+    `co` escalam com o comprimento do ramo; rejeitadas.
+  - phylofactor binomial: objetivo do `gpf(algorithm = "phylo")` com
+    cbind(S, F) ~ phylo * env (pvDeviance) calculado para todo nó, com dados
+    agregados por sítio × lado da partição; o melhor nó bate com o 1º fator
+    do `gpf` (teste). `phylofactor::matrix.to.phyloframe` quebra no R ≥ 4
+    (`class(x) != "matrix"`); a tabela longa é montada à mão.
+  - Piloto (3 células × N 50/100/200 × profundidade old/young × shift 1/2 ×
+    50 réplicas = 1800; 12 núcleos): **1,2 min**, 0,13/0,20/0,47 s por réplica
+    para N = 50/100/200. Acerto do nó (shift 2, N = 100, old/young): evoPCA
+    0,79/0,73, phylofactor 0,76/0,73, PCPS 0,37/0,12, PCC 0,11/0,11. O PCPS
+    acerta mais clados antigos (coerente com a H3); o PCC, limitado a 4
+    autovetores, quase não isola clados de 10–30% das pontas. Idade relativa
+    média: old 0,67, young 0,49.
+  - Pendências: abundância no objetivo 2 (o plano previa incidência e
+    abundância com N = 100; o phylofactor binomial só serve para 0/1);
+    cronometrar cada método; validar o phylofactor contra o `gpf` em mais
+    sementes.

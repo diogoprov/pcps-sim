@@ -71,12 +71,14 @@ sim_metacommunity_clade <- function(tree, shift = 2, depth = "any", incidence = 
 #' |correlation| between membership of the clade (0/1) and the species scores;
 #' the root (all species) has no score. The two children of the root define the
 #' same split and get the same score.
-#' @param sp_score named vector with one value for every tip of `tree`.
+#' @param sp_score named vector with one value for every tip of `tree`; NA
+#'   (a species constant across sites) counts as 0, no association.
 #' @return tibble with `node` and `score` (NA if the species scores are
 #'   constant).
 node_scores <- function(tree, sp_score) {
   stopifnot(all(tree$tip.label %in% names(sp_score)))
   sp_score <- sp_score[tree$tip.label]
+  sp_score[is.na(sp_score)] <- 0
   tips <- clade_tips(tree)
   score <- if (stats::sd(sp_score) > 0) {
     vapply(tips, \(t) abs(stats::cor(tree$tip.label %in% t, sp_score)), numeric(1))
@@ -110,6 +112,6 @@ recovery_metrics <- function(tree, scores, planted_tips) {
   jaccard <- function(a, b) length(intersect(a, b)) / length(union(a, b))
   j <- max(jaccard(best_tips, present),
            jaccard(best_tips, setdiff(tree$tip.label, present)))
-  rank <- sum(scores$score > scores$score[scores$node == true_node]) + 1L
+  rank <- sum(scores$score > scores$score[scores$node == true_node], na.rm = TRUE) + 1L
   tibble::tibble(hit = j == 1, rank = rank, jaccard = j)
 }

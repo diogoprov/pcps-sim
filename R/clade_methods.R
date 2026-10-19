@@ -1,8 +1,10 @@
 # Node scores of each method for the recovery of the planted clade
 # (R/clade_recovery.R). PCPS, PCC and evoPCA give species scores, turned into
 # node scores by [node_scores()]; phylofactorization gives an objective per
-# split. All on the metacommunity as
-# analysed (`mc` from [sim_metacommunity_clade()]).
+# split. All on the metacommunity as analysed (`mc` from
+# [sim_metacommunity_clade()]). The ordinations are unsupervised, so each takes
+# the axis most correlated with E among its first four as the axis "associated
+# with E"; phylofactorization uses E directly in its objective.
 
 #' Axis most correlated with the gradient among the first `n_axes`
 best_axis <- function(axes, env) which.max(abs(stats::cor(axes, env)))
@@ -10,26 +12,26 @@ best_axis <- function(axes, env) which.max(abs(stats::cor(axes, env)))
 #' PCPS: correlation of each species (column of P) with the PCPS axis most
 #' correlated with E (species scores as in `PCPS::pcps`)
 pcps_species_scores <- function(comm, tree, env, n_axes = 4) {
-  p <- matrix_p(comm, phylo_q(tree))
-  axes <- pcoa_axes(gower_centre(d_p(p, sqrt = TRUE)), seq_len(n_axes))
+  q <- phylo_q(tree)
+  axes <- pcps_axes(comm, q, seq_len(n_axes))
   a <- axes[, best_axis(axes, env)]
+  p <- matrix_p(comm, q)
   stats::setNames(drop(stats::cor(p, a)), tree$tip.label)
 }
 
-#' PCC: species values of the phylogenetic direction fitted to E
+#' PCC: values of the phylogenetic eigenvector whose PCC column is most
+#' correlated with E, among the first `n_axes` eigenvectors
 #'
-#' The PCC columns (sites x eigenvectors) are regressed on E as in
-#' [pcc_stat()]; the species score is the combination of the standardized
-#' eigenvectors weighted by the regression coefficients.
-pcc_species_scores <- function(comm, tree, env) {
-  pev <- phylo_eigenvectors(tree)
-  w_spp <- colSums(comm)
-  w_site <- rowSums(comm)
-  pev_std <- weighted_std(pev, w_spp)
-  pcc <- (comm %*% pev_std) / w_site
-  e_std <- weighted_std(env, w_site)
-  beta <- crossprod(e_std, w_site * pcc) / sum(w_site * e_std^2)
-  stats::setNames(drop(pev_std %*% t(beta)), tree$tip.label)
+#' The analogue of the PCPS and evoPCA axes: one phylogenetic axis chosen by
+#' its association with E. Combining all eigenvectors by their regression
+#' coefficients would nearly span the whole species space, so the tree would
+#' cancel out and the score would rank species by E alone.
+pcc_species_scores <- function(comm, tree, env, n_axes = 4) {
+  comm <- comm[, tree$tip.label, drop = FALSE]
+  pev <- phylo_eigenvectors(tree)[, seq_len(n_axes), drop = FALSE]
+  pev_std <- weighted_std(pev, colSums(comm))
+  pcc <- (comm %*% pev_std) / rowSums(comm)
+  stats::setNames(pev_std[, best_axis(pcc, env)], tree$tip.label)
 }
 
 #' evoPCA (Hellinger): correlation of each species with the evoPCA axis most
@@ -55,15 +57,27 @@ evopca_species_scores <- function(comm, tree, env, n_axes = 4) {
 #' cbind(Successes, Failures) ~ phylo * env and the default `pvDeviance`: the
 #' sequential deviance of the terms with `phylo` (phylo, then phylo:env after
 #' env). Computed on presences aggregated by site and side of the split, which
-#' leaves the deviance differences unchanged, so every node gets a score.
+#' leaves the deviance differences unchanged (the model has no species effect),
+#' so every node gets a score, not only the best one. Only internal nodes are
+#' scored, as for the other methods. Note that the phylo term also rewards a
+#' difference in prevalence unrelated to E, and that the logit is linear in E
+#' although responses are unimodal; with the planted shift the response of the
+#' clade is monotone along E.
 phylofactor_node_scores <- function(comm, tree, env) {
   tips <- clade_tips(tree)
   n_site <- nrow(comm)
   k <- ncol(comm)
   # a split that separates presences perfectly fits probabilities of 0 or 1;
-  # the deviance is still the right objective, so the warning is muted
+  # the deviance is still the right objective, so only that warning is muted;
+  # a fit that does not converge gives no score
   dev <- function(y, n, x) {
-    suppressWarnings(stats::glm.fit(x, cbind(y, n - y), family = stats::binomial()))$deviance
+    fit <- withCallingHandlers(
+      stats::glm.fit(x, cbind(y, n - y), family = stats::binomial()),
+      warning = \(w) if (grepl("fitted probabilities", conditionMessage(w)) ||
+                         grepl("probabilidades ajustadas", conditionMessage(w)))
+        invokeRestart("muffleWarning")
+    )
+    if (fit$converged) fit$deviance else NA_real_
   }
   score <- vapply(tips, \(t) {
     in_g <- colnames(comm) %in% t
