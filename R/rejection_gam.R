@@ -2,53 +2,41 @@
 #'
 #' Layer B cannot fix the shape of the analysed tree: the cell sets the pool
 #' tree, and the dynamics prune it. The rejection is therefore modelled as a
-#' smooth function of the realized gamma and Colless, with the archetype and N
-#' as fixed effects. Fit separately for each test x scenario.
+#' smooth function of the realized gamma and Colless. Fit within one stratum
+#' (test x scenario x archetype x N): the realized gamma scales with the number
+#' of tips and differs among archetypes, so pooling strata would mix rates and
+#' extrapolate gamma beyond the support of each stratum.
 #'
-#' @param d Rows of one test x scenario, with `p_max`, `gamma`, `colless`,
-#'   `archetype` and `n_spp`.
+#' @param d Rows of one stratum, with `p_max`, `gamma` and `colless`.
 #' @param alpha Nominal level of the test.
-#' @param k Basis dimension of each smooth.
 #' @return A `mgcv::bam` fit.
-fit_rejection_gam <- function(d, alpha = 0.05, k = 6) {
-  d <- prepare_gam_data(d, alpha)
-  # a single archetype or N cannot enter as a factor
-  terms <- c(sprintf("s(gamma, k = %d)", k), sprintf("s(colless, k = %d)", k),
-             if (nlevels(d$archetype) > 1) "archetype",
-             if (nlevels(d$n_spp) > 1) "n_spp")
-  mgcv::bam(stats::reformulate(terms, "reject"), family = stats::binomial(),
+fit_rejection_gam <- function(d, alpha = 0.05) {
+  d$reject <- as.integer(d$p_max <= alpha)
+  mgcv::bam(reject ~ s(gamma, k = 6) + s(colless, k = 6), family = stats::binomial(),
             data = d, discrete = TRUE)
 }
 
-prepare_gam_data <- function(d, alpha = 0.05) {
-  d |>
-    dplyr::mutate(reject = as.integer(p_max <= alpha),
-                  archetype = droplevels(factor(archetype)),
-                  n_spp = droplevels(factor(n_spp)))
-}
-
-#' Marginal rejection rate along the realized gamma
+#' Rejection rate along the realized gamma, with a 95% interval
 #'
-#' At each gamma on the grid, the gamma of every replicate is set to that
-#' value and the predicted probabilities are averaged, so the other terms keep
-#' their observed distribution (marginal standardization).
+#' Conditional on the median Colless of the stratum. The gamma grid spans the
+#' 2.5% to 97.5% quantiles of the gamma the model was fit to.
 #'
 #' @param fit A fit from [fit_rejection_gam()].
-#' @param d The rows the model was fit to.
-#' @param n_grid Number of gamma values, spread between the 2.5% and 97.5%
-#'   quantiles of the observed gamma.
-#' @param max_rows Averages over a random subset of at most this many rows, to
-#'   keep the prediction cheap.
-#' @return A tibble with `gamma` and the marginal rejection rate `rate`.
-marginal_rejection_gamma <- function(fit, d, n_grid = 25, max_rows = 5000) {
-  d <- prepare_gam_data(d)
-  if (nrow(d) > max_rows) d <- d[sample.int(nrow(d), max_rows), ]
-  grid <- seq(stats::quantile(d$gamma, 0.025), stats::quantile(d$gamma, 0.975),
-              length.out = n_grid)
-  rate <- vapply(grid, \(g) {
-    mean(stats::predict(fit, transform(d, gamma = g), type = "response"))
-  }, numeric(1))
-  tibble::tibble(gamma = grid, rate = rate)
+#' @param n_grid Number of gamma values.
+#' @return A tibble with `gamma`, the rejection rate `rate` and its interval
+#'   `lower`, `upper`.
+rejection_curve_gamma <- function(fit, n_grid = 25) {
+  m <- fit$model
+  grid <- tibble::tibble(
+    gamma = seq(stats::quantile(m$gamma, 0.025, names = FALSE),
+                stats::quantile(m$gamma, 0.975, names = FALSE),
+                length.out = n_grid),
+    colless = stats::median(m$colless)
+  )
+  p <- lapply(stats::predict(fit, grid, se.fit = TRUE), as.numeric)
+  dplyr::mutate(grid, rate = stats::plogis(p$fit),
+                lower = stats::plogis(p$fit - 1.96 * p$se.fit),
+                upper = stats::plogis(p$fit + 1.96 * p$se.fit))
 }
 
 #' Summary of the smooth terms of a rejection GAM
