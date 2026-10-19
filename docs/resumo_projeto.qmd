@@ -14,46 +14,74 @@ execute:
   echo: false
   warning: false
   message: false
-  cache: true
 ---
+
+<!-- Render: quarto render docs/resumo_projeto.qmd (paths are relative to
+docs/). Needs data/derived/{full,axes,layerB}/results.csv, which are not in git
+(download from S3, aws/README.md). No cache: the CSVs are read on every render
+(~10 s). -->
 
 ```{r}
 #| label: setup
-#| cache: false
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 root <- ".."
-read_res <- function(profile, cols) {
+# fread: the results files have 2-3.5 million rows
+read_results <- function(profile, cols) {
   data.table::fread(file.path(root, "data", "derived", profile, "results.csv"),
                     select = cols) |>
     as_tibble()
 }
-rate <- function(p) mean(p <= 0.05)
-tab <- function(x, digits = 3) knitr::kable(x, digits = digits)
-test_order <- c("adonis", "mantel", "glm_pcps1", "glm_pcps2", "glm_pcps1_proc",
-                "glm_pcps2_proc", "rda_pcps", "pcc")
-type1 <- c("S0", "S1", "S2", "S2sigma", "S2h")
-power <- c("S3a", "S3b", "S3sigma")
+reject_rate <- function(p) mean(p <= 0.05)
+kable3 <- function(x, digits = 3) knitr::kable(x, digits = digits)
+test_levels <- c("adonis", "mantel", "glm_pcps1", "glm_pcps2", "glm_pcps1_proc",
+                 "glm_pcps2_proc", "rda_pcps", "pcc")
+gamma_levels <- c("g_low", "g_mid", "g_yule")
+colless_levels <- c("c_yule", "c_mid", "c_high")
+type1_scenarios <- c("S0", "S1", "S2", "S2sigma", "S2h")
+power_scenarios <- c("S3a", "S3b", "S3sigma")
+# grid cells are named "g_<gamma level>__c_<Colless level>"
+add_shape_levels <- function(d) {
+  separate(d, cell, c("gamma", "colless"), sep = "__", remove = FALSE) |>
+    mutate(gamma = factor(gamma, gamma_levels),
+           colless = factor(colless, colless_levels))
+}
+# rejection rate of the max test, one column per test
+rate_table <- function(d, scenarios, ...) {
+  d |>
+    filter(scenario %in% scenarios) |>
+    mutate(scenario = factor(scenario, scenarios)) |>
+    group_by(..., scenario, test) |>
+    summarise(r = reject_rate(p_max), .groups = "drop") |>
+    pivot_wider(names_from = test, values_from = r) |>
+    kable3()
+}
 ```
 
 Este documento resume o estado do projeto em 19 de outubro de 2026. O registro
 detalhado das decisões, com datas, commits e números, está em
 `docs/MEMORIA_PROJETO.md`; o desenho, em `docs/PLANO_SIMULACAO.md`. As tabelas
-abaixo são calculadas a partir dos resultados em `data/derived/` (fora do git;
-também no S3), e todas as taxas são do teste max (largest P: o maior entre os
-p-valores do site shuffle e do taxa shuffle), a α = 0,05.
+são calculadas a partir dos resultados em `data/derived/` (fora do git; também
+no S3). Todas as taxas são do teste max (largest P: o maior entre os p-valores
+do site shuffle e do taxa shuffle), a α = 0,05. O critério de aceitabilidade do
+erro tipo I é o intervalo liberal de Bradley, [0,025; 0,075]
+[CITAR: Bradley 1978, não verificado]. O erro de Monte Carlo de uma taxa de 0,05
+com 1000 réplicas é ±0,014.
 
 # Pergunta e lacuna
 
 O capítulo da tese (2012–2016) perguntava como o formato da árvore (γ de Pybus,
 desbalanço de Colless) e o tamanho do pool afetam o autovalor do PCPS1. O
 reenquadramento de 2026 troca a resposta (autovalor) pela **validade da
-inferência**: erro tipo I e poder dos testes sobre a matriz P da *phylogenetic
-fuzzy weighting* (PFW) e sobre os eixos PCPS, em função do formato da árvore, do
-sinal filogenético em traços de nuisance (σ, h), do tamanho do pool e do tipo
-de dado. O segundo objetivo é comparar métodos (PFW/PCPS e PCC de Peres-Neto &
-Kembel 2015, por ora).
+inferência**.
+
+- **Objetivo 1:** erro tipo I e poder dos testes sobre a matriz P da
+  *phylogenetic fuzzy weighting* (PFW) e sobre os eixos PCPS, em função de
+  (a) formato da árvore, (b) sinal filogenético em σ e h sob H0, (c) tamanho
+  do pool e (d) incidência × abundância.
+- **Objetivo 2:** comparar métodos. Por ora, PFW/PCPS e o PCC de Peres-Neto &
+  Kembel 2015; evoPCA e phylofactorization estão pendentes.
 
 A lacuna se apoia em três pontos verificados:
 
@@ -88,9 +116,12 @@ Revista-alvo: **Methods in Ecology and Evolution**. Autoria única.
   "baixo" de γ (q10 ≈ −5,6 a −8,9) e "alto" de Colless (q90) vêm daí.
 - **Camada A:** metacomunidades estáticas no protocolo de Peres-Neto, Leibold &
   Dray 2012, com 8 cenários (abaixo).
-- **Camada B:** dinâmica de metacomunidade baseada em processo, escrita a partir
-  das equações de Thompson et al. 2020 (*Ecol Lett* 23: 1314–1329): crescimento
-  Gaussiano, Beverton–Holt, Poisson, emigração binomial e dispersão uniforme.
+- **Camada B:** dinâmica de metacomunidade baseada em processo, no modelo de
+  Thompson et al. 2020 (*Ecol Lett* 23: 1314–1329): crescimento Gaussiano,
+  Beverton–Holt, Poisson, emigração binomial e dispersão uniforme. Código
+  próprio (nem o mcomsimr nem o código Julia têm licença). **O artigo ainda
+  não foi lido** (a citação vem do README do mcomsimr), e a ordem Poisson →
+  dispersão dentro do passo não foi conferida.
 - **AWS:** imagem Docker (rocker 4.6.1, OpenBLAS com 1 thread), instância spot
   c7a.48xlarge (190 workers), store sincronizado com o S3 a cada 10 min, com
   retomada automática.
@@ -111,7 +142,7 @@ Revista-alvo: **Methods in Ecology and Evolution**. Autoria única.
 | S3b | 1 | não | o verdadeiro | poder |
 | S3sigma | 1 | σ | o verdadeiro | poder |
 
-# Validação contra os trabalhos publicados
+# Validação e pilotos
 
 Com 1000 réplicas por célula e critério "a taxa publicada cai no IC95% da
 nossa":
@@ -122,7 +153,20 @@ nossa":
   (confirmado no código do Appendix S3).
 - **Peres-Neto & Kembel 2015 (PCC):** validado nas células que não dependem da
   árvore. O poder publicado fica no extremo superior do que obtemos em 20
-  árvores Yule (0,71–0,925), compatível com uma árvore única favorável.
+  árvores Yule (0,71–0,925), compatível com uma árvore única favorável. Nessas
+  20 árvores, o poder do PCC já correlacionava com γ (Spearman 0,87–0,90).
+
+Pilotos que orientaram o desenho (detalhes na memória):
+
+- **Piloto do formato da árvore** (3 células, 200 réplicas): o γ baixo derrubou
+  o poder do PCC (N = 50: 0,33 contra 0,87 em Yule), e a PFW passou à frente
+  (Mantel 0,49). Foi a primeira evidência para a H4.
+- **Mini-piloto GLM** (14.400 réplicas, AWS): revelou a inflação do GLM no
+  PCPS2 em S2sigma (0,10). O diagnóstico (`analysis/09`) atribuiu o problema à
+  identidade dos eixos no teste eixo a eixo; daí a inclusão de Procrustes e RDA.
+- **Calibração e piloto da camada B** (8.800 réplicas): definiram os tamanhos de
+  pool, mostraram a célula inviável e o confundimento entre a poda competitiva
+  e o γ, o que levou à opção B (seção 5).
 
 # Camada A: resultados
 
@@ -134,56 +178,50 @@ eixos 1–2 e a fração da variação em cada eixo).
 ```{r}
 #| label: layerA-data
 cols <- c("scenario", "cell", "n_spp", "data_type", "test", "p_max")
-full <- read_res("full", cols)
-axes <- read_res("axes", c(cols, "eig_share1", "eig_share2"))
-a <- bind_rows(full, filter(axes, !test %in% unique(full$test))) |>
-  mutate(test = factor(test, test_order))
+full <- read_results("full", cols)
+axes <- read_results("axes", c(cols, "eig_share1", "eig_share2"))
+layerA <- bind_rows(full, filter(axes, !test %in% unique(full$test))) |>
+  mutate(test = factor(test, test_levels))
 ```
 
 ## Erro tipo I
 
 ```{r}
 #| label: layerA-type1
-a |>
-  filter(scenario %in% type1) |>
-  group_by(scenario = factor(scenario, type1), test) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
-  pivot_wider(names_from = test, values_from = r) |>
-  tab()
+rate_table(layerA, type1_scenarios)
 ```
 
-- S0, S1, S2 e S2h: nominal ou conservador em todos os testes.
-- **S2sigma** (sinal filogenético só na amplitude de nicho): o GLM no PCPS2 e o
-  PCC inflam. A inflação do GLM PCPS2 cresce com N e com γ baixo (tabela
-  abaixo). Diagnóstico (`analysis/09`): o clado de nicho amplo gira os eixos
-  principais, e o PCPS2 nulo do taxa shuffle não é o mesmo eixo que o PCPS2
-  observado. O problema é a identidade dos eixos no teste eixo a eixo.
-- O PCC também infla em S2sigma, e mais com N grande e em árvores Yule (0,13
-  com N = 200), o oposto do GLM PCPS2.
+- S2 e S2h: dentro do intervalo de Bradley em todos os testes, exceto os GLM
+  com Procrustes, conservadores demais. S0 e S1: conservadores em todos os
+  testes (≤ 0,033).
+- **S2sigma** (sinal filogenético só na amplitude de nicho): o GLM no PCPS2
+  (0,12) e o PCC (0,08) passam do limite. A inflação do GLM PCPS2 cresce com N
+  e com γ baixo (tabela abaixo). Diagnóstico (`analysis/09`): o clado de nicho
+  amplo gira os eixos principais, e o PCPS2 nulo do taxa shuffle não é o mesmo
+  eixo que o PCPS2 observado.
+- O PCC também infla em S2sigma, mais com N grande e em árvores Yule (0,13 com
+  N = 200), o oposto do GLM PCPS2.
 - O Procrustes remove a inflação, mas fica conservador demais em toda parte. A
   RDA nos eixos 1–2 controla o erro tipo I (e fica conservadora com N grande).
+- O Colless não muda o erro tipo I em nenhum teste (diferenças ≤ 0,007 entre
+  os níveis).
 
 ```{r}
 #| label: layerA-s2sigma
-a |>
+layerA |>
   filter(scenario == "S2sigma", test %in% c("glm_pcps2", "pcc", "rda_pcps")) |>
-  mutate(gamma = sub("__.*", "", cell)) |>
+  add_shape_levels() |>
   group_by(test, gamma, n_spp) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
+  summarise(r = reject_rate(p_max), .groups = "drop") |>
   pivot_wider(names_from = n_spp, values_from = r, names_prefix = "N = ") |>
-  tab()
+  kable3()
 ```
 
 ## Poder
 
 ```{r}
 #| label: layerA-power
-a |>
-  filter(scenario %in% power) |>
-  group_by(scenario = factor(scenario, power), test) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
-  pivot_wider(names_from = test, values_from = r) |>
-  tab()
+rate_table(layerA, power_scenarios)
 ```
 
 ```{r}
@@ -191,13 +229,11 @@ a |>
 #| fig-cap: "Poder em S3b por célula de forma da árvore (incidência e abundância juntas). Linhas: N."
 #| fig-width: 9
 #| fig-height: 5
-a |>
-  filter(scenario == "S3b", test != "glm_pcps2", test != "glm_pcps2_proc") |>
-  separate(cell, c("gamma", "colless"), sep = "__") |>
-  mutate(gamma = factor(gamma, c("g_low", "g_mid", "g_yule")),
-         colless = factor(colless, c("c_yule", "c_mid", "c_high"))) |>
+layerA |>
+  filter(scenario == "S3b", !test %in% c("glm_pcps2", "glm_pcps2_proc")) |>
+  add_shape_levels() |>
   group_by(test, gamma, colless, n_spp) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
+  summarise(r = reject_rate(p_max), .groups = "drop") |>
   ggplot(aes(gamma, r, colour = factor(n_spp), group = n_spp)) +
   geom_line() + geom_point() +
   facet_grid(colless ~ test) +
@@ -215,17 +251,35 @@ a |>
   N = 200: 0,68 contra 0,42).
 - O Colless não tem efeito visível.
 
+## Incidência × abundância
+
+```{r}
+#| label: layerA-datatype
+layerA |>
+  filter(scenario %in% c("S2sigma", power_scenarios),
+         test %in% c("adonis", "mantel", "glm_pcps1", "glm_pcps2", "pcc")) |>
+  group_by(scenario, test, data_type) |>
+  summarise(r = reject_rate(p_max), .groups = "drop") |>
+  pivot_wider(names_from = data_type, values_from = r) |>
+  kable3()
+```
+
+A incidência dá mais poder que a abundância no ADONIS, no Mantel e sobretudo
+no GLM PCPS1 (S3b: 0,55 contra 0,21). No PCC, os dois tipos de dado se
+equivalem. Em contrapartida, a inflação em S2sigma é maior com incidência (GLM
+PCPS2 0,15 contra 0,09; PCC 0,11 contra 0,05).
+
 ## Espectro: fração da variação no PCPS1
 
 ```{r}
 #| label: layerA-eig
 axes |>
   filter(test == "adonis", scenario %in% c("S0", "S3b")) |>
-  mutate(gamma = sub("__.*", "", cell)) |>
+  add_shape_levels() |>
   group_by(scenario, gamma) |>
   summarise(eig_share1 = mean(eig_share1), eig_share2 = mean(eig_share2),
             .groups = "drop") |>
-  tab()
+  kable3()
 ```
 
 A fração da variação no PCPS1 diminui com γ baixo, o que reproduz na grade
@@ -250,52 +304,47 @@ no caminho:
 
 ```{r}
 #| label: layerB-data
-b <- read_res("layerB", c("scenario", "archetype", "cell", "n_spp", "test", "p_max",
-                          "n_realized", "gamma_pool", "colless_pool", "gamma",
-                          "colless", "eig_share1")) |>
+layerB <- read_results("layerB", c("scenario", "archetype", "cell", "n_spp", "test",
+                                   "p_max", "n_realized", "gamma_pool",
+                                   "colless_pool", "gamma", "colless")) |>
   filter(test %in% c("adonis", "mantel", "glm_pcps1", "glm_pcps2", "rda_pcps", "pcc")) |>
-  mutate(test = factor(test, test_order),
-         scenario = factor(scenario, c(type1, power)))
+  mutate(test = factor(test, test_levels))
 ```
 
 ## A árvore do pool e a árvore analisada
 
 ```{r}
 #| label: layerB-shapes
-b |>
+layerB |>
   filter(test == "adonis") |>
-  mutate(gamma_cell = sub("__.*", "", cell)) |>
+  mutate(gamma_cell = factor(sub("__.*", "", cell), gamma_levels)) |>
   group_by(archetype, gamma_cell) |>
   summarise(gamma_pool = mean(gamma_pool), gamma_analysed = mean(gamma),
             colless_pool = mean(colless_pool), colless_analysed = mean(colless),
             n_realized_over_N = mean(n_realized / n_spp), .groups = "drop") |>
-  tab(2)
+  kable3(2)
 ```
 
 A árvore do pool cai nos alvos da célula em todos os arquétipos, o que mostra
 que a opção B funciona (o γ médio menos negativo de *mass effects* com
-competição vem da falta do N = 200, cujos alvos são os mais negativos). Sem competição, a árvore analisada é praticamente a do
-pool. A competição filogenética poda parentes próximos: o γ fica mais negativo
-(pool Yule → −1,9 a −2,4) e o Colless cai para menos da metade (a árvore
-analisada fica *mais* balanceada que o pool).
+competição vem da falta do N = 200, cujos alvos são os mais negativos). Sem
+competição, a árvore analisada é praticamente a do pool. A competição
+filogenética poda parentes próximos. O γ fica mais negativo (pool Yule → −1,9
+a −2,4). O Colless cai cerca de 45% com *species sorting* e cerca de 75% com
+*mass effects*: a árvore analisada fica *mais* balanceada que o pool.
 
 ## Erro tipo I
 
 ```{r}
 #| label: layerB-type1
-b |>
-  filter(scenario %in% type1) |>
-  group_by(archetype, scenario, test) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
-  pivot_wider(names_from = test, values_from = r) |>
-  tab()
+rate_table(layerB, type1_scenarios, archetype)
 ```
 
-- Todos os testes ficam dentro do intervalo de Bradley [0,025; 0,075] ou
-  abaixo, com duas exceções na borda: o **PCC em S2h** (sinal em h, a taxa
-  máxima de crescimento) sem competição (0,076–0,078), e o **GLM PCPS2 em
-  S2sigma** com *species sorting* sem competição (0,073; 0,096 com N = 200).
-  Esse último repete, mais fraco, a inflação da camada A.
+- Todos os testes ficam dentro do intervalo de Bradley ou abaixo, com duas
+  exceções na borda: o **PCC em S2h** (sinal em h, a taxa máxima de
+  crescimento) sem competição (0,076–0,078), e o **GLM PCPS2 em S2sigma** com
+  *species sorting* sem competição (0,073; 0,096 com N = 200). Esse último
+  repete, mais fraco, a inflação da camada A.
 - Com *species sorting* e competição filogenética, ADONIS e RDA ficam muito
   conservadores em S2, S2h e S2sigma (0,013–0,023).
 - A inflação do ADONIS em S2sigma com *mass effects* vista no piloto (0,09 com
@@ -305,23 +354,18 @@ b |>
 
 ```{r}
 #| label: layerB-power
-b |>
-  filter(scenario %in% power) |>
-  group_by(archetype, scenario, test) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
-  pivot_wider(names_from = test, values_from = r) |>
-  tab()
+rate_table(layerB, power_scenarios, archetype)
 ```
 
 ```{r}
 #| label: layerB-power-gamma
-b |>
+layerB |>
   filter(scenario == "S3b", test != "glm_pcps2") |>
-  mutate(gamma_cell = factor(sub("__.*", "", cell), c("g_low", "g_mid", "g_yule"))) |>
+  mutate(gamma_cell = factor(sub("__.*", "", cell), gamma_levels)) |>
   group_by(archetype, test, gamma_cell) |>
-  summarise(r = rate(p_max), .groups = "drop") |>
+  summarise(r = reject_rate(p_max), .groups = "drop") |>
   pivot_wider(names_from = gamma_cell, values_from = r) |>
-  tab()
+  kable3()
 ```
 
 - Com *species sorting*, o poder é parecido com o da camada A (ADONIS e Mantel
@@ -338,21 +382,43 @@ b |>
   são mais negativos com N grande); o modelo com γ realizado como covariável
   ainda precisa ser ajustado.
 
+# Hipóteses: leitura preliminar
+
+Leitura minha, descritiva (sem o modelo formal da seção 6 do plano):
+
+- **H1** (o desbalanço afasta do nominal o erro tipo I do taxa shuffle sobre
+  D_P): **não sustentada**. O Colless não muda o erro tipo I nem o poder em
+  nenhum teste.
+- **H2** (sinal filogenético em σ ou h infla o erro tipo I em todos os
+  métodos, com magnitude dependente da forma): **parcial**. Só o sinal em σ
+  infla, e só no GLM PCPS2 e no PCC. A magnitude depende do γ, em sentidos
+  opostos nos dois. O sinal em h não infla na camada A; na camada B, o PCC
+  fica na borda (0,076–0,078).
+- **H3** (γ muito negativo concentra a variação no PCPS1): **contrariada**. A
+  fração no PCPS1 *diminui* com γ baixo. A parte sobre recuperação de clados
+  não foi medida.
+- **H4** (a ordem dos métodos muda com a forma da árvore): **sustentada**. PCC
+  > ADONIS em árvores Yule, ADONIS ≥ PCC com γ baixo; o padrão se repete nas
+  duas camadas.
+
 # Infraestrutura e custo
 
-| Rodada | Réplicas | Duração | Custo aproximado |
-|---|---|---|---|
-| Bench e mini-piloto GLM | 14.400 | < 1 h | ~US$ 1–2 |
-| full | 432.000 | ~8 h | ~US$ 20–25 |
-| axes | 432.000 | ~6,6 h | ~US$ 17–21 |
-| layerB (+ reexecução) | 440.000 | 6,6 h + 0,9 h | ~US$ 20–24 |
+| Rodada | Réplicas | Duração |
+|---|---|---|
+| Bench | — | < 1 h |
+| Mini-piloto GLM | 14.400 | ~21 min |
+| full | 432.000 | ~8 h |
+| axes | 432.000 | ~6,6 h |
+| layerB (+ reexecução) | 440.000 | 6,6 h + 0,9 h |
 
-Os custos são estimativas pelo preço spot (US$ 2,60–3,24/h), não a fatura; o
-painel da AWS mostrava US$ 14,21 no dia 18, com atraso. Lições operacionais
-registradas na memória: o token SSO expira em ~8 h (`aws sso login --profile
-pcps`), a instância encerrada some do `describe-instances`, o furrr precisa de
-`scheduling = Inf` para balancear a carga, e o OpenBLAS precisa de 1 thread por
-worker (ganho de 2–3× nos testes).
+Pelo preço spot registrado (US$ 2,6–3,3/h), as quatro rodadas grandes custam
+algo como US$ 60–75 no total. É estimativa minha (horas × preço), não a
+fatura. Lições operacionais (na memória): o token SSO expira em ~8 h (`aws sso
+login --profile pcps`); a instância encerrada some do `describe-instances`; o
+furrr precisa de `scheduling = Inf` para balancear a carga; o OpenBLAS precisa
+de 1 thread por worker (ganho de 2–3× nos testes). O store `_targets_layerB`
+ficou com branches de duas versões de `run_chunk_B()`: um `tar_make` novo nele
+refaria quase tudo (o `results.csv` já é o final).
 
 # Próximos passos
 
@@ -367,26 +433,30 @@ worker (ganho de 2–3× nos testes).
    `mgcv` para explorar e `brms` (priors explícitos, R-hat, ESS, PPC) para o
    modelo final. Figura-chave: superfícies de rejeição sobre γ × Colless por
    método.
+3. Ler Thompson et al. 2020 e conferir a ordem Poisson → dispersão da camada B.
 
 **Decisões pendentes (Diogo)**
 
-3. Baixar os bootstraps datados de Portik et al. 2023 (TreePL, 22,9 MB) para
+4. Baixar os bootstraps datados de Portik et al. 2023 (TreePL, 22,9 MB) para
    pôr incerteza nos quantis empíricos de γ e Colless.
-4. Objetivo 2: incluir evoPCA (Pavoine 2016; `adiv`) e decidir sobre a
+5. Objetivo 2: incluir evoPCA (Pavoine 2016; `adiv`) e decidir sobre a
    phylofactorization (Washburne et al. 2017); definir a métrica de
-   recuperação de clados.
-5. Um segundo simulador baseado em processo (ex.: MCSim) para a camada B, ou
-   não.
-6. Figura 1: manter o painel 5 ilustrativo ou trocar por resultados; ajustar
+   recuperação de clados (necessária para fechar a H3).
+6. Um segundo simulador baseado em processo para a camada B, ou não.
+7. Pools regionais empíricos (ex.: espécies do Brasil) como referência
+   alternativa aos clados de Portik.
+8. Figura 1: manter o painel 5 ilustrativo ou trocar por resultados; ajustar
    os rótulos "999 permutações" e "×1000".
 
 **Manuscrito**
 
-7. Conferir as normas de autores e de figuras da MEE.
-8. Escrever Métodos e Resultados (em inglês) a partir das tabelas finais; a
-   Introdução usa a lacuna da seção 1.
-9. Reconhecer a ideia original de V. J. Debastiani (rascunho de 2012) nos
+9. Conferir as normas de autores e de figuras da MEE.
+10. Escrever Métodos e Resultados (em inglês) a partir das tabelas finais; a
+    Introdução usa a lacuna da seção 1.
+11. Reconhecer a ideia original de V. J. Debastiani (rascunho de 2012) nos
     agradecimentos; declarar a tese de 2015, se o capítulo estiver nela.
-10. Leituras pendentes para fechar a lacuna: texto completo de Pavoine 2016,
-    Tucker et al. 2017 e Peres-Neto et al. 2012. Confirmar o DOI canônico do
-    pacote PCPS (Debastiani & Duarte 2014).
+12. Leituras pendentes: texto completo de Pavoine 2016, Tucker et al. 2017 e
+    Peres-Neto et al. 2012 (variação do formato da árvore); ter Braak et al.
+    2017 e Duarte et al. 2018 (crítica à CWM sobre P); Bradley 1978 (critério
+    de erro tipo I). Confirmar o DOI canônico do pacote PCPS (Debastiani &
+    Duarte 2014).

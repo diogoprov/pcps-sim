@@ -51,7 +51,8 @@ pcps-sim/
 ├── aws/                           scripts to run the pipeline on an EC2 spot instance
 ├── Dockerfile                     container used on AWS (rocker/r-ver + renv)
 ├── renv.lock                      package versions
-├── docs/                          simulation plan, project log, method specifications
+├── docs/                          simulation plan, project log, method specifications,
+│                                  status report (resumo_projeto.qmd; quarto render)
 ├── manuscript/                    Quarto manuscript (in preparation) and figures
 ├── legacy/                        material from the 2012–2016 version of the project (not tracked)
 └── references/                    literature (not tracked)

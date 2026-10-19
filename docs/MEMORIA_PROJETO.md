@@ -755,8 +755,8 @@ Próximos passos sugeridos:
   novo nesse store refaria quase tudo (o results.csv já é o final).
   - Pool: γ e Colless da árvore do pool batem com os alvos em todos os
     arquétipos (opção B funciona). Competição filogenética: γ podado mais
-    negativo (pool Yule → −1,9/−2,4) e Colless podado < metade (0,27–0,75 vs
-    1,1–1,3).
+    negativo (pool Yule → −1,9/−2,4) e Colless podado ~45% menor com sorting
+    (0,65–0,75 vs 1,17–1,33) e ~75% menor com mass effects (0,27–0,36).
   - Erro tipo I (max): tudo ≤ 0,075 exceto, na borda, PCC em S2h sem competição
     (0,076–0,078) e GLM PCPS2 em S2sigma com sorting/none (0,073; 0,096 com
     N = 200; repete a camada A, mais fraco). sorting/phylo: ADONIS e RDA muito
