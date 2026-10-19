@@ -294,17 +294,20 @@ do erro de Monte Carlo. Se não baterem, aí sim vale escrever ao Pedro.
 - **Erro tipo I e poder:** taxa de rejeição a α = 0,05. Com 1000 réplicas, o IC95%
   de Monte Carlo em torno de 0,05 é de cerca de ±0,014. Critério de aceitabilidade:
   intervalo liberal de Bradley, [0,025; 0,075].
-- **Recuperação de clados.** O "efeito verdadeiro" de cada nó interno é a diferença
-  padronizada entre as médias de u_j dos dois clados-filhos, ou a contribuição do nó
-  ao BM simulado; isso ainda precisa ser decidido no piloto. Cada método produz um
-  escore por nó:
-  - PCPS: correlação entre a pertença ao clado e os escores das espécies no eixo
-    associado a E;
-  - PCC e evoPCA: loadings das espécies agregados por clado;
-  - phylofactor: as arestas escolhidas.
+- **Recuperação de clados (decidido em 2026-10-19: clado plantado).** Em cada
+  réplica sorteia-se um nó cujo clado tem 10–30% das pontas, restrito à metade
+  mais antiga ou mais recente dos nós elegíveis (fator de profundidade, H3; a
+  idade relativa do nó também é guardada). Os ótimos são
+  u = −1 + 102·Φ(z + shift·[espécie no clado]), com z iid N(0, 1): as demais
+  espécies não têm sinal filogenético, e o deslocamento tem o mesmo
+  significado para qualquer N. Cada método dá um escore por nó:
+  - PCPS, evoPCA e PCC: |correlação| entre a pertença ao clado (0/1) e os
+    escores das espécies no eixo mais correlacionado com E;
+  - phylofactor: a aresta escolhida.
 
-  Métrica: correlação de Spearman entre efeito verdadeiro e escore, e
-  precision/recall dos k nós de maior efeito.
+  Métricas: acerto (o clado de maior escore é o plantado, ou o seu
+  complemento), posto do nó plantado e Jaccard entre o clado de maior escore e
+  o plantado. Código em `R/clade_recovery.R`.
 - **Espectro:** autovalor relativo dos eixos 1 a 4. Isso recupera a pergunta
   original do capítulo, agora como variável descritiva e não como resposta
   principal.

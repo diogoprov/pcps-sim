@@ -95,6 +95,11 @@ sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_origin
 }
 
 #' Static community from species traits (Gaussian response, Poisson counts)
+#'
+#' @param traits data.frame with `u`, `sigma` and `h`, one row per species.
+#' @param env environmental value of each site.
+#' @param species species labels, in the row order of `traits`.
+#' @return sites x species matrix of counts, or of 0/1 if `incidence`.
 sim_comm_traits <- function(traits, env, species, incidence = TRUE) {
   lambda_ij <- sweep(outer(env, traits$u, "-")^2, 2, 2 * traits$sigma^2, "/")
   lambda_ij <- sweep(exp(-lambda_ij), 2, traits$h, "*")
