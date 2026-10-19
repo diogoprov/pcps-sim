@@ -745,3 +745,28 @@ Próximos passos sugeridos:
   Passos da reexecução: esperar a instância atual terminar (ela sincroniza o
   store), `aws/pack_code.sh` (a instância lê o código do S3, não do git) e
   `aws/launch_spot.sh ... layerB`.
+- **Reexecução e fim da layerB (2026-10-19).** A 1ª instância terminou à 01:17
+  com 816 de 8.800 chunks com erro; a reexecução (i-004f36ee7b9f1d21f, commit
+  7f1ed73, 01:18 → 02:11) refez só esses. **440.000 réplicas completas**, 8
+  testes, nenhum p ausente. `data/derived/layerB/results.csv` (fora do git) e
+  no S3. ~508 s por chunk. Custo estimado das duas: ~7,5 h × US$ 2,6–3,2 ≈
+  US$ 20–24. O `tar_cue(depend = FALSE)` foi revertido: os branches da 1ª
+  instância ficaram com o hash antigo de `run_chunk_B()`, então um `tar_make`
+  novo nesse store refaria quase tudo (o results.csv já é o final).
+  - Pool: γ e Colless da árvore do pool batem com os alvos em todos os
+    arquétipos (opção B funciona). Competição filogenética: γ podado mais
+    negativo (pool Yule → −1,9/−2,4) e Colless podado < metade (0,27–0,75 vs
+    1,1–1,3).
+  - Erro tipo I (max): tudo ≤ 0,075 exceto, na borda, PCC em S2h sem competição
+    (0,076–0,078) e GLM PCPS2 em S2sigma com sorting/none (0,073; 0,096 com
+    N = 200; repete a camada A, mais fraco). sorting/phylo: ADONIS e RDA muito
+    conservadores em S2/S2h/S2sigma (0,013–0,023). A inflação do ADONIS em
+    S2sigma/mass effects do piloto não se confirma (0,057).
+  - Poder S3b: sorting ADONIS 0,74–0,81, Mantel 0,82–0,84, PCC 0,82–0,84;
+    mass effects ADONIS 0,19–0,27, **PCC ~0,02 (sem poder)**. γ baixo do pool
+    derruba GLM PCPS1 (0,76 → 0,34, sorting/none), PCC (0,95 → 0,69) e RDA
+    (0,79 → 0,63); ADONIS insensível com sorting. Repete a camada A.
+  - Tabular pelo γ realizado confunde com N; falta o modelo com covariáveis.
+- **Resumo do projeto em `docs/resumo_projeto.qmd`** (2026-10-19, pedido do
+  Diogo): estado, tabelas das três rodadas e próximos passos. HTML renderizado
+  fica fora do git.

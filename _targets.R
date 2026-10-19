@@ -94,13 +94,7 @@ layer_b <- list(
       targets::tar_group(),
     iteration = "group"
   ),
-  # Temporary, for the rerun of the chunks that failed in the AWS run of
-  # 2026-10-18 (docs/MEMORIA_PROJETO.md): depend = FALSE keeps the chunks
-  # already done although run_chunk_B() changed. It also ignores changes to
-  # `profile` and to every function run_chunk_B() calls, so revert it once
-  # that rerun is done.
-  tar_target(results, run_chunk_B(design_B, profile), pattern = map(design_B),
-             cue = tar_cue(depend = FALSE)),
+  tar_target(results, run_chunk_B(design_B, profile), pattern = map(design_B)),
   results_csv_target,
   tar_target(
     rejection,
