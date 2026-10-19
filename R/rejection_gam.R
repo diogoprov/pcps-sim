@@ -11,7 +11,7 @@
 #' @param alpha Nominal level of the test.
 #' @return A `mgcv::gam` fit.
 fit_rejection_gam <- function(d, alpha = 0.05) {
-  d$reject <- as.integer(d$p_max <= alpha)
+  d$reject <- rejected(d, alpha)
   mgcv::gam(reject ~ s(gamma, k = 6) + s(colless, k = 6), family = stats::binomial(),
             data = d, method = "REML")
 }
@@ -21,7 +21,8 @@ fit_rejection_gam <- function(d, alpha = 0.05) {
 #' Conditional on the median Colless of the stratum. The gamma grid spans the
 #' 2.5% to 97.5% quantiles of the gamma the model was fit to. The realized
 #' gamma clumps around the pool cells, so grid points farther than `max_dist`
-#' from any observed gamma get `NA` instead of an interpolated rate.
+#' from any observed gamma get `NA` instead of an interpolated rate. The
+#' default is half the tolerance of the pool tree around its cell target.
 #'
 #' @param fit A fit from [fit_rejection_gam()].
 #' @param n_grid Number of gamma values.
@@ -37,33 +38,45 @@ rejection_curve_gamma <- function(fit, n_grid = 25, max_dist = 0.25) {
     colless = stats::median(m$colless)
   )
   p <- lapply(stats::predict(fit, grid, se.fit = TRUE), as.numeric)
-  observed <- sort(m$gamma)
-  supported <- vapply(grid$gamma, \(g) min(abs(observed - g)) <= max_dist, logical(1))
+  supported <- vapply(grid$gamma, \(g) min(abs(m$gamma - g)) <= max_dist, logical(1))
   p$fit[!supported] <- NA
-  z <- stats::qnorm(0.975)
+  ci <- wald_ci(p$fit, p$se.fit)
   dplyr::mutate(grid, rate = stats::plogis(p$fit),
-                lower = stats::plogis(p$fit - z * p$se.fit),
-                upper = stats::plogis(p$fit + z * p$se.fit))
+                lower = stats::plogis(ci$lower), upper = stats::plogis(ci$upper))
 }
 
-#' Effect of the realized gamma within the pool cells
+#' Effect of the pruning on gamma, given the pool tree
 #'
-#' Logistic regression of rejection on the pool cell plus the realized gamma
-#' and Colless. With the cell as a factor, the gamma slope only uses the
-#' spread of the realized gamma around each pool tree, which comes from the
-#' pruning, so it separates the analysed tree from the pool.
+#' Logistic regression of rejection on the pool cell, the gamma of the pool
+#' tree, the change of gamma caused by the pruning (`gamma - gamma_pool`) and
+#' the realized Colless. Each replicate draws its own pool tree within the
+#' tolerance of the cell, so the cell alone does not fix the pool; the slope of
+#' the shift is the effect of the analysed tree beyond its pool.
 #'
-#' @param d Rows of one stratum, with `p_max`, `cell`, `gamma` and `colless`.
+#' @param d Rows of one stratum, with `p_max`, `cell`, `gamma_pool`, `gamma`
+#'   and `colless`.
 #' @param alpha Nominal level of the test.
-#' @return A one-row tibble with the slope of `gamma` on the logit scale, its
-#'   95% Wald interval `lower`, `upper`, and `p_value`.
-within_cell_gamma_slope <- function(d, alpha = 0.05) {
-  d$reject <- as.integer(d$p_max <= alpha)
-  fit <- stats::glm(reject ~ cell + gamma + colless, family = stats::binomial(), data = d)
-  b <- summary(fit)$coefficients["gamma", ]
-  z <- stats::qnorm(0.975)
-  tibble::tibble(slope = b[["Estimate"]], lower = b[["Estimate"]] - z * b[["Std. Error"]],
-                 upper = b[["Estimate"]] + z * b[["Std. Error"]], p_value = b[["Pr(>|z|)"]])
+#' @return A one-row tibble with the slope of the shift on the logit scale, its
+#'   95% Wald interval `lower`, `upper`, `p_value`, the SD of the shift and
+#'   whether the fit converged.
+pruning_gamma_slope <- function(d, alpha = 0.05) {
+  d$reject <- rejected(d, alpha)
+  d$shift <- d$gamma - d$gamma_pool
+  fit <- suppressWarnings(stats::glm(reject ~ cell + gamma_pool + shift + colless,
+                                     family = stats::binomial(), data = d))
+  b <- stats::coef(summary(fit))
+  # an aliased shift (no spread) drops out of the coefficient table
+  est <- if ("shift" %in% rownames(b)) b["shift", ] else c(NA, NA, NA, NA)
+  ci <- wald_ci(est[[1]], est[[2]])
+  tibble::tibble(slope = est[[1]], lower = ci$lower, upper = ci$upper, p_value = est[[4]],
+                 shift_sd = stats::sd(d$shift), converged = fit$converged)
+}
+
+rejected <- function(d, alpha) as.integer(d$p_max <= alpha)
+
+wald_ci <- function(est, se, level = 0.95) {
+  z <- stats::qnorm(1 - (1 - level) / 2)
+  list(lower = est - z * se, upper = est + z * se)
 }
 
 #' Summary of the smooth terms of a rejection GAM

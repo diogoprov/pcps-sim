@@ -778,23 +778,27 @@ Próximos passos sugeridos:
   e média marginal (misturava sorting e mass effects e extrapolava γ entre N);
   (2) curvas sobre todo o intervalo de γ (interpolavam nos buracos entre as
   células do pool). Curvas condicionais à mediana do Colless, IC 95% pontual,
-  trechos a > 0,25 de qualquer γ observado ficam NA. Saídas em
+  trechos a > 0,25 de qualquer γ observado ficam NA (metade da tolerância do
+  pool). Saídas em
   `data/derived/layerB_gam/` (fora do git).
   - O γ realizado se agrupa nas células do pool (r dentro do estrato
     0,83–0,9997; > 0,99 sem competição), então o contraste entre extremos das
     curvas repete o contraste entre células. S3b sorting/none N = 100: GLM PCPS1
     0,39 → 0,84, PCC 0,70 → 0,99, RDA 0,67 → 0,84; ADONIS e Mantel quase
     planos; com N = 200 ADONIS 0,97 → 0,90 e Mantel 0,98 → 0,95.
-  - **Inclinação dentro das células** (`within_cell_gamma_slope`: glm com
-    célula como fator + γ + Colless; separa a árvore analisada do pool): com
-    sorting/phylo (DP do γ ~0,6 por célula) o γ analisado tem efeito próprio e
-    positivo em todos os testes, 35 de 72 estratos de poder com IC > 0 e
-    nenhum < 0; PCC 0,44–0,64 logit/γ, demais 0,05–0,27. sorting/none (DP ~0,3)
-    só com N = 50; mass effects nenhum. Erro tipo I: 23 de 440 estratos com IC
-    excluindo zero, nos dois sentidos (o esperado ao acaso).
-  - Erro tipo I nas pontas das curvas: GLM PCPS2 em S2sigma sorting sobe com γ
-    baixo (0,089 com N = 100; 0,13 com N = 200, IC inf. 0,12); PCC em S2h sobe
-    com γ alto ou N = 200 (até 0,11–0,135).
+  - **Efeito da poda** (`pruning_gamma_slope`: glm por estrato com célula +
+    γ do pool + (γ − γ do pool) + Colless; cada réplica sorteia sua árvore do
+    pool dentro da tolerância, então a célula sozinha não fixa o pool; versão
+    anterior só com a célula foi descartada na 3ª revisão). Só com
+    sorting/phylo a mudança de γ pela poda tem efeito próprio: 35 de 72 estratos
+    de poder com IC > 0 e nenhum < 0 (16, 15 e 4 com N = 50, 100, 200). PCC até
+    0,46 logit/γ, Mantel até 0,29, ADONIS/GLM PCPS1/RDA 0,10–0,22. Sem
+    competição a poda quase não muda γ (DP 0,1–0,3); mass/phylo muda muito
+    (DP ~1,2) mas só 2 de 48 estratos com efeito. Erro tipo I: 27 de 440 com
+    IC excluindo zero, nos dois sentidos (~22 ao acaso).
+  - Erro tipo I nas curvas: IC inferior > 0,05 em algum ponto em 41 estratos,
+    > 0,075 em 6: GLM PCPS2 em S2sigma sorting N = 200 (sobe com γ baixo, até
+    0,13) e PCC em S2h N = 100–200 (até 0,135).
   - Colless com p < 0,01 em 67 de 704 modelos (efeitos pequenos). edf máx. 4,7
     com k = 6 (k' = 5), apertado em poucos estratos; o γ tem só ~3 grupos.
   - Limites: aditivo em γ e Colless (sem `te()`); IC pontuais, sem correção

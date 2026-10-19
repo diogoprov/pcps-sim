@@ -3,9 +3,9 @@
 # (R/rejection_gam.R). Asks whether the loss of power at low gamma of the pool
 # also holds along the gamma of the tree that is analysed. The realized and the
 # pool gamma are strongly correlated, and the realized gamma clumps around the
-# pool cells, so the curves mostly restate the contrast among cells; the slope
-# of gamma within the cells (fit with the cell as a factor) isolates the
-# spread that comes from the pruning.
+# pool cells, so the curves mostly restate the contrast among cells; a
+# logistic regression on the gamma of the pool tree and the shift caused by
+# the pruning separates the analysed tree from the pool.
 # Usage: Rscript analysis/14_gam_layerB.R <workers>
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -18,7 +18,8 @@ out_dir <- file.path("data", "derived", "layerB_gam")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 res <- data.table::fread(in_file, select = c("scenario", "archetype", "n_spp", "test",
-                                             "cell", "p_max", "gamma", "colless")) |>
+                                             "cell", "p_max", "gamma_pool", "gamma",
+                                             "colless")) |>
   tibble::as_tibble()
 stopifnot(!anyNA(res))
 keys <- c("test", "scenario", "archetype", "n_spp")
@@ -30,7 +31,7 @@ fits <- parallel::mclapply(strata, \(d) {
   key <- d[1, keys]
   list(summary = dplyr::bind_cols(key, summarise_rejection_gam(fit), n = nrow(d)),
        curve = dplyr::bind_cols(key, rejection_curve_gamma(fit)),
-       slope = dplyr::bind_cols(key, within_cell_gamma_slope(d, alpha)))
+       slope = dplyr::bind_cols(key, pruning_gamma_slope(d, alpha)))
 }, mc.cores = workers)
 # a worker that errors returns a try-error, one that is killed returns NULL
 stopifnot(length(fits) == length(strata),
@@ -43,7 +44,7 @@ curves <- dplyr::bind_rows(lapply(fits, `[[`, "curve"))
 slopes <- dplyr::bind_rows(lapply(fits, `[[`, "slope"))
 readr::write_csv(smooths, file.path(out_dir, "gam_smooths.csv"))
 readr::write_csv(curves, file.path(out_dir, "gam_gamma_curves.csv"))
-readr::write_csv(slopes, file.path(out_dir, "within_cell_gamma_slopes.csv"))
+readr::write_csv(slopes, file.path(out_dir, "pruning_gamma_slopes.csv"))
 
 # N = 100 is the only N with all four archetypes
 stopifnot(dplyr::n_distinct(curves$archetype[curves$n_spp == 100]) == 4)
