@@ -532,8 +532,10 @@ refaria quase tudo (o `results.csv` já é o final).
 9. Conferir as normas de autores e de figuras da MEE.
 10. Escrever Métodos e Resultados (em inglês) a partir das tabelas finais; a
     Introdução usa a lacuna da seção 1.
-11. Agradecer a V. J. Debastiani e L. D. S. Duarte (a ideia da simulação é do
-    Diogo); declarar a tese de 2015, se o capítulo estiver nela.
+11. Agradecimentos: V. J. Debastiani, L. D. S. Duarte, A. S. Melo
+    (orientador) e a banca (M. V. Cianciaruso, T. Rangel, T. Quental); a ideia
+    da simulação é do Diogo. Declarar a tese de 2015, se o capítulo estiver
+    nela.
 12. Leituras pendentes: texto completo de Pavoine 2016, Tucker et al. 2017 e
     Peres-Neto et al. 2012 (variação do formato da árvore); ter Braak et al.
     2017 e Duarte et al. 2018 (crítica à CWM sobre P); Bradley 1978 (critério

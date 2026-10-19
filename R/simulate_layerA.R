@@ -90,12 +90,18 @@ sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_origin
                                 incidence = TRUE, n_sites = 100, mu_tol = 10) {
   tr <- sim_species_traits(tree, lambda, sigma_signal, h_signal, mu_tol)
   env <- stats::runif(n_sites, 0, 100)
-  lambda_ij <- sweep(outer(env, tr$u, "-")^2, 2, 2 * tr$sigma^2, "/")
-  lambda_ij <- sweep(exp(-lambda_ij), 2, tr$h, "*")
-  comm <- matrix(stats::rpois(length(lambda_ij), lambda_ij), nrow = n_sites,
-                 dimnames = list(NULL, tree$tip.label))
+  finish_metacommunity(sim_comm_traits(tr, env, tree$tip.label, incidence), tree, env,
+                       env_original, tr)
+}
+
+#' Static community from species traits (Gaussian response, Poisson counts)
+sim_comm_traits <- function(traits, env, species, incidence = TRUE) {
+  lambda_ij <- sweep(outer(env, traits$u, "-")^2, 2, 2 * traits$sigma^2, "/")
+  lambda_ij <- sweep(exp(-lambda_ij), 2, traits$h, "*")
+  comm <- matrix(stats::rpois(length(lambda_ij), lambda_ij), nrow = length(env),
+                 dimnames = list(NULL, species))
   if (incidence) comm <- (comm > 0) * 1
-  finish_metacommunity(comm, tree, env, env_original, tr)
+  comm
 }
 
 #' Run all methods on one metacommunity

@@ -834,8 +834,9 @@ Próximos passos sugeridos:
     (sítios, espécies como cruzes e a seta de E).
   - **Autoria (correção):** a ideia da simulação foi do Diogo (o PDF com
     anotações à mão é dele). V. J. Debastiani ajudou na implementação e nos
-    detalhes, mas o desenho atual é outro. Agradecer a Debastiani e a L. D. S.
-    Duarte (confirmar se A. S. Melo também) nos agradecimentos.
+    detalhes, mas o desenho atual é outro. Agradecimentos: V. J. Debastiani,
+    L. D. S. Duarte, A. S. Melo (orientador do doutorado), e a banca: M. V.
+    Cianciaruso, T. Rangel e T. Quental (conferir nomes completos e iniciais).
 - **Figura por célula da camada B** (2026-10-19, `analysis/15_fig_layerB_cells.R`):
   taxa de rejeição por célula do pool (IC de Wilson) no γ realizado mediano,
   barra horizontal = quantis 2,5–97,5% do γ realizado, forma = Colless da
