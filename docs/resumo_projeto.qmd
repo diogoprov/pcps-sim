@@ -514,26 +514,26 @@ refaria quase tudo (o `results.csv` já é o final).
    método.
 3. Ler Thompson et al. 2020 e conferir a ordem Poisson → dispersão da camada B.
 
-**Decisões pendentes (Diogo)**
+**Decididos (Diogo, 2026-10-19)**
 
-4. Baixar os bootstraps datados de Portik et al. 2023 (TreePL, 22,9 MB) para
-   pôr incerteza nos quantis empíricos de γ e Colless.
-5. Objetivo 2: incluir evoPCA (Pavoine 2016; `adiv`) e decidir sobre a
-   phylofactorization (Washburne et al. 2017); definir a métrica de
-   recuperação de clados (necessária para fechar a H3).
-6. Um segundo simulador baseado em processo para a camada B, ou não.
-7. Pools regionais empíricos (ex.: espécies do Brasil) como referência
-   alternativa aos clados de Portik.
-8. Figura 1: manter o painel 5 ilustrativo ou trocar por resultados; ajustar
-   os rótulos "999 permutações" e "×1000".
+4. Bootstraps datados de Portik et al. 2023: baixados (100 árvores); falta
+   usá-los para a incerteza dos quantis empíricos de γ e Colless.
+5. Objetivo 2: evoPCA (Pavoine 2016; `adiv`) e phylofactorization (Washburne
+   et al. 2017) entram. Falta definir a métrica de recuperação de clados
+   (necessária para fechar a H3).
+6. Segundo simulador para a camada B: sim. A camada B atual já é o framework
+   de Thompson et al. 2020; falta escolher o segundo modelo.
+7. Pools regionais empíricos: dados de literatura do mestrado do Diogo
+   (aguarda cópia local).
+8. Figura 1: painel 5 ilustrativo; rótulos e triplot da RDA ajustados.
 
 **Manuscrito**
 
 9. Conferir as normas de autores e de figuras da MEE.
 10. Escrever Métodos e Resultados (em inglês) a partir das tabelas finais; a
     Introdução usa a lacuna da seção 1.
-11. Reconhecer a ideia original de V. J. Debastiani (rascunho de 2012) nos
-    agradecimentos; declarar a tese de 2015, se o capítulo estiver nela.
+11. Agradecer a V. J. Debastiani e L. D. S. Duarte (a ideia da simulação é do
+    Diogo); declarar a tese de 2015, se o capítulo estiver nela.
 12. Leituras pendentes: texto completo de Pavoine 2016, Tucker et al. 2017 e
     Peres-Neto et al. 2012 (variação do formato da árvore); ter Braak et al.
     2017 e Duarte et al. 2018 (crítica à CWM sobre P); Bradley 1978 (critério

@@ -16,3 +16,10 @@
   `.gitignore`). Download it from https://osf.io/download/akupm/, save it as
   `data/raw/portik2023_timetree.tre` and check the SHA-256 above before running
   the pipeline.
+
+- `portik2023_timetree_bootstraps.tre`: the 100 time-calibrated bootstrap trees
+  (`TreePL-Rooted_Anura_bootstraps.tre`, OSF file id 64ea0805209bae05d5e93844,
+  same component and licence as above). Downloaded on 2026-10-19 from
+  https://files.osf.io/v1/resources/qgcf2/providers/osfstorage/64ea0805209bae05d5e93844?action=download.
+  SHA-256 b608766078c2570cf76bd342d0c4232c68cb3de57199c9270245289b891212db.
+  Not redistributed here (listed in `.gitignore`).

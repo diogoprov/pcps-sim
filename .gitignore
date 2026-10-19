@@ -22,6 +22,7 @@ logs/
 # not redistributed: unpublished 2012-2016 material and third-party data
 legacy/
 data/raw/portik2023_timetree.tre
+data/raw/portik2023_timetree_bootstraps.tre
 
 # rendered reports
 docs/*.html

@@ -351,8 +351,8 @@ lx <- 1046
 ly2 <- 432
 path(sprintf("M%s %s A26 26 0 1 1 %s %s", num(lx + 18), num(ly2 + 19), num(lx + 26), num(ly2 - 2)),
      stroke = col_line, sw = 2.4, marker = "arr")
-text(lx, ly2 + 6, "×1000", size = 14, weight = "bold")
-text(lx, ly2 + 48, "steps", size = 12, fill = "#5c6878")
+text(lx, ly2 + 6, "1000", size = 14, weight = "bold")
+text(lx, ly2 + 48, "time steps", size = 12, fill = "#5c6878")
 # competition
 cx3 <- 1046
 cy3 <- 548
@@ -448,11 +448,22 @@ sy <- scores[, 2]
 for (k in seq_along(sx)) circle(tcx[3] - 24 + 48 * (sx[k] - min(sx)) / diff(range(sx)),
                                 ty + 54 - 46 * (sy[k] - min(sy)) / diff(range(sy)), 3.2,
                                 fill = env_col(env01[k]), stroke = "#ffffff", sw = 0.6)
-# RDA: biplot arrow
+# RDA: triplot (sites, species, E arrow)
+line(tcx[4] - 26, ty + 31, tcx[4] + 26, ty + 31, stroke = "#e1e5ea", sw = 0.8)
+line(tcx[4], ty + 6, tcx[4], ty + 56, stroke = "#e1e5ea", sw = 0.8)
 for (k in seq_along(sx)) circle(tcx[4] - 24 + 48 * (sx[k] - min(sx)) / diff(range(sx)),
-                                ty + 54 - 46 * (sy[k] - min(sy)) / diff(range(sy)), 2.2,
+                                ty + 54 - 46 * (sy[k] - min(sy)) / diff(range(sy)), 2,
                                 fill = "#b8c0cc")
-line(tcx[4] - 4, ty + 36, tcx[4] + 20, ty + 14, stroke = col_h1, sw = 2.4, marker = "arr")
+# species: crosses, as in vegan's triplot
+spx <- c(-18, -10, -3, 6, 12, 19, -14, 9)
+spy <- c(8, -12, 14, -6, 10, -14, -2, 3)
+for (k in seq_along(spx)) {
+  line(tcx[4] + spx[k] - 3, ty + 31 + spy[k], tcx[4] + spx[k] + 3, ty + 31 + spy[k],
+       stroke = col_phylo, sw = 1.3)
+  line(tcx[4] + spx[k], ty + 28 + spy[k], tcx[4] + spx[k], ty + 34 + spy[k],
+       stroke = col_phylo, sw = 1.3)
+}
+line(tcx[4], ty + 31, tcx[4] + 22, ty + 13, stroke = col_h1, sw = 2.4, marker = "arr")
 text(tcx[4] + 22, ty + 12, "E", size = 11, style = "italic", weight = "bold", anchor = "start",
      fill = col_h1)
 # PCC: tree + eigenvector bars
@@ -533,7 +544,8 @@ text(x5 + 90, 700, 'I<tspan font-size="10" dy="3">C</tspan>', size = 15, style =
 for (k in 2:0) rect(x5 + 38 + k * 8, 724 + k * 6, 70, 46, fill = "#ffffff", stroke = "#b8c0cc",
                     sw = 1.2, rx = 6)
 text(x5 + 73, 753, "×1000", size = 16, weight = "bold")
-text(x5 + 136, 752, "reps", size = 12, fill = "#5c6878", anchor = "start")
+text(x5 + 136, 746, "replicates", size = 11, fill = "#5c6878", anchor = "start")
+text(x5 + 136, 760, "per cell", size = 11, fill = "#5c6878", anchor = "start")
 
 add("</svg>")
 

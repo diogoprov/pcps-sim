@@ -805,3 +805,28 @@ Próximos passos sugeridos:
     para 704 modelos; em S0/S1 a rejeição também cai com γ baixo (testes mais
     conservadores), então parte da perda de poder pode ser calibração.
     Exploratório; o modelo final segue em `brms`.
+- **Decisões do Diogo sobre as pendências** (2026-10-19):
+  - Bootstraps de Portik: sim. Baixados os 100 bootstraps datados (TreePL) em
+    `data/raw/portik2023_timetree_bootstraps.tre` (fora do git; SHA-256 no
+    README de `data/raw/`). A árvore única bate byte a byte com o
+    `TreePL-Rooted_Anura_bestTree.tre` do OSF. Falta usar os bootstraps para a
+    incerteza dos quantis empíricos de γ e Colless.
+  - Objetivo 2: **evoPCA e phylofactorization entram**. Diogo pediu mais
+    detalhes sobre a métrica de recuperação de clados.
+  - **Segundo simulador para a camada B: sim.** Atenção: a camada B atual já é
+    o framework de Thompson et al. 2020 (o do `mcomsimr`), reimplementado.
+    O segundo simulador precisa ser outro modelo (a escolher).
+  - Pools regionais empíricos: sim, com os dados de literatura do mestrado do
+    Diogo, que estão no Box. Não baixar do Box: pedir ao Diogo uma cópia local.
+  - Figura 1: o painel 5 fica ilustrativo. Rótulos ajustados ("1000 time
+    steps"; "×1000 replicates per cell") e o ícone da RDA virou um triplot
+    (sítios, espécies como cruzes e a seta de E).
+  - **Autoria (correção):** a ideia da simulação foi do Diogo (o PDF com
+    anotações à mão é dele). V. J. Debastiani ajudou na implementação e nos
+    detalhes, mas o desenho atual é outro. Agradecer a Debastiani e a L. D. S.
+    Duarte (confirmar se A. S. Melo também) nos agradecimentos.
+- **Figura por célula da camada B** (2026-10-19, `analysis/15_fig_layerB_cells.R`):
+  taxa de rejeição por célula do pool (IC de Wilson) no γ realizado mediano,
+  barra horizontal = quantis 2,5–97,5% do γ realizado, forma = Colless da
+  célula. Uma figura por N em `data/derived/layerB_gam/cell_rates_n*.png`.
+  Substitui as curvas do GAM para leitura (sem interpolar entre células).
