@@ -119,9 +119,9 @@ Revista-alvo: **Methods in Ecology and Evolution**. Autoria única.
 - **Camada B:** dinâmica de metacomunidade baseada em processo, no modelo de
   Thompson et al. 2020 (*Ecol Lett* 23: 1314–1329): crescimento Gaussiano,
   Beverton–Holt, Poisson, emigração binomial e dispersão uniforme. Código
-  próprio (nem o mcomsimr nem o código Julia têm licença). **O artigo ainda
-  não foi lido** (a citação vem do README do mcomsimr), e a ordem Poisson →
-  dispersão dentro do passo não foi conferida.
+  próprio (nem o mcomsimr nem o código Julia têm licença). A ordem dentro do
+  passo (Poisson → emigração → imigração) confere com as Eqs. 1, 2 e 4 do
+  artigo.
 - **AWS:** imagem Docker (rocker 4.6.1, OpenBLAS com 1 thread), instância spot
   c7a.48xlarge (190 workers), store sincronizado com o S3 a cada 10 min, com
   retomada automática.
@@ -512,19 +512,21 @@ refaria quase tudo (o `results.csv` já é o final).
    `mgcv` para explorar e `brms` (priors explícitos, R-hat, ESS, PPC) para o
    modelo final. Figura-chave: superfícies de rejeição sobre γ × Colless por
    método.
-3. Ler Thompson et al. 2020 e conferir a ordem Poisson → dispersão da camada B.
+3. Thompson et al. 2020 lido: a ordem Poisson → emigração → imigração da
+   camada B confere com as Eqs. 1, 2 e 4.
 
 **Decididos (Diogo, 2026-10-19)**
 
 4. Bootstraps datados de Portik et al. 2023: baixados (100 árvores); falta
    usá-los para a incerteza dos quantis empíricos de γ e Colless.
 5. Objetivo 2: evoPCA (Pavoine 2016; `adiv`) e phylofactorization (Washburne
-   et al. 2017) entram. Falta definir a métrica de recuperação de clados
-   (necessária para fechar a H3).
-6. Segundo simulador para a camada B: sim. A camada B atual já é o framework
-   de Thompson et al. 2020; falta escolher o segundo modelo.
-7. Pools regionais empíricos: dados de literatura do mestrado do Diogo
-   (aguarda cópia local).
+   et al. 2017) entram; recuperação de clados por **clado plantado** (código
+   do cenário e das métricas pronto; faltam os escores por método e o piloto).
+6. Sem segundo simulador: o modelo de Thompson et al. 2020 basta.
+7. Pools regionais empíricos (opção b): juntar as listas de espécies das
+   metacomunidades de girinos do projeto NRI vs PCPS por região, atualizar os
+   nomes para a taxonomia de Portik e podar a árvore de Portik (pools de
+   50–200 spp.).
 8. Figura 1: painel 5 ilustrativo; rótulos e triplot da RDA ajustados.
 
 **Manuscrito**

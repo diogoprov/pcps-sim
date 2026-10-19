@@ -827,8 +827,9 @@ Próximos passos sugeridos:
     local em `~/Downloads/Capitulo X - NRI vs. PCPS/` (projeto NRI vs PCPS):
     ~15 metacomunidades de girinos com composição e árvore datada. As árvores
     têm só 9–34 espécies (γ −2,7 a 1,4; Colless normalizado −0,4 a 2,5), bem
-    abaixo do N = 50–200 do desenho; servem como referência de metacomunidades
-    locais ou caso empírico, não como pool de 50–200.
+    abaixo do N = 50–200 do desenho. **Decisão do Diogo: opção (b)** — juntar
+    as listas por região, atualizar os nomes para a taxonomia de Portik e podar
+    a árvore de Portik para formar pools regionais de 50–200 espécies.
   - Figura 1: o painel 5 fica ilustrativo. Rótulos ajustados ("1000 time
     steps"; "×1000 replicates per cell") e o ícone da RDA virou um triplot
     (sítios, espécies como cruzes e a seta de E).
@@ -842,3 +843,11 @@ Próximos passos sugeridos:
   barra horizontal = quantis 2,5–97,5% do γ realizado, forma = Colless da
   célula. Uma figura por N em `data/derived/layerB_gam/cell_rates_n*.png`.
   Substitui as curvas do GAM para leitura (sem interpolar entre células).
+- **Thompson et al. 2020 lido (2026-10-19; PDF em ~/Downloads).** A ordem da
+  camada B confere com as Eqs. 1, 2 e 4: Ñ(t+1) = Poisson(N r / (1 + Σ α N)),
+  depois emigração binomial a partir de Ñ(t+1) com probabilidade a_i, depois
+  imigração com probabilidade ∝ Σ_{y≠x} E_iy (kernel exponencial no artigo;
+  uniforme aqui, por desenho). Semeadura Poisson(0,5) a cada 10 passos nos 100
+  primeiros também confere. Diferenças de desenho já documentadas: ambiente
+  estático U(0, 100) em vez de autocorrelado no espaço e no tempo, kernel
+  uniforme e sítios sem coordenadas.
