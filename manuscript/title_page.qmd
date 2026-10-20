@@ -11,9 +11,11 @@ with the e-mail, is written by tools/render_title_page.sh to
 manuscript/title_page_submission.docx (not in git). Fields in [CITAR: ...]
 are to be filled by the author. -->
 
-Diogo B. Provete^1^
+Diogo B. Provete^1,2^
 
 ^1^ Instituto de Biociências, Universidade Federal de Mato Grosso do Sul, Campo Grande, Mato Grosso do Sul, Brazil
+
+^2^ Gothenburg Global Biodiversity Centre, University of Gothenburg, Gothenburg, Sweden
 
 Correspondence: Diogo B. Provete, CORRESPONDING_EMAIL
 
