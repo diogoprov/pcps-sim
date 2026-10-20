@@ -996,3 +996,30 @@ Próximos passos sugeridos:
   - **Clados, γ baixo − Yule:** PCPS +0,23 a +0,45 (cresce com N; antigos >
     recentes); PCC −0,10 a −0,14 (antigos) e +0,07 a +0,09 (recentes); evoPCA
     e phylofactor ≈ 0 em todos os N.
+- **Decisões do Diogo para o manuscrito (2026-10-19):** um único artigo com as
+  camadas A e B; a **camada B entra no texto principal como 2º grande
+  objetivo** (desempenho dos métodos sob processos de montagem da
+  metacomunidade, que os artigos de benchmark e os que propuseram os testes
+  não avaliaram), com modelo formal próprio. Pools regionais: juntar as
+  metacomunidades empíricas do Diogo em conjuntos maiores e harmonizar a
+  nomenclatura (talvez com o pacote AmphiNom). Manuscrito: Métodos e
+  Resultados em .docx com figuras no texto, números de linha e de página, na
+  voz do Diogo, seguindo DiRenzo et al. 2023 (MEE 14: 203–217) e Williams et al.
+  2024 (MEE 15: 1926–1939); resumo dos guias em `docs/GUIAS_RELATO_MEE.md`
+  (Williams só pelo resumo: o PDF não pôde ser baixado; o Diogo precisa
+  fornecê-lo). Log de uso de IA em `docs/AI_INTERACTION_LOG.md`.
+- **Modelo formal da camada B** (2026-10-19, `analysis/20_formal_models_layerB.R`;
+  saídas em `data/derived/models/B_<type_I|power>/`). Beta-binomial agregado,
+  `test * archetype * (scenario + cell) + test * n_f`, célula do pool como
+  fator de 5 níveis (só as 4 quinas e o centro), 6 testes (sem as variantes
+  Procrustes). Tipo I: 1650 condições; poder: 990. Convergência: R-hat ≤ 1,005,
+  ESS bulk ≥ 893, tail ≥ 1232, 0 divergências, 0 treedepth. PPC agrupado por
+  teste × arquétipo × N × célula: 95% → 0,93–0,97, 50% → 0,58–0,68.
+  Dispersão quasibinomial: 2,9 (tipo I), 10,7 (poder).
+  - Poder (S3b, N = 100), arquétipo − sorting sem competição: mass effects sem
+    competição derruba todos (PCC −0,95 em Yule e −0,75 com γ baixo; Mantel
+    −0,76/−0,79; ADONIS −0,63/−0,72; GLM PCPS1 −0,55/−0,26; RDA −0,58/−0,55),
+    exceto o GLM PCPS2 (+0,09/+0,08, com poder de base quase nulo). Competição
+    filogenética com sorting: ±0,08.
+  - Tipo I (N = 100): só o PCC em S2h, sorting sem competição, Yule, tem IC
+    inferior > 0,075 (0,093 [0,081; …]); máximo das medianas 0,093.
