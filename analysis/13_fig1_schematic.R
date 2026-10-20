@@ -561,4 +561,10 @@ system2(rsvg, c("-f", "pdf", "-o", shQuote(file.path(out_dir, "fig1_schematic.pd
                 shQuote(svg_file)))
 system2(rsvg, c("-w", "2400", "-o", shQuote(file.path(out_dir, "fig1_schematic.png")),
                 shQuote(svg_file)))
+# submission files (Wiley figure guidelines): vector PDF, and PNG at 600 dpi
+# for a 180 mm width (4252 px)
+sub_dir <- file.path(out_dir, "submission")
+dir.create(sub_dir, showWarnings = FALSE)
+system2(rsvg, c("-f", "pdf", "-o", shQuote(file.path(sub_dir, "Figure_1.pdf")), shQuote(svg_file)))
+system2(rsvg, c("-w", "4252", "-o", shQuote(file.path(sub_dir, "Figure_1.png")), shQuote(svg_file)))
 message("Written: ", svg_file, " (+ .pdf, .png)")

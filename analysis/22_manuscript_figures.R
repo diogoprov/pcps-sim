@@ -6,7 +6,8 @@
 
 models <- file.path("data", "derived", "models")
 out_dir <- file.path("manuscript", "figures")
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+sub_dir <- file.path(out_dir, "submission")
+dir.create(sub_dir, recursive = TRUE, showWarnings = FALSE)
 test_labels <- c(adonis = "PERMANOVA", mantel = "Mantel", glm_pcps1 = "GLM PCPS1",
                  glm_pcps2 = "GLM PCPS2", rda_pcps = "RDA PCPS", pcc = "PCC")
 method_labels <- c(pcps = "PCPS", pcc = "PCC", evopca = "evoPCA",
@@ -14,6 +15,17 @@ method_labels <- c(pcps = "PCPS", pcc = "PCC", evopca = "evoPCA",
 level_labels <- c(g_yule = "Yule", g_mid = "mid", g_low = "low",
                   c_yule = "Yule", c_mid = "mid", c_high = "high")
 scenario_label <- function(x) sub("sigma", "\u03c3", x)
+# draft PNG for the docx, plus the submission files (Wiley figure guidelines:
+# vector PDF and 600 dpi PNG, 80-180 mm wide, named Figure_<number>)
+save_figure <- function(p, name, number, width, height) {
+  ggplot2::ggsave(file.path(out_dir, paste0(name, ".png")), p, width = width, height = height,
+                  units = "cm", dpi = 300)
+  stem <- file.path(sub_dir, paste0("Figure_", number))
+  ggplot2::ggsave(paste0(stem, ".pdf"), p, width = width, height = height, units = "cm",
+                  device = grDevices::cairo_pdf)
+  ggplot2::ggsave(paste0(stem, ".png"), p, width = width, height = height, units = "cm",
+                  dpi = 600)
+}
 theme_ms <- ggplot2::theme_bw(base_size = 9) +
   ggplot2::theme(panel.grid = ggplot2::element_blank(),
                  strip.background = ggplot2::element_rect(fill = "grey95"))
@@ -29,7 +41,7 @@ surface_plot <- function(d, group, row, labels, fill_limits, fill_name) {
     ggplot2::geom_tile(colour = "white") +
     ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", rate),
                                     colour = rate > fill_limits[1] + 0.5 * diff(fill_limits)),
-                       size = 2.2, show.legend = FALSE) +
+                       size = 2.5, show.legend = FALSE) +
     ggplot2::scale_colour_manual(values = c(`FALSE` = "black", `TRUE` = "white")) +
     ggplot2::scale_fill_distiller(palette = "YlGnBu", direction = 1, limits = fill_limits,
                                   oob = scales::squish, name = fill_name) +
@@ -41,19 +53,16 @@ surface_plot <- function(d, group, row, labels, fill_limits, fill_name) {
 type1 <- readr::read_csv(file.path(models, "type_I", "shape_surface.csv"), show_col_types = FALSE)
 p <- surface_plot(dplyr::filter(type1, test %in% names(test_labels)), "test", "scenario",
                   test_labels, c(0, 0.17), "Type I\nerror")
-ggplot2::ggsave(file.path(out_dir, "fig2_type1.png"), p, width = 17, height = 14, units = "cm",
-                dpi = 300)
+save_figure(p, "fig2_type1", 2, width = 17, height = 14)
 
 power <- readr::read_csv(file.path(models, "power", "shape_surface.csv"), show_col_types = FALSE)
 p <- surface_plot(dplyr::filter(power, test %in% names(test_labels)), "test", "scenario",
                   test_labels, c(0, 1), "Power")
-ggplot2::ggsave(file.path(out_dir, "fig3_power.png"), p, width = 17, height = 9, units = "cm",
-                dpi = 300)
+save_figure(p, "fig3_power", 3, width = 17, height = 9)
 
 clade <- readr::read_csv(file.path(models, "clade", "shape_surface.csv"), show_col_types = FALSE)
 p <- surface_plot(clade, "method", "depth", method_labels, c(0, 1), "Recovery")
-ggplot2::ggsave(file.path(out_dir, "fig5_clade.png"), p, width = 15, height = 8, units = "cm",
-                dpi = 300)
+save_figure(p, "fig5_clade", 5, width = 15, height = 8)
 
 # layer B: power by archetype and pool cell
 archetype_labels <- c(sorting__none = "Sorting", sorting__phylo = "Sorting + phylo. competition",
@@ -78,8 +87,7 @@ p <- ggplot2::ggplot(b_power, ggplot2::aes(cell, median, colour = archetype)) +
   theme_ms +
   ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
                  legend.position = "bottom")
-ggplot2::ggsave(file.path(out_dir, "fig4_layerB_power.png"), p, width = 17, height = 11,
-                units = "cm", dpi = 300)
+save_figure(p, "fig4_layerB_power", 4, width = 17, height = 11)
 
 # Box 1: regional pools, empirical anuran clades and the grid targets
 grid <- readRDS(file.path("data", "derived", "trees", "tree_grid_k200.rds")) |>
@@ -108,5 +116,4 @@ p <- ggplot2::ggplot() +
   ggplot2::scale_colour_manual(values = c("#009E73", "#0072B2", "#D55E00"), name = "Regional pool") +
   ggplot2::labs(x = "Colless index (normalized against Yule)", y = expression(gamma)) +
   theme_ms
-ggplot2::ggsave(file.path(out_dir, "box1_pools.png"), p, width = 15, height = 10, units = "cm",
-                dpi = 300)
+save_figure(p, "box1_pools", 6, width = 15, height = 10)
