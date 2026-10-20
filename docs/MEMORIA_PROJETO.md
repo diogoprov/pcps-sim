@@ -1073,3 +1073,22 @@ Próximos passos sugeridos:
   N = 100: γ −6,54/−4,94/0, Colless 0/1,31/2,74): γ dos três fica entre os
   níveis Yule e médio; Colless entre Yule e médio nos dois primeiros e entre
   médio e alto na América do Sul.
+- **Estudo de caso e manuscrito (2026-10-19/20).** `analysis/23_case_study.R`
+  (funções de nomes movidas para `R/taxonomy.R`): testes e métodos de clado em
+  Bocaina (Provete et al. 2014, Hydrobiologia 734: 69–79), sul do Brasil (Both,
+  Melo, Cechin & Hartz 2011, Acta Oecologica 37: 140–145; confirmado pelo Diogo)
+  e noroeste de SP ("vitao" = Prado & Rossa-Feres 2014, Austral Ecology 39:
+  540–547), incidência, profundidade como gradiente e dossel na Bocaina (o
+  gradiente do preprint Provete 2018, bioRxiv 10.1101/252478). Nenhum teste
+  rejeita com profundidade (p max ≥ 0,11); dossel na Bocaina: site shuffle
+  p ≈ 0,05, taxa shuffle p = 0,23–0,56. γ: −1,59, −1,53, +1,39. Clados: na
+  Bocaina PCC, evoPCA e phylofactor escolhem o mesmo clado (Dendropsophus +
+  Scinax); no NW de SP PCC e evoPCA, os microhilídeos.
+  Manuscrito (`manuscript/methods_results.qmd` → .docx com linhas e páginas
+  numeradas; referência `manuscript/reference.docx` gerada por
+  `make_reference_docx.py`): Métodos e Resultados na voz do Diogo, com H1–H4,
+  versões, ICs, posto/Jaccard e Box 1; Material Suplementar
+  (`manuscript/supporting_information.qmd`; Tabelas S1–S3 de
+  `analysis/24_si_tables.R`); figuras de `analysis/22_manuscript_figures.R`.
+  Atenção registrada no texto: o GLM PCPS2 em S2σ chega a 0,36 de tipo I bruto
+  com N = 200 e γ baixo (o modelo, sem cenário × N, subestima).

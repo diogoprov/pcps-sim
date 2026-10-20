@@ -84,3 +84,15 @@ decisions, commands and results). The full history of changes is in git.
   species). The author set the rules (exclude undetermined taxa, no manual
   review) and resolved the doubtful names; reviews caught bugs in code
   resolution and an over-claimed bootstrap interval, fixed before reporting.
+
+### 2026-10-20 — Case study and manuscript draft
+- Applied the tests and clade-scoring methods to three published tadpole
+  metacommunities chosen by the author's criteria (≥ 10 ponds, depth
+  measured); the author identified the sources (Provete et al. 2014; Both et
+  al. 2011; Prado & Rossa-Feres 2014) and pointed to his 2018 preprint, whose
+  gradient (canopy cover) was added for Bocaina.
+- Drafted Methods, Results, Box 1 and Supporting Information in the author's
+  voice, following DiRenzo et al. 2023 and Williams et al. 2024; every number
+  was checked by independent review passes, which found wrong values and
+  over-claims that were corrected. References were verified on Crossref;
+  unverified ones are marked [CITAR: ...].
