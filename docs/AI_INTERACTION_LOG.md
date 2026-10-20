@@ -70,3 +70,11 @@ decisions, commands and results). The full history of changes is in git.
   convergence and posterior predictive checks reported. Hypothesis verdicts
   were revised twice after reviews flagged over-claiming.
 - Started this log at the author's request.
+- Author's decisions for the manuscript: one article with layers A and B, layer
+  B as a second main objective (methods under metacommunity assembly
+  processes) with its own formal model; regional pools from the author's
+  empirical metacommunities, names harmonized (AmphiNom); Methods and Results
+  as .docx following DiRenzo et al. 2023 and Williams et al. 2024.
+- Fitted the layer B formal model; reviews found missing N interactions (fit
+  misses concentrated at N = 50 and 200) and a stale cached fit reused after a
+  sampler change; both fixed and the model refitted.

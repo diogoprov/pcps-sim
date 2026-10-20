@@ -1010,16 +1010,28 @@ Próximos passos sugeridos:
   fornecê-lo). Log de uso de IA em `docs/AI_INTERACTION_LOG.md`.
 - **Modelo formal da camada B** (2026-10-19, `analysis/20_formal_models_layerB.R`;
   saídas em `data/derived/models/B_<type_I|power>/`). Beta-binomial agregado,
-  `test * archetype * (scenario + cell) + test * n_f`, célula do pool como
-  fator de 5 níveis (só as 4 quinas e o centro), 6 testes (sem as variantes
-  Procrustes). Tipo I: 1650 condições; poder: 990. Convergência: R-hat ≤ 1,005,
-  ESS bulk ≥ 893, tail ≥ 1232, 0 divergências, 0 treedepth. PPC agrupado por
-  teste × arquétipo × N × célula: 95% → 0,93–0,97, 50% → 0,58–0,68.
-  Dispersão quasibinomial: 2,9 (tipo I), 10,7 (poder).
-  - Poder (S3b, N = 100), arquétipo − sorting sem competição: mass effects sem
-    competição derruba todos (PCC −0,95 em Yule e −0,75 com γ baixo; Mantel
-    −0,76/−0,79; ADONIS −0,63/−0,72; GLM PCPS1 −0,55/−0,26; RDA −0,58/−0,55),
-    exceto o GLM PCPS2 (+0,09/+0,08, com poder de base quase nulo). Competição
-    filogenética com sorting: ±0,08.
-  - Tipo I (N = 100): só o PCC em S2h, sorting sem competição, Yule, tem IC
-    inferior > 0,075 (0,093 [0,081; …]); máximo das medianas 0,093.
+  6 testes (sem as variantes Procrustes, como nas tabelas do resumo), célula do
+  pool como fator de 5 níveis (as 4 quinas e o centro). 1ª versão
+  (`test * archetype * (scenario + cell) + test * n_f`) descartada na revisão:
+  os desvios do PPC se concentravam em N = 50 e 200 e a dispersão do poder era
+  10,7. Versão final: `test * archetype * (scenario + cell) + test * n_f *
+  (archetype + scenario + cell)`; dispersão 2,2 (tipo I) e 3,9 (poder); desvios
+  do PPC espalhados entre os N. Tipo I com max_treedepth 12 (com 10, 38 de 4000
+  transições batiam no limite). Convergência: R-hat ≤ 1,01, ESS bulk ≥ 835,
+  tail ≥ 1596, 0 divergências, 0 treedepth. PPC agrupado: 95% → 1,00.
+  Atenção: `file_refit = "on_change"` ignorava mudanças em `control` e
+  recarregou um ajuste antigo sem avisar; agora `file_refit = "always"`.
+  Confusão de desenho: a célula é a forma do pool; sob competição filogenética
+  a poda muda a árvore analisada, então o contraste de competição mistura o
+  processo com a forma. Mass effects com competição não tem N = 200.
+  - Poder (S3b, N = 100), arquétipo − sorting sem competição (Yule / γ baixo;
+    1ª versão do modelo, a conferir com a final): mass effects sem competição
+    derruba todos (PCC −0,95/−0,75; Mantel −0,76/−0,79; ADONIS −0,63/−0,72; GLM
+    PCPS1 −0,55/−0,26; RDA −0,58/−0,55), exceto o GLM PCPS2 (+0,09/+0,08, poder
+    de base quase nulo); mass effects com competição: PCC −0,93, Mantel −0,55 a
+    −0,63. Competição filogenética com sorting (modelo final): −0,12 a +0,11
+    nos cenários de poder (S3b: −0,08 a +0,10).
+  - Tipo I: no modelo final, nenhuma condição com N = 100 tem IC inferior >
+    0,075 (máx. mediana 0,088). As taxas brutas passam do limite quase só com
+    N = 200: PCC em S2h (mass effects/Yule 0,143; sorting/Yule 0,111) e GLM
+    PCPS2 em S2sigma com sorting (0,104–0,129).

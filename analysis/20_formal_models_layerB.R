@@ -5,8 +5,14 @@
 # sorting or mass effects, with or without phylogenetic competition) and pool
 # tree shapes. Layer B has five pool cells (the four corners of the grid and
 # the centre), so the cell enters as a 5-level factor; its effect may differ
-# among tests and archetypes. Same priors, sampler settings and checks as
-# analysis/18_formal_models.R. Outputs in <out_root>/B_<type_I|power>/.
+# among tests and archetypes, and the effects of archetype, scenario and cell
+# may differ with N (mass effects with phylogenetic competition has no N = 200,
+# so that combination rests on the other interactions). The cell is the shape
+# of the pool tree: under phylogenetic competition the pruning changes the
+# analysed tree (gamma more negative), so the contrast of competition mixes the
+# process with a change of tree shape. Same priors, sampler settings and checks
+# as analysis/18_formal_models.R (fit_formal_model() in R/formal_models.R).
+# Outputs in <out_root>/B_<type_I|power>/.
 # Usage: Rscript analysis/20_formal_models_layerB.R <type_I|power> [chains] [iter] [out_root]
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -19,7 +25,6 @@ for (f in list.files("R", "[.]R$", full.names = TRUE)) source(f)
 out_dir <- file.path(out_root, paste0("B_", model))
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 alpha <- 0.05
-max_treedepth <- 10
 tests <- c("adonis", "mantel", "glm_pcps1", "glm_pcps2", "rda_pcps", "pcc")
 scenarios <- if (model == "type_I") c("S0", "S1", "S2", "S2sigma", "S2h") else
   c("S3a", "S3b", "S3sigma")
@@ -41,36 +46,15 @@ stopifnot(!anyNA(agg$cell), length(unique(agg$n)) == 1)
 readr::write_csv(agg, file.path(out_dir, "aggregated.csv"))
 message("B_", model, ": ", nrow(agg), " conditions")
 
-fixed <- "test * archetype * (scenario + cell) + test * n_f"
-glm_fit <- stats::glm(stats::as.formula(paste("cbind(k, n - k) ~", fixed)),
-                      family = stats::quasibinomial(), data = agg)
-message("Quasibinomial: dispersion ", round(summary(glm_fit)$dispersion, 2))
-
-t0 <- Sys.time()
-fit <- brms::brm(
-  stats::as.formula(paste("k | trials(n) ~", fixed)),
-  data = agg, family = brms::beta_binomial(),
-  prior = model_priors(if (model == "type_I") -2.9 else 0),
-  chains = chains, cores = chains, iter = iter, warmup = iter %/% 2, seed = 20261019,
-  backend = "cmdstanr",
-  control = list(adapt_delta = 0.95, max_treedepth = max_treedepth),
-  file = file.path(out_dir, "brms_fit"), file_refit = "on_change", refresh = 0
-)
-message("brms: ", format(Sys.time() - t0))
-yrep <- brms::posterior_predict(fit)
-groups <- interaction(agg$test, agg$archetype, agg$n_f, agg$cell, drop = TRUE)
-diag <- dplyr::bind_cols(fit_diagnostics(fit, max_treedepth), ppc_coverage(agg$k, yrep),
-                         dplyr::rename_with(ppc_coverage(agg$k, yrep, groups),
-                                            \(x) paste0(x, "_grouped")),
-                         dispersion = summary(glm_fit)$dispersion)
-readr::write_csv(diag, file.path(out_dir, "diagnostics.csv"))
-print(diag)
-if (diag$rhat_max > 1.01 || diag$divergent > 0 || diag$ess_bulk_min < 400 ||
-    diag$ess_tail_min < 400 || diag$max_treedepth > 0)
-  warning("convergence not reached: do not interpret the outputs of B_", model)
-readr::write_csv(tibble::as_tibble(brms::fixef(fit), rownames = "term"),
-                 file.path(out_dir, "fixef.csv"))
-readr::write_csv(ppc_table(agg$k, agg$n, yrep), file.path(out_dir, "ppc.csv"))
+fixed <- "test * archetype * (scenario + cell) + test * n_f * (archetype + scenario + cell)"
+fit <- fit_formal_model(fixed, agg,
+                        groups = interaction(agg$test, agg$archetype, agg$n_f, agg$cell,
+                                             drop = TRUE),
+                        out_dir = out_dir, intercept_mean = if (model == "type_I") -2.9 else 0,
+                        chains = chains, iter = iter,
+                        # with the N interactions the type I model hit tree depth 10
+                        # in ~1% of the transitions
+                        max_treedepth = 12)
 
 # Rates by test x archetype x scenario x cell at N = 100 (median, 95% CI), and
 # the contrast of each archetype with species sorting without competition

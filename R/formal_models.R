@@ -80,3 +80,64 @@ ppc_table <- function(k, n, yrep) {
   q <- apply(sweep(yrep, 2, n, "/"), 2, stats::quantile, probs = c(0.025, 0.5, 0.975))
   tibble::tibble(observed = k / n, pred_lo = q[1, ], pred_mid = q[2, ], pred_hi = q[3, ])
 }
+
+#' Fit, check and write a beta-binomial model of aggregated rates
+#'
+#' Exploratory quasibinomial GLM (dispersion), brms beta-binomial with
+#' [model_priors()], 4 chains by default, convergence diagnostics, in-sample and
+#' grouped posterior predictive coverage, and the observed vs predicted plot.
+#' Warns when convergence is not reached.
+#' @param fixed right-hand side of the formula (character).
+#' @param agg aggregated data with `k`, `n` and the predictors.
+#' @param groups factor, one value per row of `agg`, for the grouped check.
+#' @param out_dir where `brms_fit.rds`, `diagnostics.csv`, `fixef.csv`, `ppc.csv`
+#'   and `ppc.png` are written.
+#' @return the `brmsfit`.
+fit_formal_model <- function(fixed, agg, groups, out_dir, intercept_mean = 0, chains = 4,
+                             iter = 2000, max_treedepth = 10) {
+  glm_fit <- stats::glm(stats::as.formula(paste("cbind(k, n - k) ~", fixed)),
+                        family = stats::quasibinomial(), data = agg)
+  t0 <- Sys.time()
+  fit <- brms::brm(
+    stats::as.formula(paste("k | trials(n) ~", fixed)),
+    data = agg, family = brms::beta_binomial(), prior = model_priors(intercept_mean),
+    chains = chains, cores = chains, iter = iter, warmup = iter %/% 2, seed = 20261019,
+    backend = "cmdstanr",
+    control = list(adapt_delta = 0.95, max_treedepth = max_treedepth),
+    # always refit: "on_change" ignores changes in `control` (max_treedepth,
+    # adapt_delta) and would silently reload a fit sampled with other settings
+    file = file.path(out_dir, "brms_fit"), file_refit = "always", refresh = 0
+  )
+  message("brms: ", format(Sys.time() - t0))
+  yrep <- brms::posterior_predict(fit)
+  checks <- dplyr::bind_cols(
+    fit_diagnostics(fit, max_treedepth), ppc_coverage(agg$k, yrep),
+    dplyr::rename_with(ppc_coverage(agg$k, yrep, groups), \(x) paste0(x, "_grouped")),
+    dispersion = summary(glm_fit)$dispersion
+  )
+  readr::write_csv(checks, file.path(out_dir, "diagnostics.csv"))
+  print(checks)
+  if (!converged(checks))
+    warning("convergence not reached: do not interpret the outputs in ", out_dir)
+  readr::write_csv(tibble::as_tibble(brms::fixef(fit), rownames = "term"),
+                   file.path(out_dir, "fixef.csv"))
+  ppc <- ppc_table(agg$k, agg$n, yrep)
+  readr::write_csv(ppc, file.path(out_dir, "ppc.csv"))
+  p <- ggplot2::ggplot(ppc, ggplot2::aes(pred_mid, observed)) +
+    ggplot2::geom_abline(linetype = 2, colour = "grey50") +
+    ggplot2::geom_errorbar(ggplot2::aes(xmin = pred_lo, xmax = pred_hi), width = 0,
+                           orientation = "y", alpha = 0.3) +
+    ggplot2::geom_point(size = 0.6) +
+    ggplot2::labs(x = "Posterior predictive rate (median, 95%)", y = "Observed rate") +
+    ggplot2::theme_bw()
+  ggplot2::ggsave(file.path(out_dir, "ppc.png"), p, width = 6, height = 6, dpi = 150)
+  fit
+}
+
+#' Whether the diagnostics of [fit_diagnostics()] meet the thresholds
+#' (R-hat <= 1.01, bulk and tail ESS >= 400, no divergence, no transition at the
+#' maximum tree depth)
+converged <- function(checks) {
+  checks$rhat_max <= 1.01 && checks$ess_bulk_min >= 400 && checks$ess_tail_min >= 400 &&
+    checks$divergent == 0 && checks$max_treedepth == 0
+}

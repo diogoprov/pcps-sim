@@ -26,7 +26,6 @@ for (f in list.files("R", "[.]R$", full.names = TRUE)) source(f)
 out_dir <- file.path(out_root, model)
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 alpha <- 0.05
-max_treedepth <- 10
 
 # H2 needs the shape effects to differ among scenarios (scenario x shape); H4
 # needs them to differ among tests or methods; H3 needs gamma x depth. The
@@ -74,48 +73,13 @@ readr::write_csv(agg, file.path(out_dir, "aggregated.csv"))
 message(model, ": ", nrow(agg), " conditions")
 rm(raw)
 
-# Exploratory quasibinomial fit: how much overdispersion is left ------------------
-glm_fit <- stats::glm(stats::as.formula(paste("cbind(k, n - k) ~", spec$fixed)),
-                      family = stats::quasibinomial(), data = agg)
-message("Quasibinomial: dispersion ", round(summary(glm_fit)$dispersion, 2))
-
-# brms (final) ---------------------------------------------------------------------
-t0 <- Sys.time()
-fit <- brms::brm(
-  stats::as.formula(paste("k | trials(n) ~", spec$fixed)),
-  data = agg, family = brms::beta_binomial(), prior = model_priors(spec$intercept_mean),
-  chains = chains, cores = chains, iter = iter, warmup = iter %/% 2, seed = 20261019,
-  backend = "cmdstanr",
-  control = list(adapt_delta = 0.95, max_treedepth = max_treedepth),
-  file = file.path(out_dir, "brms_fit"), file_refit = "on_change", refresh = 0
-)
-message("brms: ", format(Sys.time() - t0))
-yrep <- brms::posterior_predict(fit)
-# grouped check: sums over the conditions of each test (or method) x N x cell,
-# where the fixed structure must reproduce the shape x N pattern
-groups <- interaction(agg[[spec$group]], agg$n_f, agg$cell, drop = TRUE)
-diag <- dplyr::bind_cols(fit_diagnostics(fit, max_treedepth), ppc_coverage(fit$data$k, yrep),
-                         dplyr::rename_with(ppc_coverage(fit$data$k, yrep, groups),
-                                            \(x) paste0(x, "_grouped")))
-readr::write_csv(diag, file.path(out_dir, "diagnostics.csv"))
-print(diag)
-if (diag$rhat_max > 1.01 || diag$divergent > 0 || diag$ess_bulk_min < 400 ||
-    diag$ess_tail_min < 400 || diag$max_treedepth > 0)
-  warning("convergence not reached: do not interpret the outputs of ", model)
-readr::write_csv(tibble::as_tibble(brms::fixef(fit), rownames = "term"),
-                 file.path(out_dir, "fixef.csv"))
-
-# Posterior predictive check: observed rate vs prediction
-ppc <- ppc_table(fit$data$k, fit$data$n, yrep)
-readr::write_csv(ppc, file.path(out_dir, "ppc.csv"))
-p <- ggplot2::ggplot(ppc, ggplot2::aes(pred_mid, observed)) +
-  ggplot2::geom_abline(linetype = 2, colour = "grey50") +
-  ggplot2::geom_errorbar(ggplot2::aes(xmin = pred_lo, xmax = pred_hi), width = 0,
-                         orientation = "y", alpha = 0.3) +
-  ggplot2::geom_point(size = 0.6) +
-  ggplot2::labs(x = "Posterior predictive rate (median, 95%)", y = "Observed rate") +
-  ggplot2::theme_bw()
-ggplot2::ggsave(file.path(out_dir, "ppc.png"), p, width = 6, height = 6, dpi = 150)
+# Fit and checks (R/formal_models.R). Grouped check: sums over the conditions of
+# each test (or method) x N x cell, where the fixed structure must reproduce the
+# shape x N pattern
+fit <- fit_formal_model(spec$fixed, agg,
+                        groups = interaction(agg[[spec$group]], agg$n_f, agg$cell, drop = TRUE),
+                        out_dir = out_dir, intercept_mean = spec$intercept_mean,
+                        chains = chains, iter = iter)
 
 # Key figure: rate over the gamma x Colless grid by test or method, at N = 100 and
 # incidence (clade: shift 2)
