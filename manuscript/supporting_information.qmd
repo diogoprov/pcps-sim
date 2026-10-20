@@ -42,7 +42,7 @@ Under phylogenetic competition, interspecific coefficients came from a uniform d
 
 ## Permutation tests
 
-We wrote the permutation loops ourselves for efficiency and checked, in unit tests, that the observed statistics equal those of the R packages vegan v. 2.7-6 (Oksanen et al., 2026) and PCPS v. 1.0.9 (Debastiani, 2026). The 999 permutations give P-values a resolution of 0.001. The Yule × Yule cell of the grid approximates the trees used in previous validations (Peres-Neto & Kembel, 2015; Duarte et al., 2016).
+We wrote the permutation loops ourselves for efficiency and checked, in unit tests, that the observed statistics equal those of the R packages vegan v. 2.7-6 (Oksanen et al., 2026) and PCPS v. 1.0.9 (Debastiani, 2026). The 999 permutations give P-values a resolution of 0.001.
 
 ## Node scores of the clade-recovery methods
 
@@ -50,7 +50,7 @@ For PCPS, PCC and evoPCA, each method took the axis most correlated with $E$ amo
 
 ## Performance measures and formal models of the simulation results
 
-With $K = 1{,}000$ replicates, the Monte Carlo standard error is at most 0.016 (at a rate of 0.5), and a 95% Monte Carlo interval around the nominal level spans about ±0.014; we chose $K$ so that this interval falls within Bradley's liberal criterion. The credible intervals of the formal models include the binomial variation among replicates.
+With $K = 1{,}000$ replicates, the Monte Carlo standard error is at most 0.016 (at a rate of 0.5), and a 95% Monte Carlo interval around the nominal level spans about ±0.014; we chose $K$ so that this interval falls within Bradley's liberal criterion for acceptable type I error, [0.025, 0.075] (Bradley, 1978). The credible intervals of the formal models include the binomial variation among replicates.
 
 The plan was to treat γ and the Colless index as continuous covariates, but each cell of the grid has a single target per axis, and Layer A did not store the shape of every tree, so a continuous term would only interpolate three points. Therefore, we entered the levels of both statistics as factors. In Layer A, the shape effects could differ among tests and scenarios, which is what testing a nuisance effect that depends on tree shape requires, and with N and data type; in the R formula notation, the model was test \* scenario \* (γ + Colless) + test \* (γ:Colless + N + data type) + test:(γ + Colless):(N + data type) + test:scenario:N, where the last term lets the scenario effects, such as the inflation under nuisance structure, differ with N. In Layer B, where only five cells were simulated, the cell entered as a five-level factor, in test \* archetype \* (scenario + cell) + test \* N \* (archetype + scenario + cell). The clade-recovery model was method \* (γ \* depth + Colless + γ:Colless + shift + N + data type) + method:(γ + Colless):(N + data type + shift).
 
@@ -137,6 +137,8 @@ knitr::kable(si("table_S3_diagnostics.csv"), digits = 3,
 Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous & R. Pemantle (Eds.), *Random discrete structures* (pp. 1–18). The IMA Volumes in Mathematics and its Applications, Vol. 76. Springer. https://doi.org/10.1007/978-1-4612-0719-1_1
 
 Both, C., Melo, A. S., Cechin, S. Z., & Hartz, S. M. (2011). Tadpole co-occurrence in ponds: when do guilds and time matter? *Acta Oecologica*, 37, 140–145. https://doi.org/10.1016/j.actao.2011.01.008
+
+Bradley, J. V. (1978). Robustness? *British Journal of Mathematical and Statistical Psychology*, 31, 144–152. https://doi.org/10.1111/j.2044-8317.1978.tb00581.x
 
 Debastiani, V. J. (2026). PCPS: principal coordinates of phylogenetic structure. R package version 1.0.9. doi:10.32614/CRAN.package.PCPS.
 
