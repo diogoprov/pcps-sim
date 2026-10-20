@@ -44,7 +44,10 @@ spec <- list(
                intercept_mean = 0)
 )[[model]]
 
-raw <- data.table::fread(do.call(file.path, as.list(c("data", "derived", spec$file)))) |>
+cols <- if (model == "clade") c("method", "cell", "n_spp", "data_type", "depth", "shift", "hit") else
+  c("test", "scenario", "cell", "n_spp", "data_type", "p_max")
+raw <- data.table::fread(do.call(file.path, as.list(c("data", "derived", spec$file))),
+                         select = cols) |>
   tibble::as_tibble()
 if (model == "clade") {
   raw <- dplyr::mutate(raw, success = hit)
@@ -87,7 +90,8 @@ message("brms: ", format(Sys.time() - t0))
 diag <- dplyr::bind_cols(fit_diagnostics(fit, max_treedepth), ppc_coverage(fit))
 readr::write_csv(diag, file.path(out_dir, "diagnostics.csv"))
 print(diag)
-if (diag$rhat_max > 1.01 || diag$divergent > 0 || diag$ess_bulk_min < 400)
+if (diag$rhat_max > 1.01 || diag$divergent > 0 || diag$ess_bulk_min < 400 ||
+    diag$ess_tail_min < 400 || diag$max_treedepth > 0)
   warning("convergence not reached: do not interpret the outputs of ", model)
 readr::write_csv(tibble::as_tibble(brms::fixef(fit), rownames = "term"),
                  file.path(out_dir, "fixef.csv"))

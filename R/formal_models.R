@@ -18,9 +18,9 @@ aggregate_binomial <- function(d, by) {
 #' Priors on the logit scale (declared explicitly, docs/PLANO_SIMULACAO.md)
 #'
 #' Beta-binomial: phi is the precision of the replicate-level probabilities.
-#' With 1000 trials per condition, an overdispersion of ~5 times the binomial
-#' (quasibinomial fits) means phi ~ 250; gamma(2, 0.01) (mean 200, sd 141) is
-#' weakly informative on that scale.
+#' With 1000 trials per condition, a quasibinomial dispersion D means
+#' phi ~ 999 / (D - 1) - 1; the fits give D = 3 to 14, so phi ~ 75 to 500, and
+#' gamma(2, 0.01) (mean 200, sd 141) is weakly informative on that scale.
 #' @param intercept_mean prior mean of the intercept (logit(0.05) ~ -2.9 for
 #'   type I error, 0 for power and recovery).
 model_priors <- function(intercept_mean = 0) {
@@ -63,6 +63,11 @@ ppc_coverage <- function(fit) {
 }
 
 #' Observed rate and posterior predictive rate (median, 95%) of every condition
+#'
+#' In-sample: the same conditions the model was fit to, so the agreement is
+#' optimistic.
+#' @param fit a beta-binomial `brmsfit` with `k | trials(n)`.
+#' @return tibble with `observed`, `pred_lo`, `pred_mid` and `pred_hi`.
 ppc_table <- function(fit) {
   rate <- sweep(brms::posterior_predict(fit), 2, fit$data$n, "/")
   q <- apply(rate, 2, stats::quantile, probs = c(0.025, 0.5, 0.975))

@@ -929,15 +929,34 @@ Próximos passos sugeridos:
     0 transições no treedepth máximo. PPC: 97% das condições no IC preditivo de
     95% e 58–66% no de 50% (levemente conservador). Dispersão quasibinomial:
     3,0 (tipo I), 13,8 (poder), 5,0 (clados).
-  - Contrastes (N = 100, incidência; mediana [IC 95%]), γ baixo − Yule:
-    - Tipo I: GLM PCPS2 em S2sigma +0,078 [0,062; 0,095] (0,08 → 0,16); PCC em
-      S2sigma −0,021 [−0,035; −0,007]. Nos demais, |Δ| ≤ 0,02 (em S0 os testes
-      ficam mais conservadores com γ baixo). Colless alto − Yule: todos
-      |Δ| ≤ 0,005, ICs incluem 0 → **H1 não sustentada**; **H2 parcial**
-      (só σ, GLM PCPS2 e PCC, em sentidos opostos).
-    - Poder: GLM PCPS1 −0,41 a −0,46; PCC −0,20 a −0,36; Mantel −0,09 a −0,18;
-      ADONIS ≈ 0 em S3b/S3sigma (−0,09 em S3a). Colless alto: −0,01 a −0,08.
-      **H4 sustentada.**
-    - Clados: PCPS +0,29 a +0,31 com γ baixo (antigos e recentes); evoPCA e
+  - Contrastes (N = 100, incidência; mediana [IC 95%]; γ baixo − Yule no Colless
+    Yule, Colless alto − Yule no γ Yule). O modelo impõe os mesmos efeitos de
+    forma (escala logit) para todo N e tipo de dado; os contrastes em N = 100
+    não testam se o padrão vale nos outros N.
+    - Tipo I, γ baixo: GLM PCPS2 em S2sigma +0,078 [0,062; 0,095] (0,08 →
+      0,16); PCC em S2sigma −0,021 [−0,035; −0,007]; em S1, GLM PCPS2 −0,008 e
+      PCC −0,013; em S0, 4 de 5 testes ficam mais conservadores (−0,011 a
+      −0,019; no PCC o IC inclui 0). Colless alto: |Δ| ≤ 0,005, ICs com 0.
+    - Poder, γ baixo: GLM PCPS1 −0,41 a −0,46; PCC −0,20 a −0,36; Mantel −0,09
+      a −0,18; ADONIS ≈ 0 em S3b/S3sigma (−0,09 em S3a); GLM PCPS2 −0,02 (poder
+      ≈ 0,01–0,04). Colless alto: −0,01 a −0,08. Ordem dos métodos muda: em S3a
+      o GLM PCPS1 cai de 2º para 4º; em S3b o PCC cai de 1º para 3º.
+    - Clados, γ baixo: PCPS +0,31 (antigos) e +0,28 (recentes); evoPCA e
       phylofactor ≈ 0; PCC −0,12 (antigos) e +0,08 (recentes). Colless alto:
-      −0,02 a −0,07 em todos. **H3 sustentada para o PCPS.**
+      −0,02 a −0,07. evoPCA e phylofactor sempre no topo.
+  - Leitura das hipóteses (revisada na revisão de spec):
+    - H1: sem evidência nesta resolução (Colless não muda o tipo I; ICs ±0,01).
+      A H1 fala do taxa shuffle; a resposta modelada é o p_max.
+    - H2: não testada como formulada (falta o contraste de cenário S2sigma/S2h
+      vs S0/S1). As taxas em Yule sugerem inflação só no GLM PCPS2 (0,084) e
+      no PCC (0,098) em S2sigma; o efeito de γ vai em sentidos opostos nos dois.
+    - H3: parcial. Com γ baixo o PCPS recupera mais clados basais, mas também
+      mais recentes; a concentração da variação no PCPS1 não entrou. Não há
+      nível γ > Yule, então a metade "γ positivo" não pode ser testada.
+    - H4: sustentada para poder (a ordem muda em S3a e S3b) e, nos clados, só
+      entre PCPS e PCC.
+  - Limites e próximos passos do modelo: γ e Colless como fatores (o PLANO
+    pedia contínuos; a confirmar com o Diogo); sem interações forma × N, forma
+    × tipo de dado nem g:cl × cenário; PPC só in-sample (cobertura otimista; a
+    dispersão de 13,8 no poder sugere estrutura faltando, provavelmente forma ×
+    N). Falta um PPC agrupado por N × célula e o contraste de cenário para H2.

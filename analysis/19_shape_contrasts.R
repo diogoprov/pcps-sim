@@ -1,7 +1,9 @@
 # Posterior contrasts of the tree-shape effects from the brms models of
-# analysis/18_formal_models.R: rate at low gamma minus Yule, and at high
-# Colless minus Yule, for every test x scenario (or method x depth), at N = 100,
-# incidence (clade: shift 2). Median and 95% credible interval.
+# analysis/18_formal_models.R: rate at low gamma minus Yule (at Yule Colless),
+# and at high Colless minus Yule (at Yule gamma), for every test x scenario (or
+# method x depth), at N = 100, incidence (clade: shift 2). The models share the
+# shape effects across N and data types on the logit scale, so other N differ
+# only through the baseline rate. Median and 95% credible interval.
 # Usage: Rscript analysis/19_shape_contrasts.R
 
 for (f in list.files("R", "[.]R$", full.names = TRUE)) source(f)
