@@ -30,27 +30,30 @@ nexus_labels <- function(path) {
   unique(gsub("'", "", lab[lab != ""]))
 }
 
-# one NEXUS per metacommunity (Wild19961.nex duplicates Wild1996.nex)
+# one NEXUS per metacommunity (Wild19961.nex duplicates Wild1996.nex), with its
+# locality and region; `locality_source` says whether the author confirmed it
+# or it is inferred from the file names, the coordinates file and the species
 datasets <- tibble::tribble(
-  ~dataset,      ~file,
-  "bocaina",     "bocaina_tadpole.trees.nex",
-  "both",        "Both_tree.nex",
-  "costa",       "Costa_phylo.nex",
-  "crivelari",   "Crivelari_phylo.nex",
-  "decio_jatai", "Decio_phylo_jatai.nex",
-  "decio_assis", "Decio_phylo.nex",
-  "dias",        "Dias2007.nex",
-  "gomes",       "Gomes.nex",
-  "mainara",     "Mainara.nex",
-  "motta",       "Motta_phylo.nex",
-  "peltzer",     "Peltzer_phylo.nex",
-  "rogerio",     "Rogeio_phylo.nex",
-  "vasconcelos", "Vasconcelos2011.nex",
-  "wild",        "Wild1996.nex"
+  ~dataset,      ~file,                       ~locality,                ~region,              ~locality_source,
+  "bocaina",     "bocaina_tadpole.trees.nex", "Serra da Bocaina, SP/RJ", "Atlantic Forest SE", "inferred",
+  "both",        "Both_tree.nex",             "Cacapava do Sul, RS",    "South (Pampa)",      "inferred",
+  "costa",       "Costa_phylo.nex",           "Maranhao?",              "Northeast?",         "inferred",
+  "crivelari",   "Crivelari_phylo.nex",       "Parana",                 "Atlantic Forest S",  "author",
+  "decio_jatai", "Decio_phylo_jatai.nex",     "Jatai, Luiz Antonio, SP", "Interior SP",       "inferred",
+  "decio_assis", "Decio_phylo.nex",           "Assis, SP",              "Interior SP",        "inferred",
+  "dias",        "Dias2007.nex",              "Ubatuba?, SP",           "Atlantic Forest SE", "inferred",
+  "gomes",       "Gomes.nex",                 "Campos do Jordao?, SP",  "Atlantic Forest SE", "inferred",
+  "mainara",     "Mainara.nex",               "Mainara (-23.36, -44.85)", "Atlantic Forest SE", "inferred",
+  "motta",       "Motta_phylo.nex",           "?",                      "?",                  "inferred",
+  "peltzer",     "Peltzer_phylo.nex",         "Santa Fe?, Argentina",   "South (Argentina)",  "inferred",
+  "rogerio",     "Rogeio_phylo.nex",          "SW Goias",               "Cerrado GO",         "inferred",
+  "vasconcelos", "Vasconcelos2011.nex",       "?, SP",                  "Interior SP",        "inferred",
+  "wild",        "Wild1996.nex",              "Peru",                   "Amazonia (Peru)",    "inferred"
 )
 labels <- purrr::map2(datasets$dataset, file.path(raw_dir, datasets$file), \(d, f)
   tibble::tibble(dataset = d, label = nexus_labels(f))) |>
-  dplyr::bind_rows()
+  dplyr::bind_rows() |>
+  dplyr::left_join(dplyr::select(datasets, dataset, region), by = "dataset")
 
 # full names: "Genus_species" (possibly with aff./cf./sp.)
 is_full <- grepl("^[A-Z][a-z]+_[a-z]", labels$label)
@@ -140,8 +143,11 @@ review <- labels |>
                                     vapply(label, candidates_text, character(1))),
                 decision = "")
 readr::write_csv(review, file.path(out_dir, "names_to_review.csv"))
+readr::write_csv(datasets, file.path(out_dir, "datasets.csv"))
 labels |>
-  dplyr::count(dataset, resolution, in_portik) |>
+  dplyr::filter(in_portik) |>
+  dplyr::group_by(region) |>
+  dplyr::summarise(species = dplyr::n_distinct(asw_name)) |>
   print(n = Inf)
 message(nrow(review), " of ", nrow(labels), " labels need review; ",
         dplyr::n_distinct(labels$asw_name[labels$in_portik]), " species matched to Portik")
