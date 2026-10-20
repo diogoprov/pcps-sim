@@ -1,6 +1,6 @@
 ---
 title: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
-subtitle: "Abstract, Methods and Results (draft)"
+subtitle: "Abstract, Methods, Results and Discussion (draft)"
 author: "Diogo B. Provete"
 date: 2026-10-20
 crossref:
@@ -132,6 +132,22 @@ The three metacommunities of the case study had small trees with contrasting sha
 
 ![Tree shape of three nested regional pools of anurans (filled points and bars, median and 2.5–97.5% quantiles across 100 bootstrap trees; open diamonds, point-estimate tree) against the targets of the simulation grid (open symbols, by N) and the anuran clades with 40–250 tips of Portik et al. (2023) (grey points). Notice that the pools fall inside the grid and close to its Yule and median levels, and that the point-estimate tree has a lower γ than most bootstrap trees.](figures/box1_pools.png){#fig-box1 width=85%}
 
+# Discussion
+
+The shape of the phylogenetic tree and the process that assembles a metacommunity changed the performance of every method we evaluated, but not in the way we expected. The distribution of branching times, rather than the imbalance of the topology, governed both the power of the tests and the recovery of clades, and a phylogenetically conserved niche breadth inflated the type I error of only the two methods that rely on single phylogenetic axes. Mass effects reduced the power of all tests more than any tree shape did. To the best of our knowledge, this is the first simulation study that evaluates tests on phylogeny-weighted species composition across controlled gradients of branching times and imbalance, with both static and process-based metacommunities, and that compares them with branch-wise methods in their ability to locate the clade associated with an environmental gradient. In the following paragraphs, we discuss each of these results and their consequences for empirical studies.
+
+Tree imbalance did not affect the type I error of any test, whereas very negative γ reduced the power of the GLM on the first PCPS axis and of the PCC. This agrees with a general pattern in phylogenetic comparative methods, in which permutation tests keep the nominal level across topologies and the properties of the tree change mainly their power (Blomberg et al., 2003; Münkemüller et al., 2012). Accordingly, in an empirical case study, the bias of the net relatedness index caused by poor phylogenetic resolution depended on tree shape and consisted mostly of type II errors (Molina-Venegas & Roquet, 2014), and metrics such as the mean pairwise distance, which weight deep branches, respond to the stemminess of the tree (Mazel et al., 2016). The loss of power with low γ seems to follow from how phylogenetic eigenvectors summarize trees with long internal branches near the root. The eigenstructure of a phylogenetic matrix is set by the tree (Diniz-Filho et al., 1998), and in such trees a few deep splits probably dominate it, so the first PCPS axis and the leading eigenvectors of the PCC probably capture the deepest dichotomy even when the gradient sorts species along another one. In contrast, PERMANOVA uses the whole matrix $\mathbf{P}$ and was much less sensitive to γ. However, we did not record the eigenvalue spectra or the axis loadings of each replicate, so we cannot confirm this mechanism with our data. Taken together, single-axis tests on phylogenetic eigenvectors seem to be fragile whenever the phylogenetic structure is spread over several axes, as already argued for the selection of eigenvectors in comparative analyses (Diniz-Filho et al., 2012).
+
+Phylogenetic signal in niche breadth created false positives that previous evaluations could not detect. The simulations of Duarte et al. (2016, 2018) and Peres-Neto et al. (2017) drew niche breadth and maximum abundance independently of the phylogeny, so their type I errors refer to a null hypothesis in which these nuisance parameters carry no phylogenetic signal. When σ is conserved, clades differ in how widely they spread along the gradient, which is a phylogenetic pattern in composition that is unrelated to the association between optima and environment. Permutation tests become liberal when the randomization breaks down a structure of the data that is unrelated to the null hypothesis (Hardy, 2008), and species-level variation in the response to the environment that is ignored by the test inflates the type I error of trait–environment analyses (ter Braak et al., 2017). This seems to explain why the second PCPS axis, which is orthogonal to the basal contrast captured by the first one, and the PCC were inflated, whereas PERMANOVA and the Mantel test, which average over all axes of $D_P$, were not. Interestingly, the largest inflation occurred in trees with low γ and at N = 200, which suggests that both the depth of the conserved structure and the number of species determine how much of it reaches a single axis. In addition, the more conservative behaviour of the other tests under signal in σ agrees with the conservative max test already reported for phylogenetic fuzzy weighting (Duarte et al., 2016). Unfortunately, the empirical distribution of phylogenetic signal in niche breadth is unknown for most groups, so we cannot say how often this situation arises in real metacommunities. Constrained randomizations that preserve phylogenetic structure, such as Moran spectral randomization (Braga et al., 2018), and model-based tests with phylogenetic random effects (Li & Ives, 2017; Tsang & Cadotte, 2025) seem to be promising alternatives to the taxa shuffle in this case.
+
+The assembly process mattered more than tree shape. Mass effects reduced the power of every test except GLM PCPS2 and almost abolished that of the PCC. This is expected from the theory of source–sink metacommunities, in which high dispersal homogenizes composition among sites and erodes β-diversity (Mouquet & Loreau, 2003; Thompson et al., 2020), and it agrees with the low power of phylogenetic diversity indices under mass effects even when traits were strongly conserved (Mason & Pavoine, 2013). Our design probably represents the most extreme case, because the dispersal kernel was uniform and the sites had no spatial structure; in spatially explicit landscapes, mass effects allow species to dominate subregions instead of homogenizing the whole metacommunity (Thompson et al., 2020), which would leave more signal for the tests. Surprisingly, phylogenetic competition partly restored the power lost under mass effects. However, competition also pruned close relatives and reduced the Colless index of the analysed tree by about 75% relative to the pool, so the effect of the process cannot be separated from that of the change in the shape of the analysed tree. Moreover, our competition kernel assumed that close relatives compete more strongly, an assumption that is weakly supported empirically (Cahill et al., 2008; Godoy et al., 2014; Gerhold et al., 2015), and competition can also exclude distant relatives when fitness differences are phylogenetically conserved (Mayfield & Levine, 2010). Therefore, this result should be read as an upper bound for a particular competition structure rather than as a general effect of competition. Taken together, a non-significant test in a metacommunity with high dispersal does not seem to indicate the absence of environmental filtering on lineages, in line with the warning that the interpretation of community phylogenetic tests should account for dispersal (Kembel, 2009).
+
+The methods that treat branches as units recovered the planted clade far more often than those based on phylogenetic eigenvectors. evoPCA ordinates the abundances of evolutionary units, so the stem branch of a clade enters the ordination as a variable (Pavoine, 2016), and phylofactorization searches explicitly for the edge that best separates clades with contrasting responses (Washburne et al., 2017, 2019). As a result, both methods evaluate every partition of the tree, and their recovery did not depend on γ. In contrast, PCPS recovers a clade only when its stem node is among those weighted by the leading axes, which depends on the distribution of node depths and seems to explain why low γ improved its recovery of both basal and recent clades. Thus, H3 was only partly supported, since the advantage of basal clades under PCPS seems to be a matter of degree. Empirical applications of PCPS have also found that environmental effects concentrate on a few deep nodes (Duarte et al., 2012), which agrees with this interpretation. The PCC was not designed to locate clades, since it tests a global association between phylogenetic eigenvectors, composition and environment (Peres-Neto & Kembel, 2015), and our results confirm that its leading eigenvectors rarely isolate the clade of interest. Node-based analyses of species distributions (Borregaard et al., 2014) belong to the same family as phylofactorization and could be added to future comparisons.
+
+Our conclusions apply to real metacommunities, at least for anurans. Negative γ is the norm in empirical phylogenies, with slowdowns in diversification in most clades of several groups (McPeek, 2008; Phillimore & Price, 2008), and the major clades of frogs diversified rapidly at the Cretaceous–Paleogene boundary (Feng et al., 2017). The three regional pools of tadpoles fell inside our grid, between its Yule and median levels of γ (Box 1). However, γ is sensitive to incomplete sampling of deep nodes (Cusimano & Renner, 2010), so we used it only as a descriptor of the shape of the analysed tree, not as evidence of a diversification process. Our study also has limitations. First, the grid had no level with γ > 0, which one of the three metacommunities of the case study had. Second, Layer B had no spatial structure and used only incidence data and five cells of the grid. Third, every metacommunity had 100 sites, and we did not vary the length of the gradient or the number of sites, which also change power. Finally, the case study had 13–40 ponds and no significant association, so it illustrates how the methods behave with real data rather than validating them.
+
+In summary, we recommend that empirical studies (i) report γ and the normalized Colless index of the analysed tree, since tree shape changes the power and the ranking of the tests; (ii) prefer tests on the whole matrix $\mathbf{P}$, such as PERMANOVA with the max test, to tests on single PCPS axes or phylogenetic eigenvectors, especially in trees with very negative γ; (iii) interpret the second PCPS axis and the PCC with caution when niche breadth may be phylogenetically conserved; (iv) interpret a lack of power under high dispersal as a property of the metacommunity rather than as evidence against niche-based assembly; and (v) use evoPCA or phylofactorization, rather than PCPS axes, to identify the clades associated with a gradient. These recommendations seem to hold across the range of tree shapes found in anuran clades and in the regional pools we examined.
+
 # References (verified)
 
 Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous & R. Pemantle (Eds.), *Random discrete structures* (pp. 1–18). The IMA Volumes in Mathematics and its Applications, Vol. 76. Springer. https://doi.org/10.1007/978-1-4612-0719-1_1
@@ -140,37 +156,81 @@ Anderson, M. J. (2001). A new method for non-parametric multivariate analysis of
 
 Beverton, R. J. H., & Holt, S. J. (1957). *On the dynamics of exploited fish populations*. Fishery Investigations Series II, Vol. 19. London: HMSO (reprinted 1993, Springer, doi:10.1007/978-94-011-2106-4).
 
+Blomberg, S. P., Garland, T., & Ives, A. R. (2003). Testing for phylogenetic signal in comparative data: behavioral traits are more labile. *Evolution*, 57, 717–745. https://doi.org/10.1111/j.0014-3820.2003.tb00285.x
+
+Borregaard, M. K., Rahbek, C., Fjeldså, J., Parra, J. L., Whittaker, R. J., & Graham, C. H. (2014). Node-based analysis of species distributions. *Methods in Ecology and Evolution*, 5, 1225–1235. https://doi.org/10.1111/2041-210X.12283
+
 Both, C., Melo, A. S., Cechin, S. Z., & Hartz, S. M. (2011). Tadpole co-occurrence in ponds: when do guilds and time matter? *Acta Oecologica*, 37, 140–145. https://doi.org/10.1016/j.actao.2011.01.008
+
+ter Braak, C. J. F., Peres-Neto, P. R., & Dray, S. (2017). A critical issue in model-based inference for studying trait-based community assembly and a solution. *PeerJ*, 5, e2885. https://doi.org/10.7717/peerj.2885
 
 Bradley, J. V. (1978). Robustness? *British Journal of Mathematical and Statistical Psychology*, 31, 144–152. https://doi.org/10.1111/j.2044-8317.1978.tb00581.x
 
+Braga, J., ter Braak, C. J. F., Thuiller, W., & Dray, S. (2018). Integrating spatial and phylogenetic information in the fourth-corner analysis to test trait–environment relationships. *Ecology*, 99, 2667–2674. https://doi.org/10.1002/ecy.2530
+
 Bürkner, P.-C. (2017). brms: an R package for Bayesian multilevel models using Stan. *Journal of Statistical Software*, 80(1), 1–28. https://doi.org/10.18637/jss.v080.i01
+
+Cahill, J. F., Kembel, S. W., Lamb, E. G., & Keddy, P. A. (2008). Does phylogenetic relatedness influence the strength of competition among vascular plants? *Perspectives in Plant Ecology, Evolution and Systematics*, 10, 41–50. https://doi.org/10.1016/j.ppees.2007.10.001
 
 Colless, D. H. (1982). Review of Phylogenetics: the theory and practice of phylogenetic systematics. *Systematic Zoology*, 31, 100–104. [CITAR: conferir página final] https://doi.org/10.2307/2413420
 
+Cusimano, N., & Renner, S. S. (2010). Slowdowns in diversification rates from real phylogenies may not be real. *Systematic Biology*, 59, 458–464. https://doi.org/10.1093/sysbio/syq032
+
 Debastiani, V. J. (2026). PCPS: principal coordinates of phylogenetic structure. R package version 1.0.9. doi:10.32614/CRAN.package.PCPS.
+
+Diniz-Filho, J. A. F., Bini, L. M., Rangel, T. F., Morales-Castilla, I., Olalla-Tárraga, M. Á., Rodríguez, M. Á., & Hawkins, B. A. (2012). On the selection of phylogenetic eigenvectors for ecological analyses. *Ecography*, 35, 239–249. https://doi.org/10.1111/j.1600-0587.2011.06949.x
+
+Diniz-Filho, J. A. F., de Sant'Ana, C. E. R., & Bini, L. M. (1998). An eigenvector method for estimating phylogenetic inertia. *Evolution*, 52, 1247–1262. https://doi.org/10.1111/j.1558-5646.1998.tb02006.x
 
 DiRenzo, G. V., Hanks, E., & Miller, D. A. W. (2023). A practical guide to understanding and validating complex models using data simulations. *Methods in Ecology and Evolution*, 14, 203–217. https://doi.org/10.1111/2041-210X.14030
 
 Duarte, L. D. S. (2011). Phylogenetic habitat filtering influences forest nucleation in grasslands. *Oikos*, 120, 208–215. https://doi.org/10.1111/j.1600-0706.2010.18898.x
 
+Duarte, L. D. S., Debastiani, V. J., Carlucci, M. B., & Diniz-Filho, J. A. F. (2018). Analyzing community-weighted trait means across environmental gradients: should phylogeny stay or should it go? *Ecology*, 99, 385–398. https://doi.org/10.1002/ecy.2081
+
 Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946. https://doi.org/10.1111/2041-210X.12547
 
 Duarte, L. D. S., Prieto, P. V., & Pillar, V. D. (2012). Assessing spatial and environmental drivers of phylogenetic structure in Brazilian Araucaria forests. *Ecography*, 35, 952–960. https://doi.org/10.1111/j.1600-0587.2011.07193.x
+
+Feng, Y.-J., Blackburn, D. C., Liang, D., Hillis, D. M., Wake, D. B., Cannatella, D. C., & Zhang, P. (2017). Phylogenomics reveals rapid, simultaneous diversification of three major clades of Gondwanan frogs at the Cretaceous–Paleogene boundary. *Proceedings of the National Academy of Sciences*, 114, E5864–E5870. https://doi.org/10.1073/pnas.1704632114
 
 Frost, D. R. (2026). *Amphibian Species of the World: an online reference*. Version 6.2. American Museum of Natural History. https://amphibiansoftheworld.amnh.org/index.php https://doi.org/10.5531/db.vz.0001
 
 Gabry, J., Češnovar, R., Johnson, A., & Bronder, S. (2025). cmdstanr: R interface to CmdStan. R package version 0.9.0. https://github.com/stan-dev/cmdstanr.
 
+Gerhold, P., Cahill, J. F., Winter, M., Bartish, I. V., & Prinzing, A. (2015). Phylogenetic patterns are not proxies of community assembly mechanisms (they are far better). *Functional Ecology*, 29, 600–614. https://doi.org/10.1111/1365-2435.12425
+
+Godoy, O., Kraft, N. J. B., & Levine, J. M. (2014). Phylogenetic relatedness and the determinants of competitive outcomes. *Ecology Letters*, 17, 836–844. https://doi.org/10.1111/ele.12289
+
+Hardy, O. J. (2008). Testing the spatial phylogenetic structure of local communities: statistical performances of different null models and test statistics on a locally neutral community. *Journal of Ecology*, 96, 914–926. https://doi.org/10.1111/j.1365-2745.2008.01421.x
+
 Janzen, T., & Etienne, R. S. (2024). Phylogenetic tree statistics: a systematic overview using the new R package treestats. *Molecular Phylogenetics and Evolution*, 200, 108168. https://doi.org/10.1016/j.ympev.2024.108168
+
+Kembel, S. W. (2009). Disentangling niche and neutral influences on community assembly: assessing the performance of community phylogenetic structure tests. *Ecology Letters*, 12, 949–960. https://doi.org/10.1111/j.1461-0248.2009.01354.x
 
 Landau, W. M. (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. *Journal of Open Source Software*, 6(57), 2959. https://doi.org/10.21105/joss.02959
 
 Landau, W. M. (2026). crew: a distributed worker launcher framework. R package version 1.3.3. doi:10.32614/CRAN.package.crew.
 
+Li, D., & Ives, A. R. (2017). The statistical need to include phylogeny in trait-based analyses of community composition. *Methods in Ecology and Evolution*, 8, 1192–1199. https://doi.org/10.1111/2041-210X.12767
+
 Liedtke, H. C. (2019). AmphiNom: an amphibian systematics tool. *Systematics and Biodiversity*, 17, 1–6. https://doi.org/10.1080/14772000.2018.1518935
 
 Mantel, N. (1967). The detection of disease clustering and a generalized regression approach. *Cancer Research*, 27, 209–220.
+
+Mason, N. W. H., & Pavoine, S. (2013). Does trait conservatism guarantee that indicators of phylogenetic community structure will reveal niche-based assembly processes along stress gradients? *Journal of Vegetation Science*, 24, 820–833. https://doi.org/10.1111/jvs.12033
+
+Mayfield, M. M., & Levine, J. M. (2010). Opposing effects of competitive exclusion on the phylogenetic structure of communities. *Ecology Letters*, 13, 1085–1093. https://doi.org/10.1111/j.1461-0248.2010.01509.x
+
+Mazel, F., Davies, T. J., Gallien, L., Renaud, J., Groussin, M., Münkemüller, T., & Thuiller, W. (2016). Influence of tree shape and evolutionary time-scale on phylogenetic diversity metrics. *Ecography*, 39, 913–920. https://doi.org/10.1111/ecog.01694
+
+McPeek, M. A. (2008). The ecological dynamics of clade diversification and community assembly. *The American Naturalist*, 172, E270–E284. https://doi.org/10.1086/593137
+
+Molina-Venegas, R., & Roquet, C. (2014). Directional biases in phylogenetic structure quantification: a Mediterranean case study. *Ecography*, 37, 572–580. https://doi.org/10.1111/j.1600-0587.2013.00442.x
+
+Mouquet, N., & Loreau, M. (2003). Community patterns in source-sink metacommunities. *The American Naturalist*, 162, 544–557. https://doi.org/10.1086/378857
+
+Münkemüller, T., Lavergne, S., Bzeznik, B., Dray, S., Jombart, T., Schiffers, K., & Thuiller, W. (2012). How to measure and test phylogenetic signal. *Methods in Ecology and Evolution*, 3, 743–756. https://doi.org/10.1111/j.2041-210X.2012.00196.x
 
 Oksanen, J., Simpson, G. L., Blanchet, F. G., Kindt, R., Legendre, P., Minchin, P. R., et al. (2026). vegan: community ecology package. R package version 2.7-6. doi:10.32614/CRAN.package.vegan.
 
@@ -184,7 +244,11 @@ Pavoine, S. (2020). adiv: an R package to analyse biodiversity in ecology. *Meth
 
 Peres-Neto, P. R., & Kembel, S. W. (2015). Phylogenetic gradient analysis: environmental drivers of phylogenetic variation across ecological communities. *Plant Ecology*, 216, 709–724. https://doi.org/10.1007/s11258-014-0405-0
 
+Peres-Neto, P. R., Dray, S., & ter Braak, C. J. F. (2017). Linking trait variation to the environment: critical issues with community-weighted mean correlation resolved by the fourth-corner approach. *Ecography*, 40, 806–816. https://doi.org/10.1111/ecog.02302
+
 Peres-Neto, P. R., Leibold, M. A., & Dray, S. (2012). Assessing the effects of spatial contingency and environmental filtering on metacommunity phylogenetics. *Ecology*, 93, S14–S30. https://doi.org/10.1890/11-0494.1
+
+Phillimore, A. B., & Price, T. D. (2008). Density-dependent cladogenesis in birds. *PLoS Biology*, 6, e71. https://doi.org/10.1371/journal.pbio.0060071
 
 Pillar, V. D., & Duarte, L. D. S. (2010). A framework for metacommunity analysis of phylogenetic structure. *Ecology Letters*, 13, 587–596. https://doi.org/10.1111/j.1461-0248.2010.01456.x
 
@@ -202,8 +266,12 @@ R Core Team (2026). *R: a language and environment for statistical computing*. V
 
 Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329. https://doi.org/10.1111/ele.13568
 
+Tsang, T. P. N., & Cadotte, M. W. (2025). Species overlap and phylogenetic relatedness result in community statistical non-independence (and what to do about it). *Ecology Letters*, 28, e70267. https://doi.org/10.1111/ele.70267
+
 Ushey, K., & Wickham, H. (2026). renv: project environments. R package version 1.3.1. doi:10.32614/CRAN.package.renv.
 
 Washburne, A. D., Silverman, J. D., Leff, J. W., Bennett, D. J., Darcy, J. L., Mukherjee, S., Fierer, N., & David, L. A. (2017). Phylogenetic factorization of compositional data yields lineage-level associations in microbiome datasets. *PeerJ*, 5, e2969. https://doi.org/10.7717/peerj.2969
+
+Washburne, A. D., Silverman, J. D., Morton, J. T., Becker, D. J., Crowley, D., Mukherjee, S., David, L. A., & Plowright, R. K. (2019). Phylofactorization: a graph partitioning algorithm to identify phylogenetic scales of ecological data. *Ecological Monographs*, 89, e01353. https://doi.org/10.1002/ecm.1353
 
 Williams, C., Yang, Y., Lagisz, M., Morrison, K., Ricolfi, L., Warton, D. I., & Nakagawa, S. (2024). Transparent reporting items for simulation studies evaluating statistical methods: foundations for reproducibility and reliability. *Methods in Ecology and Evolution*, 15, 1926–1939. https://doi.org/10.1111/2041-210X.14415
