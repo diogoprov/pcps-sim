@@ -31,8 +31,11 @@ alpha <- 0.05
 # needs them to differ among tests or methods; H3 needs gamma x depth. The
 # shape effects may also differ with N and data type (shape x N, shape x data
 # type), so the contrasts at one N do not stand for the others by construction
+# test:scenario:n_f lets the scenario effects (e.g. the inflation under signal
+# in sigma) differ with N; without it the model underestimated the raw rates
+# at N = 200
 layer_a <- paste("test * scenario * (g + cl) + test * (g:cl + n_f + data_type) +",
-                 "test:(g + cl):(n_f + data_type)")
+                 "test:(g + cl):(n_f + data_type) + test:scenario:n_f")
 spec <- list(
   type_I = list(file = c("full", "results.csv"), group = "test",
                 scenarios = c("S0", "S1", "S2", "S2sigma", "S2h"), fixed = layer_a,
@@ -79,7 +82,10 @@ rm(raw)
 fit <- fit_formal_model(spec$fixed, agg,
                         groups = interaction(agg[[spec$group]], agg$n_f, agg$cell, drop = TRUE),
                         out_dir = out_dir, intercept_mean = spec$intercept_mean,
-                        chains = chains, iter = iter)
+                        chains = chains, iter = iter,
+                        # with test:scenario:n_f the type I model reached tree depth 10
+                        # in one transition
+                        max_treedepth = 12)
 
 # Key figure: rate over the gamma x Colless grid by test or method, at N = 100 and
 # incidence (clade: shift 2)

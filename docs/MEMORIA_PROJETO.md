@@ -1092,3 +1092,23 @@ Próximos passos sugeridos:
   `analysis/24_si_tables.R`); figuras de `analysis/22_manuscript_figures.R`.
   Atenção registrada no texto: o GLM PCPS2 em S2σ chega a 0,36 de tipo I bruto
   com N = 200 e γ baixo (o modelo, sem cenário × N, subestima).
+- **Modelos formais, 3ª versão da camada A (2026-10-20).** Após a revisão de
+  estilo (subestimação do tipo I bruto com N = 200), entrou `test:scenario:n_f`
+  nos modelos de tipo I e poder; max_treedepth 12 em todos os modelos (com 10,
+  uma transição do tipo I batia no limite). Convergência: R̂ ≤ 1,01, ESS bulk
+  ≥ 908, tail ≥ 1.477, 0 divergências, 0 treedepth; dispersão quasibinomial
+  2,1 (tipo I) e 8,5 (poder, antes 13). Novos contrastes: GLM PCPS2 em S2σ − S2
+  com γ baixo +0,05/+0,10/+0,21 (N = 50/100/200; antes +0,09/+0,11/+0,16); PCC
+  +0,05 em Yule e +0,02 com γ baixo (N = 100); poder do PCC com γ baixo −0,25
+  (N = 100), −0,48 (N = 50), −0,06 (N = 200). Texto, figuras e Tabelas S1–S3
+  atualizados.
+- **Normas da MEE** (PDF salvo pelo Diogo em `references/MEE_author_guidelines.pdf`,
+  fora do git): artigo padrão com 7.000–8.000 palavras incluindo referências;
+  espaço duplo, coluna única, linhas e páginas numeradas; página de título em
+  arquivo separado (autores, agradecimentos, contribuições, Data Availability);
+  resumo numerado 1–4 (≤ 350 palavras) e declaração de dados/código para
+  revisão logo abaixo dele; até oito palavras-chave em ordem alfabética;
+  figuras e tabelas podem ficar no texto; citações "(Jones, 1998)", com DOI em
+  todas as referências; "Fig. 1", "Figs 2–4", "Table 1"; P para valores de
+  probabilidade; números de um a nove por extenso. As instruções técnicas de
+  figura (formato, resolução) ficam num link que o PDF não traz.
