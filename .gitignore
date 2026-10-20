@@ -43,3 +43,6 @@ data/raw/nri_pcps/
 
 # anonymized bundle for peer review (tools/make_review_bundle.sh)
 review_bundle/
+
+# title page with the e-mail (tools/render_title_page.sh)
+manuscript/title_page_submission.*

@@ -6,22 +6,24 @@ format:
 ---
 
 <!-- Title page (separate file, as required by Methods in Ecology and
-Evolution). Render: quarto render manuscript/title_page.qmd. Fields in
-[CITAR: ...] are to be filled by the author. -->
+Evolution). The e-mail is not kept in this public file: the submission copy,
+with the e-mail, is written by tools/render_title_page.sh to
+manuscript/title_page_submission.docx (not in git). Fields in [CITAR: ...]
+are to be filled by the author. -->
 
 Diogo B. Provete^1^
 
-^1^ [CITAR: affiliation, city, country]
+^1^ Instituto de Biociências, Universidade Federal de Mato Grosso do Sul, Campo Grande, Mato Grosso do Sul, Brazil
 
-Correspondence: Diogo B. Provete, [CITAR: corresponding e-mail]
+Correspondence: Diogo B. Provete, CORRESPONDING_EMAIL
 
-ORCID: [CITAR: ORCID]
+ORCID: https://orcid.org/0000-0002-0097-0651
 
-Running title: Tree shape and phylogenetic metacommunity tests
+Running title: Tree shape and phylogenetic community tests
 
 Article type: Research Article
 
-Word count: [CITAR: final word count, including references]
+Word count: 7,987 (abstract, main text, table, figure legends and references)
 
 # Acknowledgements
 
@@ -34,10 +36,6 @@ The author declares no conflict of interest.
 # Author contributions
 
 Diogo B. Provete conceived the study, designed and ran the simulations, analysed the results and wrote the manuscript.
-
-# Statement on inclusion
-
-[CITAR: optional statement on inclusion of local researchers and data providers, if required by the journal]
 
 # Data availability statement
 
