@@ -9,7 +9,7 @@ Fields in [CITAR: ...] are to be filled by the author. -->
 
 Dear Editor,
 
-Please find enclosed our manuscript entitled "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods", which we submit for consideration as a Research Article in *Methods in Ecology and Evolution*.
+Please find enclosed our manuscript entitled "Branching times and dispersal, not tree imbalance, govern the performance of phylogenetic community–environment methods", which we submit for consideration as a Research Article in *Methods in Ecology and Evolution*.
 
 Methods that relate the phylogenetic composition of metacommunities to environmental gradients, such as the principal coordinates of phylogenetic structure (PCPS) and the phylogenetic community composition approach (PCC), are widely used in community ecology. However, they were validated with static simulations on trees close to the Yule model and with species niche breadth independent of the phylogeny. In this manuscript, we report a simulation study that evaluates these tests across controlled gradients of tree shape, crossing the distribution of branching times (γ) with topological imbalance at levels taken from anuran clades, both in the static protocol used in the original validations and in process-based metacommunities with species sorting, mass effects and phylogenetic competition. We also compare how often PCPS, PCC, evolutionary principal component analysis and phylofactorization recover a clade associated with the gradient. To the best of our knowledge, no previous study has evaluated these methods under either source of variation.
 

@@ -1,6 +1,6 @@
 ---
 title: "Supporting Information"
-subtitle: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
+subtitle: "Branching times and dispersal, not tree imbalance, govern the performance of phylogenetic community–environment methods"
 format:
   docx:
     reference-doc: reference.docx
@@ -75,6 +75,18 @@ Power in Layer A. At N = 100 with incidence data, the losses of GLM PCPS1 with l
 Power in Layer B. Under species sorting without competition, power at N = 100 in S3b in Yule pool trees was 0.78 for GLM PCPS1, 0.83 for RDA PCPS, 0.87 for PERMANOVA, 0.92 for the Mantel test and 0.96 for the PCC, whereas GLM PCPS2 had almost no power (0.03), as in Layer A. Mass effects increased the power of GLM PCPS2 by 0.08 (95% CI 0.06–0.11) from its low baseline. Relative to species sorting, PERMANOVA lost 0.62 (0.58–0.65) in Yule pool trees and 0.72 (0.69–0.75) with low γ, the Mantel test 0.75 and 0.79, RDA PCPS 0.58 and 0.55, GLM PCPS1 0.55 and 0.27, and the PCC 0.93 (0.92–0.94) and 0.76. Under species sorting, phylogenetic competition changed power by −0.12 to +0.11. The pruning of close relatives by competition was strongest under mass effects.
 
 Clade recovery. With a shift of 2, evoPCA and phylofactorization recovered basal clades more often than recent ones (0.79 against 0.66 at N = 100). At N = 100, the median rank of the planted node was 1 for evoPCA and phylofactorization, 2 (basal clades) and 6 (recent clades) for PCPS, and 7 and 9 for PCC, and the mean Jaccard similarity between the chosen and the planted clades was 0.89–0.94, 0.60–0.75 and 0.45–0.50, respectively. Hence, PCPS often chose a clade that overlapped the planted one, whereas PCC usually chose a different part of the tree, which seems to reflect that its four leading eigenvectors follow the deepest splits. The advantage of PCPS with low γ grew with N (+0.23 to +0.45 across N and depths). The PCC lost 0.10–0.14 in basal clades with low γ and gained 0.07–0.09 in recent ones. In the descriptive summaries of Layer A, the share of variation on the first PCPS axis decreased rather than increased with low γ.
+
+## GLM on PCPS axes with Procrustes of the null axes
+
+In the R package PCPS, the axes of each taxa-shuffle permutation are rotated onto the observed ones by symmetric Procrustes before the test (PCPS::pcps.sig). We evaluated this variant for the first two axes at once in a second run of Layer A with the same design (without the PCC) and in Layer B (file procrustes_rates.csv of the code archive). At N = 100 and 200 with incidence data, and averaged over the Colless levels, the variant removed the inflation of GLM PCPS2 in S2σ (raw rates 0.002–0.009 in Layer A and 0.008–0.014 in Layer B under species sorting, against 0.096–0.294 and 0.055–0.127 without Procrustes). However, it was conservative even without nuisance structure (0.001–0.004 for GLM PCPS2 and 0.016–0.028 for GLM PCPS1 in S2 in Layer A, against nominal 0.05), and it reduced the power of GLM PCPS1, especially with low γ (in S3b, from 0.36 to 0.23 at N = 100 and from 0.44 to 0.27 at N = 200 in Layer A). For a single axis, the symmetric Procrustes is only a change of sign and scale and leaves the test unchanged.
+
+## Prior sensitivity
+
+We assessed the sensitivity of each formal model to its priors by power-scaling (R package priorsense; Kallioinen et al., 2024), which estimates, without refitting, how much the posterior changes when the prior or the likelihood is raised to a power. For the predicted rate of every condition, the median sensitivity to the prior was 0.005 (clade recovery), 0.008 (power, Layer A), 0.009 (type I error, Layer A), 0.014 (type I error, Layer B) and 0.015 (power, Layer B), and the proportion of conditions above the 0.05 threshold of priorsense was 0.2%, 1.7%, 2.7%, 2.2% and 5.2%, respectively. In Layer B, these were mostly conditions with rates close to zero (median raw rate 0.01 under the null hypothesis and 0.08 under the alternative). Individual coefficients were more often flagged (5–41% across models), as expected for models with many weakly identified interactions, but the quantities reported are the predicted rates and their contrasts (files prior_sensitivity.csv and prior_sensitivity_rates.csv of the code archive).
+
+## Tree shape of the pool and of the analysed tree in Layer B
+
+Without competition, the analysed tree kept the shape of the pool tree. Phylogenetic competition pruned close relatives and changed it: at N = 100 in Yule pool trees, the median γ of the analysed tree was −3.6 under mass effects with competition and −1.6 under species sorting with competition, against about zero without competition, and in highly imbalanced pools (Colless index 2.7) the median Colless index of the analysed tree was 0.8 under mass effects with competition and 1.8 under species sorting with competition. In low-γ pools, competition made γ more negative by 0.3–0.8 (file layerB_tree_shape.csv of the code archive).
 
 ## Type I error in Layer B
 
@@ -155,6 +167,8 @@ Debastiani, V. J. (2026). PCPS: principal coordinates of phylogenetic structure.
 Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946. https://doi.org/10.1111/2041-210X.12547
 
 Frost, D. R. (2026). *Amphibian Species of the World: an online reference*. Version 6.2. American Museum of Natural History. https://amphibiansoftheworld.amnh.org/index.php https://doi.org/10.5531/db.vz.0001
+
+Kallioinen, N., Paananen, T., Bürkner, P.-C., & Vehtari, A. (2024). Detecting and diagnosing prior and likelihood sensitivity with power-scaling. *Statistics and Computing*, 34, 57. https://doi.org/10.1007/s11222-023-10366-5
 
 Landau, W. M. (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. *Journal of Open Source Software*, 6(57), 2959. https://doi.org/10.21105/joss.02959
 

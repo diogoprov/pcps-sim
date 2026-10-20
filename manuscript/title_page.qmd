@@ -1,5 +1,5 @@
 ---
-title: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
+title: "Branching times and dispersal, not tree imbalance, govern the performance of phylogenetic community–environment methods"
 format:
   docx:
     reference-doc: reference.docx
@@ -25,7 +25,7 @@ Running title: Tree shape and phylogenetic community tests
 
 Article type: Research Article
 
-Word count: 7,987 (abstract, main text, table, figure legends and references)
+Word count: 7,815 (abstract, main text and references); 8,216 including the table and figure legends
 
 # Acknowledgements
 

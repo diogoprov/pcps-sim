@@ -1,4 +1,4 @@
-# Code and aggregated results for: Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods
+# Code and aggregated results for: Branching times and dispersal, not tree imbalance, govern the performance of phylogenetic community–environment methods
 
 **Note for reviewers:** *Methods in Ecology and Evolution* operates under double-anonymous peer review. Author names, affiliations, funding and acknowledgements have been removed from this deposit, and the public repository will be cited after acceptance.
 
