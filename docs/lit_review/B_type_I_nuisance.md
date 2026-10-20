@@ -163,3 +163,4 @@ Compiled 2026-10-20 for the Discussion of the PCPS / PCC simulation manuscript (
 - ter Braak et al. (2018) author list (Wiley citation line adds Wildi; Crossref does not).
 - Zelený, Helsen & Lee (2021, bioRxiv) and Ortega et al. (2026, MEE): surfaced by Undermind; neither verified nor read.
 - Whether Peres-Neto & Kembel (2015) Appendix A varied niche breadth relative to phylogeny: the Appendix (.doc) is in `references/appendices/` but I did not read it.
+- Added 2026-10-20 (accuracy review of the Introduction): Duarte et al. 2016 Appendix S2 simulated pure-birth trees (sim.bdtree, extinction 0); Peres-Neto & Kembel 2015 used pure-birth trees and niche breadth drawn independently of the phylogeny (main PDF and Appendix A).
