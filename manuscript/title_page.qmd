@@ -29,7 +29,7 @@ Word count: 7,987 (abstract, main text, table, figure legends and references)
 
 # Acknowledgements
 
-I thank V. J. Debastiani for help with the implementation of the first version of this simulation, L. D. S. Duarte and A. S. Melo for discussions during my PhD, and M. V. Cianciaruso, T. F. Rangel and T. B. Quental for comments as members of the thesis committee. I also thank the authors who shared the tadpole metacommunity data used in Appendix S3. [CITAR: funding agencies and grant numbers]
+I thank V. J. Debastiani for help with the implementation of the first version of this simulation, L. D. S. Duarte and A. S. Melo for discussions during my PhD, and M. V. Cianciaruso, T. F. Rangel and T. B. Quental for comments as members of the thesis committee. I also thank the authors who shared the tadpole metacommunity data used in Appendix S3. I received a PhD scholarship from the Coordenação de Aperfeiçoamento de Pessoal de Nível Superior (CAPES), and this study was supported by the Fundação de Apoio ao Desenvolvimento do Ensino, Ciência e Tecnologia do Estado de Mato Grosso do Sul (FUNDECT; grant 83/027.032/2024).
 
 # Conflict of interest statement
 
