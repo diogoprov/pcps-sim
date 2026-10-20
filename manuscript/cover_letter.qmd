@@ -1,0 +1,28 @@
+---
+format: docx
+---
+
+<!-- Cover letter (draft). Render: quarto render manuscript/cover_letter.qmd.
+Fields in [CITAR: ...] are to be filled by the author. -->
+
+[CITAR: date]
+
+Dear Editor,
+
+Please find enclosed our manuscript entitled "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods", which we submit for consideration as a Research Article in *Methods in Ecology and Evolution*.
+
+Methods that relate the phylogenetic composition of metacommunities to environmental gradients, such as the principal coordinates of phylogenetic structure (PCPS) and the phylogenetic community composition approach (PCC), are widely used in community ecology. However, they were validated with static simulations on trees close to the Yule model and with species niche breadth independent of the phylogeny. In this manuscript, we report a simulation study that evaluates these tests across controlled gradients of tree shape, crossing the distribution of branching times (γ) with topological imbalance at levels taken from anuran clades, both in the static protocol used in the original validations and in process-based metacommunities with species sorting, mass effects and phylogenetic competition. We also compare how often PCPS, PCC, evolutionary principal component analysis and phylofactorization recover a clade associated with the gradient. To the best of our knowledge, no previous study has evaluated these methods under either source of variation.
+
+We found that tree imbalance did not affect the type I error of any test, whereas very negative γ reduced the power of the tests on the first PCPS axis and of the PCC, and phylogenetic signal in niche breadth inflated the type I error of the test on the second PCPS axis and of the PCC. Mass effects reduced the power of almost every test more than any tree shape did, and branch-wise methods recovered the planted clade far more often than eigenvector-based ones, independently of tree shape. Based on these results, we provide practical recommendations on which tests to use, and how to interpret them, according to the shape of the tree and the dispersal regime of the metacommunity. We believe these results will interest the broad readership of *Methods in Ecology and Evolution*, since they concern methods applied to any taxon for which a phylogeny and community data are available.
+
+The study follows the structure recommended for simulation studies by DiRenzo et al. (2023) and Williams et al. (2024), both published in *Methods in Ecology and Evolution*, and reports Monte Carlo errors, convergence diagnostics and posterior predictive checks for every formal model. The code, the rates aggregated by condition and the scripts that reproduce every table and figure are available to the reviewers in an anonymized archive (https://doi.org/10.5281/zenodo.23500661), and the public repository will be cited after review. The manuscript was prepared for double-anonymous review, and the title page is provided as a separate file.
+
+This manuscript has not been published and is not under consideration for publication elsewhere. The author declares no conflict of interest. [CITAR: suggested and opposed reviewers, if any]
+
+Thank you for considering our manuscript.
+
+Sincerely,
+
+Diogo B. Provete
+
+[CITAR: affiliation and e-mail]
