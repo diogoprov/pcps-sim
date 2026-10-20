@@ -1,6 +1,7 @@
 # Objective 2, full run: recovery of a planted clade by PCPS, PCC, evoPCA and
 # phylofactorization (R/clade_recovery.R, R/clade_methods.R) in the 9 grid
-# cells x N = 50/100/200, basal or recent clades and shifts 0.5/1/2, with
+# cells x N = 50/100/200, basal or recent clades and shifts 0/0.5/1/2 (0: no
+# planted effect, the chance level of each method), with
 # incidence data; abundance only for N = 100. Run locally (Diogo, 2026-10-19:
 # ~2 h on 12 cores, cheaper than rebuilding the AWS image with Bioconductor).
 #
@@ -57,7 +58,7 @@ message("Trees: ", format(Sys.time() - t0))
 
 # Phase 2: chunks ------------------------------------------------------------------
 jobs <- tidyr::crossing(grid, data_type = c("incidence", "abundance"), depth = depths,
-                        shift = c(0.5, 1, 2)) |>
+                        shift = c(0, 0.5, 1, 2)) |>
   dplyr::filter(data_type == "incidence" | n == 100) |>
   dplyr::mutate(chunk_file = file.path(chunk_dir, sprintf("%s_n%d_%s_%s_s%g_k%d.csv", cell,
                                                           n, data_type, depth, shift,

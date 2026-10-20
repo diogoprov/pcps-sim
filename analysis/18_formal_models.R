@@ -55,7 +55,10 @@ raw <- data.table::fread(do.call(file.path, as.list(c("data", "derived", spec$fi
                          select = cols) |>
   tibble::as_tibble()
 if (model == "clade") {
-  raw <- dplyr::mutate(raw, success = hit)
+  # shift 0 (no planted effect) is the chance level, reported separately by
+  # analysis/29_clade_baseline.R
+  raw <- dplyr::filter(raw, shift > 0) |>
+    dplyr::mutate(success = hit)
   by <- c("method", "cell", "n_spp", "data_type", "depth", "shift")
 } else {
   raw <- raw |>

@@ -25,7 +25,7 @@ Running title: Tree shape and phylogenetic community tests
 
 Article type: Research Article
 
-Word count: 7,815 (abstract, main text and references); 8,216 including the table and figure legends
+Word count: 7,866 (abstract, main text and references); 8,267 including the table and figure legends
 
 # Acknowledgements
 
