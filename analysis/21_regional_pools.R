@@ -31,16 +31,6 @@ for (f in list.files("R", "[.]R$", full.names = TRUE)) source(f)
 raw_dir <- file.path("data", "raw", "nri_pcps")
 out_dir <- file.path("data", "derived", "pools")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-binomial_re <- "^[A-Z][a-z]+ [a-z-]+$"
-
-# taxon labels of a NEXUS file (TAXLABELS block)
-nexus_labels <- function(path) {
-  x <- paste(readLines(path, warn = FALSE, encoding = "latin1"), collapse = " ")
-  block <- regmatches(x, regexpr("(?i)TAXLABELS(.*?);", x, perl = TRUE))
-  lab <- strsplit(sub("(?i)TAXLABELS", "", sub(";$", "", block), perl = TRUE),
-                  "[[:space:]]+")[[1]]
-  unique(gsub("'", "", lab[lab != ""]))
-}
 
 # one file per metacommunity (Wild19961.nex duplicates Wild1996.nex), with its
 # locality and region; `locality_source` says whether the author confirmed it
@@ -96,75 +86,18 @@ mainara <- tibble::tribble(
   "Ccar",  "Chiasmocleis carvalhoi",      "inferred"
 )
 
-# dictionary of names a code may stand for: 2012 binomials, and current and
-# synonym ASW names of species in the study countries (synonyms map to the
-# current name); a name may appear in both sources
+# names a code may stand for (R/taxonomy.R)
 labels$is_full <- grepl("^[A-Z][a-z]+_[a-z]", labels$label)
 full_names <- unique(gsub("_", " ", labels$label[labels$is_full]))
-binomials_2012 <- full_names[grepl(binomial_re, full_names)]
-study_countries <- c("BR", "AR", "PY", "UY", "BO", "PE")
-amphibiaweb <- AmphiNom::amphweb
-local_species <- paste(amphibiaweb$genus, amphibiaweb$species)[
-  vapply(strsplit(amphibiaweb$isocc, ","), \(x) any(x %in% study_countries), logical(1))]
-asw_synonyms <- AmphiNom::asw_synonyms
-local_synonyms <- asw_synonyms[asw_synonyms$species %in% local_species, ]
-dictionary <- dplyr::bind_rows(
-  tibble::tibble(name = binomials_2012, current = binomials_2012, source = "2012 names"),
-  tibble::tibble(name = local_synonyms$synonyms, current = local_synonyms$species,
-                 source = "ASW")
-) |>
-  dplyr::filter(grepl(binomial_re, name)) |>
-  dplyr::distinct(name, source, .keep_all = TRUE)
-
-# possible splits of a code into genus and epithet prefixes: "A.albosignatus";
-# "Bokcir" (3 + 3), "Rorn" (1 + 3), "Hpu" (1 + 2), "Halbopunctatus" (1 +
-# epithet); a 6-letter code may be 3 + 3 ("Bokcir") or 1 + epithet ("Dnanus")
-code_splits <- function(code) {
-  if (grepl("[.]", code)) {
-    p <- strsplit(code, "[.]")[[1]]
-    return(list(c(p[1], p[length(p)])))
-  }
-  split_at <- function(k) c(substr(code, 1, k), substr(code, k + 1, nchar(code)))
-  if (nchar(code) == 6) list(split_at(3), split_at(1)) else list(split_at(1))
-}
-# candidates (rows of `dict`) for a code; the epithet prefix is compared on its
-# stem, so "albopunctatus" also matches "albopunctata"
-code_candidates <- function(code, dict) {
-  genus <- tolower(sub(" .*", "", dict$name))
-  epithet <- sub(".* ", "", dict$name)
-  hits <- lapply(code_splits(code), \(parts) {
-    parts <- tolower(parts)
-    stem <- if (nchar(parts[2]) > 5) substr(parts[2], 1, nchar(parts[2]) - 2) else parts[2]
-    dict[startsWith(genus, parts[1]) & startsWith(epithet, stem), ]
-  })
-  dplyr::distinct(dplyr::bind_rows(hits))
-}
-# a code is resolved when its candidates in the first dictionary that has any
-# point to a single species: the 2012 names, then the valid ASW names (a code
-# like "P.boiei" also matches old synonyms such as Phyllomedusa boiei), then
-# all ASW names
-resolve_code <- function(code) {
-  sets <- list(dictionary[dictionary$source == "2012 names", ],
-               dictionary[dictionary$source == "ASW" & dictionary$name == dictionary$current, ],
-               dictionary[dictionary$source == "ASW", ])
-  for (dict in sets) {
-    hit <- code_candidates(code, dict)
-    if (nrow(hit) > 0)
-      return(if (length(unique(hit$current)) == 1) hit$name[1] else NA_character_)
-  }
-  NA_character_
-}
-
-# undetermined taxa, including the codes of "Genus sp." ("Hsp", "Lsp", "Ssp")
-labels$undetermined <- grepl("(^|[ _.])(sp|aff|cf|gr)([ _.0-9]|$)", labels$label) |
-  grepl("^[A-Z]sp[0-9]*$", labels$label)
+dictionary <- name_dictionary(full_names[grepl(binomial_re, full_names)])
+labels$undetermined <- is_undetermined(labels$label)
 labels <- labels |>
   dplyr::mutate(
     name_2012 = dplyr::case_when(
       undetermined ~ NA_character_,
       is_full ~ gsub("_", " ", label),
       dataset == "mainara" ~ mainara$name[match(label, mainara$label)],
-      TRUE ~ vapply(label, resolve_code, character(1))
+      TRUE ~ vapply(label, resolve_code, character(1), dictionary = dictionary)
     ),
     resolution = dplyr::case_when(
       is_full ~ "full name",
@@ -174,35 +107,16 @@ labels <- labels |>
     )
   )
 
-# harmonize with ASW (AmphiNom): a name listed as a synonym maps to its current
-# name; otherwise asw_sync (NA when the name is not found)
-sync <- function(x) {
-  x <- unique(x)
-  out <- asw_synonyms$species[match(x, asw_synonyms$synonyms)]
-  todo <- is.na(out)
-  if (any(todo)) {
-    s <- suppressMessages(AmphiNom::asw_sync(x[todo]))
-    out[todo] <- ifelse(s$status == "name_not_found", NA_character_,
-                        s$ASW_names)[match(x[todo], s$query)]
-  }
-  stats::setNames(out, x)
-}
-labels$asw_name <- unname(sync(stats::na.omit(labels$name_2012))[labels$name_2012])
+labels$asw_name <- unname(sync_asw(stats::na.omit(labels$name_2012))[labels$name_2012])
 
+labels$corrected <- !labels$undetermined & !is.na(labels$name_2012) & is.na(labels$asw_name)
 # names the ASW does not know (spelling errors of full names or of the 2012
 # names a code resolved to): the closest ASW name within 2 edits, if unique
-asw_dictionary <- dictionary[dictionary$source == "ASW", ]
-fix_spelling <- function(name) {
-  d <- utils::adist(name, asw_dictionary$name)[1, ]
-  hit <- unique(asw_dictionary$current[d == min(d)])
-  if (min(d) <= 2 && length(hit) == 1) hit else NA_character_
-}
-labels$corrected <- !labels$undetermined & !is.na(labels$name_2012) & is.na(labels$asw_name)
 labels$asw_name[labels$corrected] <- vapply(labels$name_2012[labels$corrected], fix_spelling,
-                                            character(1))
+                                            character(1), dictionary = dictionary)
 
 portik_tree <- ape::read.tree(file.path("data", "raw", "portik2023_timetree.tre"))
-portik_asw <- sync(gsub("_", " ", portik_tree$tip.label))
+portik_asw <- sync_asw(gsub("_", " ", portik_tree$tip.label))
 labels <- labels |>
   dplyr::mutate(
     portik_tip = portik_tree$tip.label[match(asw_name, portik_asw)],
