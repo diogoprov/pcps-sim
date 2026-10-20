@@ -62,6 +62,8 @@ path <- function(d, fill = "none", stroke = col_line, sw = 1.5, opacity = 1,
 }
 text <- function(x, y, label, size = 14, weight = "normal", anchor = "middle",
                  fill = col_text, style = "normal") {
+  # small labels enlarged so that they print at about 6 pt or more
+  if (size < 14) size <- max(size + 3, 15)
   add(sprintf('<text x="%s" y="%s" font-family="%s" font-size="%s" font-weight="%s" font-style="%s" text-anchor="%s" fill="%s">%s</text>',
               num(x), num(y), font, size, weight, style, anchor, fill, label))
 }
@@ -181,12 +183,15 @@ scores <- pcps_axes(comm, q, 1:2)
 env01 <- (env - min(env)) / diff(range(env))
 
 # Canvas ------------------------------------------------------------------------
-W <- 1800
-H <- 820
-# physical size of 180 mm wide (Wiley maximum width), so that the PDF has the
-# printed size
-add(sprintf('<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="%smm" viewBox="0 0 %d %d">',
-            formatC(180 * H / W, format = "f", digits = 1), W, H))
+# two rows: panels 1-3 on top and panels 4-5 below, drawn in the coordinates of
+# a single row and moved into place by the row-2 offset
+W <- 1130
+H <- 1620
+row2 <- c(dx = -892, dy = 800)
+# physical size: 225 mm high (the height of a printed page), so that the PDF
+# has the printed size (about 157 mm wide)
+add(sprintf('<svg xmlns="http://www.w3.org/2000/svg" width="%smm" height="225mm" viewBox="0 0 %d %d">',
+            formatC(225 * W / H, format = "f", digits = 1), W, H))
 add('<defs>')
 add('<linearGradient id="envh" x1="0" y1="0" x2="1" y2="0">',
     paste(sprintf('<stop offset="%s" stop-color="%s"/>', seq(0, 1, length.out = 6), pal_env), collapse = ""),
@@ -203,8 +208,8 @@ rect(0, 0, W, H, fill = "#ffffff")
 
 cards <- data.frame(x = c(20, 355, 740, 1135, 1570), w = c(310, 360, 370, 410, 210))
 titles <- c("Tree shape", "Traits", "Assembly", "Analysis", "Inference")
-for (i in seq_len(nrow(cards))) card(cards$x[i], 20, cards$w[i], 780, i, titles[i])
-for (i in 1:4) chevron((cards$x[i] + cards$w[i] + cards$x[i + 1]) / 2, 410)
+for (i in 1:3) card(cards$x[i], 20, cards$w[i], 780, i, titles[i])
+for (i in 1:2) chevron((cards$x[i] + cards$w[i] + cards$x[i + 1]) / 2, 410)
 
 # 1 Tree shape ------------------------------------------------------------------
 cw <- 78
@@ -264,8 +269,8 @@ for (k in seq_along(icons)) {
   rect(x0, 222, 100, 76, fill = "#ffffff", stroke = "#e1e5ea", rx = 8)
   for (cv in icons[[k]]$curves) bell_icon(x0 + 8, 288, 84, cv[1], cv[2], cv[3], env_col(cv[4]))
   line(x0 + 8, 288, x0 + 92, 288, stroke = "#b8c0cc", sw = 1.2)
-  text(x0 + 30, 324, icons[[k]]$lab, size = 20, style = "italic", weight = "bold")
-  text(x0 + 44, 323, icons[[k]]$word, size = 12, fill = "#5c6878", anchor = "start")
+  text(x0 + 16, 324, icons[[k]]$lab, size = 20, style = "italic", weight = "bold")
+  text(x0 + 28, 323, icons[[k]]$word, size = 12, fill = "#5c6878", anchor = "start")
 }
 # scenario matrix
 sc <- scenarios_layerA()
@@ -300,10 +305,10 @@ for (i in seq_len(nrow(sc))) {
 ly <- 752
 signal_dot(388, ly, 1, r = 8)
 text(400, ly + 4, "phylogenetic signal", size = 12, anchor = "start", fill = "#5c6878")
-signal_dot(526, ly, 0.5, r = 8)
-text(538, ly + 4, "λ = 0.5", size = 12, anchor = "start", fill = "#5c6878")
-signal_dot(606, ly, 0, r = 8)
-text(618, ly + 4, "none", size = 12, anchor = "start", fill = "#5c6878")
+signal_dot(552, ly, 0.5, r = 8)
+text(564, ly + 4, "λ = 0.5", size = 12, anchor = "start", fill = "#5c6878")
+signal_dot(638, ly, 0, r = 8)
+text(650, ly + 4, "none", size = 12, anchor = "start", fill = "#5c6878")
 rect(380, ly + 20, 26, 12, fill = "url(#envh)", rx = 3)
 text(412, ly + 30, "generating E", size = 12, anchor = "start", fill = "#5c6878")
 rect(518, ly + 20, 26, 12, fill = "#e4e8ee", stroke = "#b8c0cc", rx = 3)
@@ -389,6 +394,10 @@ text(1050, yy + 60, "4", size = 26, weight = "bold")
 text(1050, yy + 80, "archetypes", size = 11, fill = "#5c6878")
 
 # 4 Analysis --------------------------------------------------------------------
+add(sprintf('<g transform="translate(%s %s)">', row2[["dx"]], row2[["dy"]]))
+chevron(cards$x[4] - 12, 410)
+for (i in 4:5) card(cards$x[i], 20, cards$w[i], 780, i, titles[i])
+chevron((cards$x[4] + cards$w[4] + cards$x[5]) / 2, 410)
 x4 <- 1160
 hy4 <- 118
 hw <- 92
@@ -548,11 +557,12 @@ text(x5 + 18, 620, "γ", size = 16, style = "italic", anchor = "middle")
 line(x5 + 40, 680, x5 + 140, 680, sw = 1.6, marker = "arr")
 text(x5 + 90, 700, 'I<tspan font-size="10" dy="3">C</tspan>', size = 15, style = "italic")
 # replicates
-for (k in 2:0) rect(x5 + 38 + k * 8, 724 + k * 6, 70, 46, fill = "#ffffff", stroke = "#b8c0cc",
+for (k in 2:0) rect(x5 + 8 + k * 6, 724 + k * 5, 64, 44, fill = "#ffffff", stroke = "#b8c0cc",
                     sw = 1.2, rx = 6)
-text(x5 + 73, 753, "×1000", size = 16, weight = "bold")
-text(x5 + 136, 746, "replicates", size = 11, fill = "#5c6878", anchor = "start")
-text(x5 + 136, 760, "per cell", size = 11, fill = "#5c6878", anchor = "start")
+text(x5 + 40, 752, "×1000", size = 16, weight = "bold")
+text(x5 + 92, 742, "replicates", size = 11, fill = "#5c6878", anchor = "start")
+text(x5 + 92, 760, "per cell", size = 11, fill = "#5c6878", anchor = "start")
+add("</g>")
 
 add("</svg>")
 
