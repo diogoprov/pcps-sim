@@ -17,7 +17,8 @@ execute:
 ---
 
 <!-- Render: quarto render docs/resumo_projeto.qmd (paths are relative to
-docs/). Needs data/derived/{full,axes,layerB}/results.csv, which are not in git
+docs/). Needs data/derived/{full,axes,layerB,clade}/results.csv and
+data/derived/models/ (analysis/18 and 19), which are not in git
 (download from S3, aws/README.md). No cache: the CSVs are read on every render
 (~10 s). -->
 
@@ -462,24 +463,201 @@ readr::read_csv(file.path(gam_dir, "pruning_gamma_slopes.csv"),
   aditivo em γ e Colless (sem `te()`), os IC são pontuais e há 704 modelos
   sem correção para multiplicidade. Exploratório; o final será em `brms`.
 
-# Hipóteses: leitura preliminar
+# Objetivo 2: recuperação de um clado plantado
 
-Leitura minha, descritiva (sem o modelo formal da seção 6 do plano):
+**Desenho.** Em cada réplica sorteia-se um nó cujo clado tem 10–30% das
+espécies, na metade mais antiga ("old") ou mais recente ("young") dos nós
+possíveis. Os ótimos das espécies desse clado são deslocados ao longo de E
+(u = −1 + 102·Φ(z + shift), z iid N(0, 1)); as demais espécies não têm sinal.
+Cada método dá um escore por nó: PCPS, evoPCA e PCC pela |correlação| entre
+pertencer ao clado e o escore das espécies no eixo (entre os 4 primeiros) mais
+correlacionado com E; o phylofactor (binomial com incidência, composicional
+com abundância) pelo seu próprio critério em cada partição. **Acerto** = o
+clado de maior escore é o plantado. Grade 3 × 3 × N 50/100/200 × 2
+profundidades × deslocamentos 0,5/1/2 × 1000 réplicas com incidência, mais
+abundância com N = 100: 864 mil linhas, sem NA. Rodou localmente (16 núcleos,
+1h11). Desenho pareado: para uma réplica, o clado plantado, os ótimos e o
+gradiente são os mesmos entre deslocamentos e tipos de dado.
+
+```{r}
+#| label: clade-data
+clade <- read_results("clade", c("cell", "n_spp", "data_type", "depth", "shift",
+                                 "method", "hit")) |>
+  add_shape_levels()
+clade |>
+  filter(data_type == "incidence", shift == 2) |>
+  group_by(n_spp, depth, method) |>
+  summarise(hit = mean(hit), .groups = "drop") |>
+  pivot_wider(names_from = method, values_from = hit) |>
+  kable3(2)
+```
+
+```{r}
+#| label: clade-shape
+clade |>
+  filter(data_type == "incidence", shift == 2, n_spp == 100) |>
+  group_by(gamma, depth, method) |>
+  summarise(hit = mean(hit), .groups = "drop") |>
+  pivot_wider(names_from = method, values_from = hit) |>
+  arrange(depth, gamma) |>
+  kable3(2)
+```
+
+- **evoPCA e phylofactor** recuperam o clado na maioria das réplicas com
+  deslocamento 2 (0,44–0,88, conforme N e profundidade) e quase não dependem da
+  forma da árvore.
+- **PCPS** acerta bem menos (0,12–0,42) e depende muito do γ: com N = 100,
+  clados antigos 0,55 com γ baixo contra 0,19 em árvores Yule; recentes 0,28
+  contra 0,03. A ponderação filogenética de P espalha o sinal pelos parentes do
+  clado, e o PCPS tende a escolher um clado maior.
+- **PCC**, com os 4 primeiros autovetores, quase não isola clados desse
+  tamanho (0,08–0,12), porque esses autovetores seguem as divisões profundas.
+- Com deslocamento 0,5 todos os métodos ficam em 0,05–0,21.
+
+# Modelos formais
+
+**Modelo.** Beta-binomial (`brms`, 4 cadeias × 2000 iterações) das taxas
+agregadas por condição (1000 réplicas cada), separadamente para erro tipo I e
+poder da camada A e para a recuperação de clados. γ e Colless entram como
+fatores de 3 níveis com a interação γ × Colless (a superfície do plano):
+cada célula tem um único alvo por eixo e a camada A não guardou o γ de cada
+árvore, então um termo contínuo só interpolaria 3 pontos (decisão aceita pelo
+Diogo). Os efeitos de forma interagem com o teste (ou método), o cenário
+(camada A), a profundidade (clados), N e o tipo de dado. Priors: normal(0; 1,5)
+nos coeficientes (escala logit); intercepto normal(−2,9; 1,5) no erro tipo I e
+normal(0; 1,5) nos demais; φ ~ gamma(2; 0,01). A primeira versão, com efeito
+aleatório por condição, batia no treedepth máximo em 99% das transições; a
+beta-binomial resolveu. Código em `analysis/18_formal_models.R` e
+`analysis/19_shape_contrasts.R`; saídas em `data/derived/models/`.
+
+```{r}
+#| label: model-diagnostics
+models_dir <- file.path(root, "data", "derived", "models")
+purrr::map(c("type_I", "power", "clade"), \(m) {
+  readr::read_csv(file.path(models_dir, m, "diagnostics.csv"), show_col_types = FALSE) |>
+    mutate(model = m, .before = 1)
+}) |>
+  bind_rows() |>
+  kable3(3)
+```
+
+Os três modelos convergiram (R-hat ≤ 1,005, ESS bulk ≥ 914, nenhuma divergência,
+nenhuma transição no treedepth máximo). O teste preditivo é in-sample: 97–98%
+das condições caem no intervalo de 95%, e agrupando por teste × N × célula
+todos os grupos caem nele. As previsões são conservadoras, e esse teste agrupado
+quase não discrimina. No poder, a sobredispersão quasibinomial segue alta (13),
+o que indica estrutura ainda não modelada (talvez cenário × N).
+
+```{r}
+#| label: contrasts
+contr <- readr::read_csv(file.path(models_dir, "contrasts.csv"), show_col_types = FALSE) |>
+  mutate(ci = sprintf("%+.3f [%+.3f, %+.3f]", median, lower, upper))
+show_contrast <- function(d, ...) {
+  d |>
+    select(..., n_f, ci) |>
+    pivot_wider(names_from = n_f, values_from = ci) |>
+    select(..., any_of(c("50", "100", "200"))) |>
+    knitr::kable()
+}
+```
+
+**Contrastes** (mediana [IC 95%] da diferença de taxa; γ baixo − Yule no
+Colless Yule; colunas = N).
+
+*Erro tipo I, efeito do sinal em σ e h* (S2sigma ou S2h − S2, mesmo gradiente
+sem sinal), incidência:
+
+```{r}
+#| label: contrasts-h2
+contr |>
+  filter(model == "type_I", grepl("^S2", contrast), data_type == "incidence") |>
+  show_contrast(contrast, test)
+```
+
+*Poder, γ baixo − Yule*, incidência:
+
+```{r}
+#| label: contrasts-power
+contr |>
+  filter(model == "power", contrast == "gamma low - yule", data_type == "incidence") |>
+  show_contrast(test, scenario)
+```
+
+*Recuperação de clados, γ baixo − Yule*, incidência:
+
+```{r}
+#| label: contrasts-clade
+contr |>
+  filter(model == "clade", contrast == "gamma low - yule", data_type == "incidence") |>
+  show_contrast(method, depth)
+```
+
+*Abundância* (N = 100 nos clados; N = 50/100/200 na camada A), γ baixo − Yule:
+
+```{r}
+#| label: contrasts-abundance
+contr |>
+  filter(contrast == "gamma low - yule", data_type == "abundance", n_f == "100") |>
+  mutate(group = coalesce(test, method), level = coalesce(scenario, depth)) |>
+  select(model, group, level, ci) |>
+  knitr::kable()
+```
+
+```{r}
+#| label: fig-surface-power
+#| fig-cap: "Poder estimado (N = 100, incidência) sobre a grade γ × Colless, por teste e cenário."
+knitr::include_graphics(file.path(models_dir, "power", "shape_surface.png"))
+```
+
+```{r}
+#| label: fig-surface-clade
+#| fig-cap: "Acerto estimado do clado plantado (N = 100, incidência, deslocamento 2) sobre a grade γ × Colless, por método e profundidade."
+knitr::include_graphics(file.path(models_dir, "clade", "shape_surface.png"))
+```
+
+- **Colless** quase não importa em nada: no erro tipo I, |taxa − 0,05| com
+  Colless alto − Yule fica em ±0,011 e nenhum dos 75 contrastes (teste ×
+  cenário × N) exclui zero, com incidência ou abundância. No poder e nos
+  clados, Colless alto reduz as taxas em 0,01–0,08.
+- **Sinal em σ** (S2sigma) infla o erro tipo I só no GLM PCPS2 (+0,03 em
+  Yule; +0,09/+0,11/+0,16 com γ baixo e N = 50/100/200) e no PCC (+0,045 em
+  Yule; +0,02 com γ baixo). ADONIS, GLM PCPS1 e Mantel ficam mais
+  conservadores (−0,01 a −0,03). Com abundância, o mesmo padrão, mais fraco no
+  GLM PCPS2 (+0,09 com γ baixo e N = 100). **Sinal em h** não tem efeito.
+- **Poder:** com γ baixo o GLM PCPS1 perde 0,32–0,46 (pior com N maior); o PCC
+  perde 0,07–0,48 (em S3b e S3sigma a perda diminui com N; em S3a aumenta); o
+  Mantel perde até 0,23; o ADONIS quase não muda e, com N = 200, até ganha
+  (+0,04 a +0,08). A ordem dos métodos muda: em S3a o GLM PCPS1 cai de 2º para
+  4º; em S3b o PCC cai de 1º para 3º.
+- **Clados:** com γ baixo o PCPS ganha +0,23 a +0,45 (mais com N maior, mais
+  nos antigos); evoPCA e phylofactor não mudam; o PCC perde nos antigos
+  (−0,10 a −0,14) e ganha nos recentes (+0,07 a +0,09).
+- O modelo não tem cenário × N, então a variação com N do efeito de σ vem só
+  da escala logit.
+
+# Hipóteses
+
+Leitura a partir dos modelos formais (seção anterior) e das tabelas descritivas:
 
 - **H1** (o desbalanço afasta do nominal o erro tipo I do taxa shuffle sobre
-  D_P): **não sustentada**. O Colless não muda o erro tipo I nem o poder em
-  nenhum teste.
+  D_P): **sem evidência.** Nenhum contraste de Colless alto contra Yule
+  exclui zero (|Δ| ≤ 0,011). Não testei o nível médio de Colless nem a parte
+  comparativa da H1 (taxa shuffle contra métodos só de distância); a resposta
+  modelada é o teste max, não o taxa shuffle isolado.
 - **H2** (sinal filogenético em σ ou h infla o erro tipo I em todos os
-  métodos, com magnitude dependente da forma): **parcial**. Só o sinal em σ
-  infla, e só no GLM PCPS2 e no PCC. A magnitude depende do γ, em sentidos
-  opostos nos dois. O sinal em h não infla na camada A; na camada B, o PCC
-  fica na borda (0,076–0,078).
-- **H3** (γ muito negativo concentra a variação no PCPS1): **contrariada**. A
-  fração no PCPS1 *diminui* com γ baixo. A parte sobre recuperação de clados
-  não foi medida.
-- **H4** (a ordem dos métodos muda com a forma da árvore): **sustentada**. PCC
-  > ADONIS em árvores Yule, ADONIS ≥ PCC com γ baixo; o padrão se repete nas
-  duas camadas.
+  métodos, com magnitude dependente da forma): **rejeitada como enunciada.**
+  Só o sinal em σ infla, e só no GLM PCPS2 e no PCC; os outros três testes
+  ficam mais conservadores. No GLM PCPS2 a inflação cresce muito com γ baixo;
+  no PCC ela diminui. O sinal em h não muda nada na camada A; na camada B, o
+  PCC em S2h fica na borda (0,076–0,078).
+- **H3** (γ muito negativo concentra a variação no PCPS1 e favorece a
+  recuperação de clados basais, não a dos recentes): **parcial.** A fração no
+  PCPS1 *diminui* com γ baixo (contraria a primeira parte). Na recuperação, o
+  PCPS melhora muito com γ baixo, nos clados antigos e também nos recentes; a
+  vantagem dos antigos é só de grau. Não há nível com γ acima de Yule.
+- **H4** (a ordem dos métodos muda com a forma da árvore): **sustentada para o
+  poder** (S3a e S3b) e nas duas camadas; na recuperação de clados, evoPCA e
+  phylofactor ficam sempre no topo e só PCPS e PCC trocam de lugar.
 
 # Infraestrutura e custo
 
@@ -490,6 +668,8 @@ Leitura minha, descritiva (sem o modelo formal da seção 6 do plano):
 | full | 432.000 | ~8 h |
 | axes | 432.000 | ~6,6 h |
 | layerB (+ reexecução) | 440.000 | 6,6 h + 0,9 h |
+| clade (local, 16 núcleos) | 216.000 | 1,2 h |
+| Modelos `brms` (local) | — | ~5 min |
 
 Pelo preço spot registrado (US$ 2,6–3,3/h), as quatro rodadas grandes custam
 algo como US$ 60–75 no total. É estimativa minha (horas × preço), não a
@@ -504,24 +684,21 @@ refaria quase tudo (o `results.csv` já é o final).
 
 **Imediatos**
 
-1. Camada B: o GAM pelo γ realizado está feito (seção 5); falta entender por
-   que o PCC perde o poder sob *mass effects* e decidir se o modelo final
-   (`brms`) da camada B entra no artigo ou só a camada A.
-2. Análise formal da camada A conforme o plano: modelo binomial da taxa de
-   rejeição com spline de γ × Colless, N, cenário, método e tipo de dado, em
-   `mgcv` para explorar e `brms` (priors explícitos, R-hat, ESS, PPC) para o
-   modelo final. Figura-chave: superfícies de rejeição sobre γ × Colless por
-   método.
-3. Thompson et al. 2020 lido: a ordem Poisson → emigração → imigração da
-   camada B confere com as Eqs. 1, 2 e 4.
+1. Camada B: decidir se entra um modelo formal (`brms`) também para ela ou
+   só os resultados descritivos e o GAM; entender por que o PCC perde o poder
+   sob *mass effects*.
+2. Modelos formais: limitações registradas (sem cenário × N; só Colless alto
+   contra Yule na H1; teste preditivo in-sample).
+3. Pools regionais empíricos (opção b) e incerteza dos quantis com os
+   bootstraps de Portik: ainda não feitos.
 
 **Decididos (Diogo, 2026-10-19)**
 
 4. Bootstraps datados de Portik et al. 2023: baixados (100 árvores); falta
    usá-los para a incerteza dos quantis empíricos de γ e Colless.
 5. Objetivo 2: evoPCA (Pavoine 2016; `adiv`) e phylofactorization (Washburne
-   et al. 2017) entram; recuperação de clados por **clado plantado** (código
-   do cenário e das métricas pronto; faltam os escores por método e o piloto).
+   et al. 2017) entram; recuperação de clados por **clado plantado** (feito,
+   seção 6).
 6. Sem segundo simulador: o modelo de Thompson et al. 2020 basta.
 7. Pools regionais empíricos (opção b): juntar as listas de espécies das
    metacomunidades de girinos do projeto NRI vs PCPS por região, atualizar os

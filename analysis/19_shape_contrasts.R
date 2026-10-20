@@ -1,6 +1,6 @@
-# Posterior contrasts from the brms models of analysis/18_formal_models.R,
-# incidence data (clade: shift 2), for every N. Median and 95% credible
-# interval of:
+# Posterior contrasts from the brms models of analysis/18_formal_models.R, for
+# every N and data type (clade: shift 2; abundance only at N = 100, where it
+# was simulated). Median and 95% credible interval of:
 #   shape    - rate at low gamma minus Yule (at Yule Colless), and at high
 #              Colless minus Yule (at Yule gamma), by test x scenario or
 #              method x depth (H3, H4)
@@ -19,11 +19,13 @@ summarise_draws_by <- function(d, rows, ...) {
   dplyr::mutate(rows, ..., median = q[2, ], lower = q[1, ], upper = q[3, ])
 }
 
-# grid of every level of `grp` x N, incidence (clade: shift 2)
+# grid of every level of `grp` x N x data type present in the data (clade:
+# shift 2)
 base_grid <- function(fit, grp, ...) {
   levs <- lapply(stats::setNames(grp, grp), \(v) levels(fit$data[[v]]))
-  out <- tidyr::crossing(!!!levs, n_f = levels(fit$data$n_f), data_type = "incidence",
-                         n = 1, ...)
+  present <- dplyr::distinct(fit$data, n_f, data_type) |>
+    dplyr::mutate(dplyr::across(dplyr::everything(), as.character))
+  out <- tidyr::crossing(!!!levs, present, n = 1, ...)
   if ("shift_f" %in% names(fit$data)) out$shift_f <- "2"
   out
 }
@@ -34,7 +36,7 @@ rate_at <- function(fit, grid, g, cl) {
 shape <- purrr::map(c("type_I", "power", "clade"), \(m) {
   fit <- readRDS(file.path(root, m, "brms_fit.rds"))
   grid <- base_grid(fit, if (m == "clade") c("method", "depth") else c("test", "scenario"))
-  rows <- dplyr::select(grid, -n, -data_type, -dplyr::any_of("shift_f"))
+  rows <- dplyr::select(grid, -n, -dplyr::any_of("shift_f"))
   yule <- rate_at(fit, grid, "g_yule", "c_yule")
   dplyr::bind_rows(
     summarise_draws_by(rate_at(fit, grid, "g_low", "c_yule") - yule, rows, model = m,
@@ -50,12 +52,12 @@ grid <- base_grid(fit, c("test", "scenario"))
 nominal <- summarise_draws_by(
   abs(rate_at(fit, grid, "g_yule", "c_high") - alpha) -
     abs(rate_at(fit, grid, "g_yule", "c_yule") - alpha),
-  dplyr::select(grid, test, scenario, n_f), model = "type_I",
+  dplyr::select(grid, test, scenario, n_f, data_type), model = "type_I",
   contrast = "|colless high - 0.05| - |yule - 0.05|")
 
 scenario <- purrr::map(c("g_yule", "g_low"), \(g) {
   at <- \(sc) rate_at(fit, base_grid(fit, "test", scenario = sc), g, "c_yule")
-  rows <- dplyr::select(base_grid(fit, "test", scenario = "S2"), test, n_f)
+  rows <- dplyr::select(base_grid(fit, "test", scenario = "S2"), test, n_f, data_type)
   s2 <- at("S2")
   dplyr::bind_rows(
     summarise_draws_by(at("S2sigma") - s2, rows, model = "type_I",
