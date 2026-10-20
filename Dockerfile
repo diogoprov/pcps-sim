@@ -6,7 +6,8 @@ FROM rocker/r-ver:4.6.1
 # source when no Linux binary matches the lockfile version)
 RUN apt-get update && apt-get install -y --no-install-recommends \
       cmake libcurl4-openssl-dev libglpk-dev libgmp3-dev libicu-dev libssl-dev \
-      libuv1-dev libx11-dev libxml2-dev pandoc zlib1g-dev \
+      libuv1-dev libx11-dev libxml2-dev pandoc zlib1g-dev libpng-dev \
+      libfontconfig1-dev libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /project
@@ -20,8 +21,12 @@ ENV RENV_PATHS_LIBRARY=/opt/renv/library \
     MAKEFLAGS="-j8"
 COPY renv.lock .Rprofile ./
 COPY renv/activate.R renv/settings.json renv/
-# rocker points `repos` to Linux binaries on Posit Package Manager
-RUN R -q -e 'renv::restore(repos = getOption("repos"), prompt = FALSE)'
+# rocker points `repos` to Linux binaries on Posit Package Manager. Only the
+# packages the simulation pipeline uses (and their dependencies, from the
+# lockfile) are restored: the lockfile also holds packages for the local
+# analyses (clade recovery, formal models, figures), some from Bioconductor
+# or needing graphics libraries, which the pipeline never loads.
+RUN R -q -e 'renv::restore(repos = getOption("repos"), prompt = FALSE, packages = c("targets", "tarchetypes", "crew", "qs2", "ape", "phytools", "geiger", "treestats", "vegan", "RSpectra", "dplyr", "tidyr", "tibble", "purrr", "readr", "data.table"))'
 
 COPY R/ R/
 COPY analysis/ analysis/
