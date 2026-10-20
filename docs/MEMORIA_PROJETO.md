@@ -1057,3 +1057,25 @@ Próximos passos sugeridos:
   alvo estatístico, versões, sementes, ausência de pré-registro e desvios do
   PLANO nos Métodos; corrigir o comentário de `rejection_rates()` (diz que
   calcula IC binomial e não calcula).
+- **Pools regionais, passo 2** (2026-10-19). Decisões do Diogo: Crivelari =
+  Paraná; Vasconcelos e Motta = noroeste de SP; três pools aninhados; estudo de
+  caso com as metacomunidades empíricas (pode virar um box); não revisar
+  planilhas, excluir as indeterminadas. Regras aplicadas: indeterminadas
+  (sp., aff., cf., gr., códigos "Xsp") e códigos ambíguos excluídos; erros de
+  digitação corrigidos pelo nome do ASW mais próximo (≤ 2 edições, único);
+  nomes casados com Portik pela sinonímia do ASW. Dúvidas mantidas e marcadas
+  até o Diogo decidir: Lma (Both; L. macrosternum ou L. latrans), Stra (Mainara;
+  S. trachythorax, que o ASW sincroniza com S. fuscovarius), Eova (Mainara;
+  E. ovalis) e V.uranoscopa (Crivelari; o ASW sincroniza com V. parvula).
+  Exclusões que podem ser revistas: Loc (Both; provavelmente L. ocellatus =
+  L. latrans), Crossodactylus dispar, Scinax caldarum e S. hiemalis (válidos,
+  mas fora da árvore de Portik). **115 espécies mantidas.** Pools
+  (`data/derived/pools/pool_shapes.csv`; γ e Colless normalizado pelo Yule na
+  árvore de Portik, IC 95% dos 100 bootstraps): Mata Atlântica (SE + S), n = 54,
+  γ −1,93 [−1,98; −1,18], Colless 0,65 [0,62; 1,11]; Mata Atlântica + interior de
+  SP, n = 75, γ −2,61 [−2,72; −1,82], Colless 0,60 [0,50; 1,05]; América do Sul,
+  n = 115, γ −3,44 [−3,65; −2,70], Colless 1,22 [1,05; 1,50]. Os três caem
+  dentro da grade, entre os níveis Yule e médio nos dois eixos (alvos com N = 50:
+  γ −5,58/−3,79/0, Colless 0/0,94/2,39; N = 100: γ −6,54/−4,94/0, Colless
+  0/1,31/2,74). A estimativa pontual de γ fica na borda do intervalo dos
+  bootstraps.

@@ -13,8 +13,12 @@
 #   - names harmonized with the Amphibian Species of the World through AmphiNom
 #     (asw_sync), and matched to the tips of the Portik et al. 2023 tree, also
 #     harmonized with asw_sync.
-# Writes data/derived/pools/names.csv (every label with its resolution) and
-# names_to_review.csv (what needs the author's taxonomic decision).
+#   - the author's rules (2026-10-19): undetermined taxa (sp., aff., cf., gr.)
+#     and codes that stay ambiguous are excluded; typos are corrected when a
+#     single ASW name is close (agrep); doubtful resolutions are kept and
+#     flagged until the author decides.
+# Writes data/derived/pools/names.csv (every label with its resolution and
+# status) and datasets.csv.
 # Usage: Rscript analysis/21_regional_pools.R
 
 raw_dir <- file.path("data", "raw", "nri_pcps")
@@ -44,10 +48,10 @@ datasets <- tibble::tribble(
   "dias",        "Dias2007.nex",              "Ubatuba?, SP",           "Atlantic Forest SE", "inferred",
   "gomes",       "Gomes.nex",                 "Campos do Jordao?, SP",  "Atlantic Forest SE", "inferred",
   "mainara",     "Mainara.nex",               "Mainara (-23.36, -44.85)", "Atlantic Forest SE", "inferred",
-  "motta",       "Motta_phylo.nex",           "?",                      "?",                  "inferred",
+  "motta",       "Motta_phylo.nex",           "NW Sao Paulo",           "Interior SP",        "author",
   "peltzer",     "Peltzer_phylo.nex",         "Santa Fe?, Argentina",   "South (Argentina)",  "inferred",
   "rogerio",     "Rogeio_phylo.nex",          "SW Goias",               "Cerrado GO",         "inferred",
-  "vasconcelos", "Vasconcelos2011.nex",       "?, SP",                  "Interior SP",        "inferred",
+  "vasconcelos", "Vasconcelos2011.nex",       "NW Sao Paulo",           "Interior SP",        "author",
   "wild",        "Wild1996.nex",              "Peru",                   "Amazonia (Peru)",    "inferred"
 )
 labels <- purrr::map2(datasets$dataset, file.path(raw_dir, datasets$file), \(d, f)
@@ -76,34 +80,41 @@ dictionary <- dplyr::bind_rows(
   dplyr::filter(grepl("^[A-Z][a-z]+ [a-z-]+$", name)) |>
   dplyr::distinct(name, .keep_all = TRUE)
 
-# split a code into genus and epithet prefixes
-code_parts <- function(code) {
+# possible splits of a code into genus and epithet prefixes: "A.albosignatus";
+# "Bokcir" (3 + 3), "Rorn" (1 + 3), "Hpu" (1 + 2), "Halbopunctatus" (1 +
+# epithet); a 6-letter code may be 3 + 3 ("Bokcir") or 1 + epithet ("Dnanus")
+code_splits <- function(code) {
   if (grepl("[.]", code)) {
     p <- strsplit(code, "[.]")[[1]]
-    return(c(p[1], p[length(p)]))
+    return(list(c(p[1], p[length(p)])))
   }
-  # "Bokcir" (3 + 3), "Rorn" (1 + 3), "Hpu" (1 + 2), "Halbopunctatus" (1 + epithet)
-  k <- if (nchar(code) == 6) 3 else 1
-  c(substr(code, 1, k), substr(code, k + 1, nchar(code)))
+  split_at <- function(k) c(substr(code, 1, k), substr(code, k + 1, nchar(code)))
+  if (nchar(code) == 6) list(split_at(3), split_at(1)) else list(split_at(1))
 }
 # candidates (names in `dict`) for a code; the epithet prefix is compared on its
 # stem, so "albopunctatus" also matches "albopunctata"
 code_candidates <- function(code, dict) {
-  parts <- tolower(code_parts(code))
-  stem <- if (nchar(parts[2]) > 5) substr(parts[2], 1, nchar(parts[2]) - 2) else parts[2]
   genus <- tolower(sub(" .*", "", dict$name))
   epithet <- sub(".* ", "", dict$name)
-  dict[startsWith(genus, parts[1]) & startsWith(epithet, stem), ]
+  hits <- lapply(code_splits(code), \(parts) {
+    parts <- tolower(parts)
+    stem <- if (nchar(parts[2]) > 5) substr(parts[2], 1, nchar(parts[2]) - 2) else parts[2]
+    dict[startsWith(genus, parts[1]) & startsWith(epithet, stem), ]
+  })
+  dplyr::distinct(dplyr::bind_rows(hits))
 }
-# a code is resolved when all its candidates in the first dictionary that has
-# any point to the same species
+# a code is resolved when its candidates in the first dictionary that has any
+# point to a single species: first the 2012 names, then the valid ASW names
+# (a code like "P.boiei" also matches old synonyms such as Phyllomedusa boiei),
+# then all ASW names
 resolve_code <- function(code) {
-  for (src in c("2012 names", "ASW")) {
-    hit <- code_candidates(code, dictionary[dictionary$source == src, ])
-    if (nrow(hit) > 0) {
-      out <- unique(hit$name)
-      return(if (length(unique(hit$current)) == 1) out[1] else NA_character_)
-    }
+  sets <- list(dictionary[dictionary$source == "2012 names", ],
+               dictionary[dictionary$source == "ASW" & dictionary$name == dictionary$current, ],
+               dictionary[dictionary$source == "ASW", ])
+  for (dict in sets) {
+    hit <- code_candidates(code, dict)
+    if (nrow(hit) > 0)
+      return(if (length(unique(hit$current)) == 1) hit$name[1] else NA_character_)
   }
   NA_character_
 }
@@ -119,10 +130,19 @@ labels <- labels |>
                                               !is.na(name_2012) ~ "code resolved",
                                               TRUE ~ "code unresolved"))
 
-# harmonize with ASW (AmphiNom); asw_sync keeps the query order
+# harmonize with ASW (AmphiNom): a name listed as a synonym maps to its current
+# name; otherwise asw_sync (NA when the name is not found)
+all_synonyms <- AmphiNom::asw_synonyms
 sync <- function(x) {
-  s <- suppressMessages(AmphiNom::asw_sync(unique(x)))
-  stats::setNames(s$ASW_names, s$query)
+  x <- unique(x)
+  out <- all_synonyms$species[match(x, all_synonyms$synonyms)]
+  todo <- is.na(out)
+  if (any(todo)) {
+    s <- suppressMessages(AmphiNom::asw_sync(x[todo]))
+    out[todo] <- ifelse(s$status == "name_not_found", NA_character_,
+                        s$ASW_names)[match(x[todo], s$query)]
+  }
+  stats::setNames(out, x)
 }
 query <- unique(stats::na.omit(labels$name_2012))
 asw <- sync(query)
@@ -131,23 +151,77 @@ labels$asw_name <- unname(asw[labels$name_2012])
 portik <- ape::read.tree(file.path("data", "raw", "portik2023_timetree.tre"))$tip.label
 portik_names <- gsub("_", " ", portik)
 portik_asw <- sync(portik_names)
-in_portik <- unique(stats::na.omit(portik_asw))
+portik_species <- unique(stats::na.omit(portik_asw))
 labels <- labels |>
-  dplyr::mutate(in_portik = !is.na(asw_name) & asw_name %in% in_portik,
+  dplyr::mutate(in_portik = !is.na(asw_name) & asw_name %in% portik_species,
                 portik_tip = portik[match(asw_name, portik_asw[portik_names])])
-readr::write_csv(labels, file.path(out_dir, "names.csv"))
 
-review <- labels |>
-  dplyr::filter(!in_portik) |>
-  dplyr::mutate(candidates = ifelse(resolution == "full name", "",
-                                    vapply(label, candidates_text, character(1))),
-                decision = "")
-readr::write_csv(review, file.path(out_dir, "names_to_review.csv"))
+# undetermined taxa, including the codes of "Genus sp." ("Hsp", "Lsp", "Ssp")
+undetermined <- grepl("(^|[ _.])(sp|aff|cf|gr)([ _.0-9]|$)", labels$label) |
+  grepl("^[A-Z]sp[0-9]*$", labels$label)
+# typos in full names: the closest ASW name (the 2012 names include the typos
+# themselves), if it is within 2 edits and points to a single current name
+asw_dictionary <- dictionary[dictionary$source == "ASW", ]
+fix_typo <- function(name) {
+  d <- utils::adist(name, asw_dictionary$name)[1, ]
+  hit <- unique(asw_dictionary$current[d == min(d)])
+  if (min(d) <= 2 && length(hit) == 1) hit else NA_character_
+}
+typo <- !undetermined & labels$resolution == "full name" & is.na(labels$asw_name)
+labels$asw_name[typo] <- vapply(labels$name_2012[typo], fix_typo, character(1))
+# doubtful resolutions, kept until the author decides
+doubtful <- c(both = "Lma", mainara = "Stra", mainara = "Eova", crivelari = "V.uranoscopa")
+labels <- labels |>
+  dplyr::mutate(
+    in_portik = !is.na(asw_name) & asw_name %in% portik_species,
+    portik_tip = portik[match(asw_name, portik_asw[portik_names])],
+    status = dplyr::case_when(
+      undetermined ~ "excluded: undetermined",
+      is.na(asw_name) ~ "excluded: unresolved",
+      !in_portik ~ "excluded: not in Portik tree",
+      paste(dataset, label) %in% paste(names(doubtful), doubtful) ~ "kept: doubtful",
+      typo ~ "kept: typo corrected",
+      TRUE ~ "kept"
+    )
+  )
+readr::write_csv(labels, file.path(out_dir, "names.csv"))
+print(dplyr::count(labels, status))
 readr::write_csv(datasets, file.path(out_dir, "datasets.csv"))
 labels |>
-  dplyr::filter(in_portik) |>
+  dplyr::filter(startsWith(status, "kept")) |>
   dplyr::group_by(region) |>
   dplyr::summarise(species = dplyr::n_distinct(asw_name)) |>
   print(n = Inf)
-message(nrow(review), " of ", nrow(labels), " labels need review; ",
-        dplyr::n_distinct(labels$asw_name[labels$in_portik]), " species matched to Portik")
+message(dplyr::n_distinct(labels$asw_name[startsWith(labels$status, "kept")]),
+        " species kept")
+
+# Step 2: three nested regional pools, pruned from the Portik tree and from its
+# 100 time-calibrated bootstrap trees; shape (gamma, Colless normalized against
+# Yule, as in R/trees.R) of each, against the grid targets of the nearest N
+pools <- list(
+  "Atlantic Forest" = c("Atlantic Forest SE", "Atlantic Forest S"),
+  "Atlantic Forest + interior SP" = c("Atlantic Forest SE", "Atlantic Forest S", "Interior SP"),
+  "South America" = unique(datasets$region)
+)
+kept <- dplyr::filter(labels, startsWith(status, "kept"))
+for (f in list.files("R", "[.]R$", full.names = TRUE)) source(f)
+boot <- ape::read.tree(file.path("data", "raw", "portik2023_timetree_bootstraps.tre"))
+pool_shape <- purrr::imap(pools, \(regions, pool) {
+  tips <- unique(kept$portik_tip[kept$region %in% regions])
+  shape_of <- \(tr) tree_shape(ape::keep.tip(tr, tips))
+  b <- vapply(boot, shape_of, numeric(2))
+  tibble::tibble(pool = pool, n = length(tips),
+                 gamma = shape_of(ape::read.tree(file.path("data", "raw",
+                                                           "portik2023_timetree.tre")))[["gamma"]],
+                 gamma_lo = stats::quantile(b["gamma", ], 0.025, names = FALSE),
+                 gamma_hi = stats::quantile(b["gamma", ], 0.975, names = FALSE),
+                 colless = shape_of(ape::read.tree(file.path("data", "raw",
+                                                             "portik2023_timetree.tre")))[["colless"]],
+                 colless_lo = stats::quantile(b["colless", ], 0.025, names = FALSE),
+                 colless_hi = stats::quantile(b["colless", ], 0.975, names = FALSE))
+}) |>
+  dplyr::bind_rows()
+readr::write_csv(pool_shape, file.path(out_dir, "pool_shapes.csv"))
+readr::write_csv(dplyr::transmute(kept, dataset, region, asw_name, portik_tip) |>
+                   dplyr::distinct(), file.path(out_dir, "pool_species.csv"))
+print(pool_shape)
