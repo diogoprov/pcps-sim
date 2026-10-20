@@ -1112,3 +1112,8 @@ Próximos passos sugeridos:
   todas as referências; "Fig. 1", "Figs 2–4", "Table 1"; P para valores de
   probabilidade; números de um a nove por extenso. As instruções técnicas de
   figura (formato, resolução) ficam num link que o PDF não traz.
+
+## Reestruturação do manuscrito (2026-10-20)
+- Pedido do autor após ler o docx: equações nativas do Word (math LaTeX no qmd → OMML via pandoc), subscritos em math, Methods/Results enxutos, detalhes movidos para Appendix S1 (métodos estendidos) e S2 (resultados estendidos) em manuscript/supporting_information.qmd, que tem lista de referências própria. Results sem subtítulos; Box 1 mantido.
+- Figuras: Figs 2, 3 e 5 em YlGnBu com rótulo branco em célula escura; Fig. 4 e Box 1 em Okabe–Ito; ícone RDA da Fig. 1 com quatro setinhas; Box 1 com ponto = mediana bootstrap e losango = árvore pontual. Rótulos σ nos painéis.
+- Novo no S1, tirado do código: σ = √2 σ_T de Thompson, imigração multinomial, só o estado final.

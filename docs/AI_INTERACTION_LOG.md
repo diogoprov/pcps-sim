@@ -96,3 +96,19 @@ decisions, commands and results). The full history of changes is in git.
   was checked by independent review passes, which found wrong values and
   over-claims that were corrected. References were verified on Crossref;
   unverified ones are marked [CITAR: ...].
+
+### 2026-10-20 — Manuscript restructure after the author's read of the docx
+- At the author's request: formulas and subscripts converted to native Word
+  equations (LaTeX math rendered by pandoc as OMML); Methods and Results
+  shortened (about 2,800 and 1,500 words) by moving generator, Layer B,
+  node-score, model-formula, prior, computation, validation, Layer B null-rate,
+  abundance-recovery and convergence details to Appendices S1–S2 of the
+  Supporting Information; Results subheadings removed.
+- Figures: readable palettes (YlGnBu with adaptive label colour; Okabe–Ito for
+  Fig. 4 and Box 1), several short biplot arrows in the RDA icon of Fig. 1, and
+  Box 1 points drawn at the bootstrap median with the point estimate as an
+  open diamond.
+- Two review passes (Standards, Spec) checked that no number was lost in the
+  move; they caught a wrong pointer (N = 200 vs N = 100), six dropped facts and
+  missing SI references, all fixed. Appendix S1 now states three model details
+  taken from the code (σ = √2 σ_T, multinomial immigration, final state only).

@@ -35,9 +35,9 @@ When $\sigma_j$ or $h_j$ carried phylogenetic signal, we simulated a Brownian tr
 
 The dynamics followed Thompson et al. (2020), which we implemented in R from the published equations, because neither the original Julia code nor the R package mcomsimr carries a licence. The expected abundance of species $j$ at site $i$ at time $t + 1$ was
 
-$$\lambda_{ij}(t) = \frac{r_j \exp\left[-\dfrac{(E_i - u_j)^2}{2\sigma_j^2}\right] N_{ij}(t)}{1 + \sum_k \alpha_{jk} N_{ik}(t)},$$
+$$\mu_{ij}(t) = \frac{r_j \exp\left[-\dfrac{(E_i - u_j)^2}{2\sigma_j^2}\right] N_{ij}(t)}{1 + \sum_k \alpha_{jk} N_{ik}(t)},$$
 
-where $N_{ij}(t)$ is the abundance of species $j$ at site $i$ and $\alpha_{jk}$ is the effect of species $k$ on species $j$. We drew abundances from a Poisson distribution with mean $\lambda_{ij}(t)$; each individual then emigrated with probability $a$, and each site received the emigrants of each species from all other sites in proportion to their number (a multinomial draw), so that the dispersal kernel was uniform. Our σ is the standard deviation of the Gaussian response, as in Layer A, and equals $\sqrt{2}$ times the breadth parameter of Thompson et al. (2020). The environment was static. All species were seeded with Poisson(0.5) individuals per site every 10 steps during the first 100 steps, the dynamics ran for 1,000 steps, and we kept only the final state, a single survey, rather than a temporal mean. Maximum growth rate $r_j$, drawn from a uniform distribution between 2 and 8, took the role of $h_j$ in the trait scenarios.
+where $N_{ij}(t)$ is the abundance of species $j$ at site $i$ and $\alpha_{jk}$ is the effect of species $k$ on species $j$. We drew abundances from a Poisson distribution with mean $\mu_{ij}(t)$; each individual then emigrated with probability $a$, and each site received the emigrants of each species from all other sites in proportion to their number (a multinomial draw), so that the dispersal kernel was uniform. Our σ is the standard deviation of the Gaussian response, as in Layer A, and equals $\sqrt{2}$ times the breadth parameter of Thompson et al. (2020). The environment was static. All species were seeded with Poisson(0.5) individuals per site every 10 steps during the first 100 steps, the dynamics ran for 1,000 steps, and we kept only the final state, a single survey, rather than a temporal mean. Maximum growth rate $r_j$, drawn from a uniform distribution between 2 and 8, took the role of $h_j$ in the trait scenarios.
 
 Under phylogenetic competition, interspecific coefficients came from a uniform distribution between 0 and 0.1, relative to an intraspecific coefficient of 1 (both multiplied by 0.05), and were assigned to species pairs by the rank of their phylogenetic similarity, so that close relatives competed more strongly. We calibrated the size of the pool for each archetype, scenario and N so that the mean number of species left after the dynamics was close to N, and drew the pool tree with the targets of its cell, recalibrating β and $c$ for each pool size. However, mass effects with phylogenetic competition could not reach N = 200, since pools of up to 2,900 species left only about 150 species, and we dropped this combination. We recorded γ and the Colless index of both the pool tree and the analysed tree.
 
@@ -57,7 +57,7 @@ We first fitted quasibinomial generalized linear models to the same structures, 
 
 ## Computation
 
-The simulations of Layer A and Layer B ran in a Docker image on spot cloud instances with 192 virtual CPUs (190 workers); the pipeline seed was 20261018, from which the R package targets derives one seed per branch. Layer A took about 8 h for the 432,000 metacommunities of the main run and Layer B about 7.5 h for its 440,000. The clade-recovery runs took 1.2 h on a 16-core workstation, with one seed per tree, depth and replicate, and each formal model 1–7 min. The trait simulation, the β-splitting and branching-time generator and the calibration of the grid are our own R code in the repository.
+The simulations of Layer A and Layer B ran in a Docker image on spot cloud instances with 192 virtual CPUs (190 workers); the pipeline seed was 20261018, from which the R package targets (Landau, 2021) derives one seed per branch. Layer A took about 8 h for the 432,000 metacommunities of the main run and Layer B about 7.5 h for its 440,000. The clade-recovery runs took 1.2 h on a 16-core workstation, with one seed per tree, depth and replicate, and each formal model 1–7 min. The trait simulation, the β-splitting and branching-time generator and the calibration of the grid are our own R code in the repository.
 
 # Appendix S2. Extended results
 
@@ -79,16 +79,18 @@ All models converged, with $\hat{R}$ ≤ 1.01, bulk effective sample size ≥ 90
 
 # Table S1
 
-Targets of the tree-shape grid for each pool size N. Levels of γ are zero (Yule), the median and the 10% quantile of the anuran clades with 40–250 tips of Portik et al. (2023); levels of the Colless index (normalized against its Yule expectation) are zero, the median and the 90% quantile. c and β are the calibrated parameters of the generator, and acceptance is the proportion of simulated trees that fell within 0.5 units of both targets.
+Targets of the tree-shape grid for each pool size N. Levels of γ are zero (Yule), the median and the 10% quantile of the anuran clades with 40–250 tips of Portik et al. (2023); levels of the Colless index (normalized against its Yule expectation) are zero, the median and the 90% quantile. $c$ and β are the calibrated parameters of the generator, and acceptance is the proportion of simulated trees that fell within 0.5 units of both targets.
 
 ```{r}
 #| label: tbl-s1
-knitr::kable(si("table_S1_grid.csv"))
+knitr::kable(si("table_S1_grid.csv"),
+             col.names = c("N", "γ level", "Colless level", "γ target", "Colless target",
+                           "c", "β", "Acceptance"))
 ```
 
 # Table S2
 
-Every rate of the study (rejection rate of each test, or hit rate of each clade-recovery method) by condition, with its Monte Carlo standard error, MCSE = [p(1 − p)/K]^½ with K = 1,000 replicates, and the 95% Monte Carlo interval. The full table (file table_S2_rates_mcse.csv) has one row per condition; below we summarize the range of the MCSE by group of conditions.
+Every rate of the study (rejection rate of each test, or hit rate of each clade-recovery method) by condition, with its Monte Carlo standard error, $\text{MCSE} = \sqrt{p(1 - p)/K}$ with $K = 1{,}000$ replicates, and the 95% Monte Carlo interval. The full table (file table_S2_rates_mcse.csv) has one row per condition; below we summarize the range of the MCSE by group of conditions.
 
 ```{r}
 #| label: tbl-s2
@@ -97,16 +99,20 @@ s2 |>
   dplyr::group_by(model) |>
   dplyr::summarise(conditions = dplyr::n(), rate_min = min(rate), rate_max = max(rate),
                    mcse_min = min(mcse), mcse_max = max(mcse), .groups = "drop") |>
-  knitr::kable(digits = 3)
+  knitr::kable(digits = 3, col.names = c("Model", "Conditions", "Min. rate", "Max. rate",
+                                          "Min. MCSE", "Max. MCSE"))
 ```
 
 # Table S3
 
-Convergence and posterior predictive diagnostics of the beta-binomial models: maximum rank-normalized R̂, minimum bulk and tail effective sample sizes, numbers of divergent transitions and of transitions at the maximum tree depth, coverage of the 50% and 95% posterior predictive intervals for each condition and for the sums over the conditions of each test (or method), N and cell, and the dispersion of the quasibinomial model with the same structure.
+Convergence and posterior predictive diagnostics of the beta-binomial models: maximum rank-normalized $\hat{R}$, minimum bulk and tail effective sample sizes, numbers of divergent transitions and of transitions at the maximum tree depth, coverage of the 50% and 95% posterior predictive intervals for each condition and for the sums over the conditions of each test (or method), N and cell, and the dispersion of the quasibinomial model with the same structure.
 
 ```{r}
 #| label: tbl-s3
-knitr::kable(si("table_S3_diagnostics.csv"), digits = 3)
+knitr::kable(si("table_S3_diagnostics.csv"), digits = 3,
+             col.names = c("Model", "Max. R-hat", "Min. bulk ESS", "Min. tail ESS", "Divergences",
+                           "Max. tree depth", "50% cover", "95% cover", "50% cover (grouped)",
+                           "95% cover (grouped)", "Dispersion"))
 ```
 
 # References
@@ -117,11 +123,15 @@ Debastiani, V. J. (2026). PCPS: principal coordinates of phylogenetic structure.
 
 Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946. https://doi.org/10.1111/2041-210X.12547
 
+Landau, W. M. (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. *Journal of Open Source Software*, 6(57), 2959. https://doi.org/10.21105/joss.02959
+
 Legendre, P., & Gallagher, E. D. (2001). Ecologically meaningful transformations for ordination of species data. *Oecologia*, 129, 271–280. https://doi.org/10.1007/s004420100716
 
 Oksanen, J., Simpson, G. L., Blanchet, F. G., Kindt, R., Legendre, P., Minchin, P. R., et al. (2026). vegan: community ecology package. R package version 2.7-6. doi:10.32614/CRAN.package.vegan.
 
 Peres-Neto, P. R., & Kembel, S. W. (2015). Phylogenetic gradient analysis: environmental drivers of phylogenetic variation across ecological communities. *Plant Ecology*, 216, 709–724. https://doi.org/10.1007/s11258-014-0405-0
+
+Portik, D. M., Streicher, J. W., & Wiens, J. J. (2023). Frog phylogeny: a time-calibrated, species-level tree based on hundreds of loci and 5,242 species. *Molecular Phylogenetics and Evolution*, 188, 107907. https://doi.org/10.1016/j.ympev.2023.107907
 
 Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329. https://doi.org/10.1111/ele.13568
 

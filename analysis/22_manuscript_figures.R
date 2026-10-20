@@ -105,7 +105,7 @@ p <- ggplot2::ggplot() +
   ggplot2::geom_point(data = pools, ggplot2::aes(colless, gamma, colour = pool), shape = 5,
                       size = 2.2, stroke = 0.8, show.legend = FALSE) +
   ggplot2::scale_shape_manual(values = c(1, 2, 0), name = "Grid targets, N") +
-  ggplot2::scale_colour_manual(values = c("#1b9e77", "#7570b3", "#d95f02"), name = "Regional pool") +
+  ggplot2::scale_colour_manual(values = c("#009E73", "#0072B2", "#D55E00"), name = "Regional pool") +
   ggplot2::labs(x = "Colless index (normalized against Yule)", y = expression(gamma)) +
   theme_ms
 ggplot2::ggsave(file.path(out_dir, "box1_pools.png"), p, width = 15, height = 10, units = "cm",
