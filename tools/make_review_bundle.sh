@@ -61,7 +61,7 @@ grep -rIn -i 'provete' "$dest" | sed -E 's/Provete( et al\.)?,? \(?(2014|2018)//
 rm -f "$out_dir/pcps-sim-review.zip"
 (cd "$work" && zip -qr "$out_dir/pcps-sim-review.zip" pcps-sim)
 # description of the anonymous Zenodo deposit (Zenodo takes HTML)
-quarto pandoc "$root/tools/review_bundle_README.md" -f markdown -t html-auto_identifiers --wrap=none \
+quarto pandoc "$root/tools/review_bundle_README.md" -f markdown-auto_identifiers -t html --wrap=none \
   -o "$out_dir/zenodo_description.html"
 echo "Written: $out_dir/zenodo_description.html"
 echo "Written: $out_dir/pcps-sim-review.zip ($(du -h "$out_dir/pcps-sim-review.zip" | cut -f1))"
