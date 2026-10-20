@@ -31,7 +31,7 @@ We stated four hypotheses before the main runs. We expected that (i) tree imbala
 
 ## Tree generation and the tree-shape grid
 
-We controlled γ and the Colless index independently by generating topology and branching times from separate processes. We drew topologies from Aldous's β-splitting model [CITAR: Aldous 1996], in which β = 0 gives Yule trees and smaller values give increasingly imbalanced trees, and branching times from a pure-birth process in which each of the k lineages diversifies at rate k^c, so that c = 0 corresponds to a Yule process and c < 0 to a slowdown in diversification, as under diversity dependence, which produces negative γ. We then ordered the nodes by a uniform linear extension of the partial order of the tree and set the root depth to one. Because γ depends only on the intervals between nodes and the Colless index only on the topology, this construction controls the two axes separately. This generator is our own design choice and not a published model; it replaced the library of trees from several generators, sampled by strata, that we had planned, because it gives independent control by construction.
+We controlled γ and the Colless index independently by generating topology and branching times from separate processes. We drew topologies from Aldous's β-splitting model (Aldous, 1996), in which β = 0 gives Yule trees and smaller values give increasingly imbalanced trees, and branching times from a pure-birth process in which each of the k lineages diversifies at rate k^c, so that c = 0 corresponds to a Yule process and c < 0 to a slowdown in diversification, as under diversity dependence, which produces negative γ. We then ordered the nodes by a uniform linear extension of the partial order of the tree and set the root depth to one. Because γ depends only on the intervals between nodes and the Colless index only on the topology, this construction controls the two axes separately. This generator is our own design choice and not a published model; it replaced the library of trees from several generators, sampled by strata, that we had planned, because it gives independent control by construction.
 
 We took the levels of the grid from the empirical distribution of tree shape in anurans. We pruned all clades with 40–250 tips from the time-calibrated species-level tree of Portik et al. (2023) and computed γ and the Colless index normalized against its Yule expectation with the R package treestats v. 1.71.13 (Janzen & Etienne, 2024). For each pool size N (50, 100 and 200 species, as in Duarte et al., 2016), γ took three levels, namely zero (as in a Yule tree), the median of the empirical clades and their 10% quantile, and the Colless index took three levels, zero, the median and the 90% quantile (Table S1). We calibrated c and β for each N with curves of the mean statistic against the parameter, and accepted a tree only when both statistics fell within 0.5 units of the targets of its cell, which gave acceptance rates of 9–25%. Thus, every cell of the 3 × 3 grid could be filled, and the grid spans the empirical range of anuran tree shapes between the 10% and 90% quantiles, although it has no level with γ > 0. The Yule × Yule cell approximates the trees used in previous validations (Peres-Neto & Kembel, 2015; Duarte et al., 2016), since the acceptance window truncates the Yule distribution of both statistics. We drew 1,000 trees per cell and N, and replicate r of every scenario used tree r of its cell, so that the scenarios were paired by tree.
 
@@ -84,7 +84,7 @@ Priors were declared explicitly on the logit scale. We used normal(0, 1.5) for a
 
 ## Empirical reference and case study
 
-To show where real regional species pools fall in the grid of tree shapes, and how the methods behave with real data, we used 14 tadpole metacommunities compiled from the literature and from unpublished data (Box 1). We harmonized species names with the Amphibian Species of the World [CITAR: Frost 2025] using the R package AmphiNom v. 1.1.0 (Liedtke, 2019), excluded undetermined taxa, and matched the remaining 123 species to the tips of the Portik et al. (2023) tree. We built three nested pools (Atlantic Forest; Atlantic Forest and interior of São Paulo; all South American metacommunities), pruned the tree to each, and computed γ and the normalized Colless index on the point-estimate tree and on its 100 time-calibrated bootstrap trees. For the case study, we used the metacommunities with at least 10 ponds and pond depth measured in every pond, namely two of the 14 and one additional published dataset: Serra da Bocaina (13 ponds; Provete et al., 2014), southern Brazil (32 ponds; Both et al., 2011) and northwestern São Paulo (40 ponds; Prado & Rossa-Feres, 2014). We applied all tests and the four clade-scoring methods to incidence data with pond depth as the gradient, and also with canopy cover in Bocaina, the variable associated with its phylogenetic composition in a previous analysis with PCPS (Provete, 2018).
+To show where real regional species pools fall in the grid of tree shapes, and how the methods behave with real data, we used 14 tadpole metacommunities compiled from the literature and from unpublished data (Box 1). We harmonized species names with the Amphibian Species of the World (Frost, 2026; through the internal dataset of AmphiNom, updated on 16 October 2025) using the R package AmphiNom v. 1.1.0 (Liedtke, 2019), excluded undetermined taxa, and matched the remaining 123 species to the tips of the Portik et al. (2023) tree. We built three nested pools (Atlantic Forest; Atlantic Forest and interior of São Paulo; all South American metacommunities), pruned the tree to each, and computed γ and the normalized Colless index on the point-estimate tree and on its 100 time-calibrated bootstrap trees. For the case study, we used the metacommunities with at least 10 ponds and pond depth measured in every pond, namely two of the 14 and one additional published dataset: Serra da Bocaina (13 ponds; Provete et al., 2014), southern Brazil (32 ponds; Both et al., 2011) and northwestern São Paulo (40 ponds; Prado & Rossa-Feres, 2014). We applied all tests and the four clade-scoring methods to incidence data with pond depth as the gradient, and also with canopy cover in Bocaina, the variable associated with its phylogenetic composition in a previous analysis with PCPS (Provete, 2018).
 
 ## Implementation and reproducibility
 
@@ -138,74 +138,78 @@ The three metacommunities of the case study had small trees with contrasting sha
 
 # References (verified)
 
-Anderson, M. J. (2001). A new method for non-parametric multivariate analysis of variance. *Austral Ecology*, 26, 32–46.
+Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous & R. Pemantle (Eds.), *Random discrete structures* (pp. 1–18). The IMA Volumes in Mathematics and its Applications, Vol. 76. Springer. https://doi.org/10.1007/978-1-4612-0719-1_1
+
+Anderson, M. J. (2001). A new method for non-parametric multivariate analysis of variance. *Austral Ecology*, 26, 32–46. https://doi.org/10.1111/j.1442-9993.2001.01070.pp.x
 
 Beverton, R. J. H., & Holt, S. J. (1957). *On the dynamics of exploited fish populations*. Fishery Investigations Series II, Vol. 19. London: HMSO (reprinted 1993, Springer, doi:10.1007/978-94-011-2106-4).
 
-Both, C., Melo, A. S., Cechin, S. Z., & Hartz, S. M. (2011). Tadpole co-occurrence in ponds: when do guilds and time matter? *Acta Oecologica*, 37, 140–145.
+Both, C., Melo, A. S., Cechin, S. Z., & Hartz, S. M. (2011). Tadpole co-occurrence in ponds: when do guilds and time matter? *Acta Oecologica*, 37, 140–145. https://doi.org/10.1016/j.actao.2011.01.008
 
-Bradley, J. V. (1978). Robustness? *British Journal of Mathematical and Statistical Psychology*, 31, 144–152.
+Bradley, J. V. (1978). Robustness? *British Journal of Mathematical and Statistical Psychology*, 31, 144–152. https://doi.org/10.1111/j.2044-8317.1978.tb00581.x
 
-Bürkner, P.-C. (2017). brms: an R package for Bayesian multilevel models using Stan. *Journal of Statistical Software*, 80(1), 1–28.
+Bürkner, P.-C. (2017). brms: an R package for Bayesian multilevel models using Stan. *Journal of Statistical Software*, 80(1), 1–28. https://doi.org/10.18637/jss.v080.i01
 
-Colless, D. H. (1982). Review of Phylogenetics: the theory and practice of phylogenetic systematics. *Systematic Zoology*, 31, 100–104. [CITAR: conferir página final]
+Colless, D. H. (1982). Review of Phylogenetics: the theory and practice of phylogenetic systematics. *Systematic Zoology*, 31, 100–104. [CITAR: conferir página final] https://doi.org/10.2307/2413420
 
 Debastiani, V. J. (2026). PCPS: principal coordinates of phylogenetic structure. R package version 1.0.9. doi:10.32614/CRAN.package.PCPS.
 
-DiRenzo, G. V., Hanks, E., & Miller, D. A. W. (2023). A practical guide to understanding and validating complex models using data simulations. *Methods in Ecology and Evolution*, 14, 203–217.
+DiRenzo, G. V., Hanks, E., & Miller, D. A. W. (2023). A practical guide to understanding and validating complex models using data simulations. *Methods in Ecology and Evolution*, 14, 203–217. https://doi.org/10.1111/2041-210X.14030
 
-Duarte, L. D. S. (2011). Phylogenetic habitat filtering influences forest nucleation in grasslands. *Oikos*, 120, 208–215.
+Duarte, L. D. S. (2011). Phylogenetic habitat filtering influences forest nucleation in grasslands. *Oikos*, 120, 208–215. https://doi.org/10.1111/j.1600-0706.2010.18898.x
 
-Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946.
+Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946. https://doi.org/10.1111/2041-210X.12547
 
-Duarte, L. D. S., Prieto, P. V., & Pillar, V. D. (2012). Assessing spatial and environmental drivers of phylogenetic structure in Brazilian Araucaria forests. *Ecography*, 35, 952–960.
+Duarte, L. D. S., Prieto, P. V., & Pillar, V. D. (2012). Assessing spatial and environmental drivers of phylogenetic structure in Brazilian Araucaria forests. *Ecography*, 35, 952–960. https://doi.org/10.1111/j.1600-0587.2011.07193.x
+
+Frost, D. R. (2026). *Amphibian Species of the World: an online reference*. Version 6.2. American Museum of Natural History. https://amphibiansoftheworld.amnh.org/index.php https://doi.org/10.5531/db.vz.0001
 
 Gabry, J., Češnovar, R., Johnson, A., & Bronder, S. (2025). cmdstanr: R interface to CmdStan. R package version 0.9.0. https://github.com/stan-dev/cmdstanr.
 
-Janzen, T., & Etienne, R. S. (2024). Phylogenetic tree statistics: a systematic overview using the new R package treestats. *Molecular Phylogenetics and Evolution*, 200, 108168.
+Janzen, T., & Etienne, R. S. (2024). Phylogenetic tree statistics: a systematic overview using the new R package treestats. *Molecular Phylogenetics and Evolution*, 200, 108168. https://doi.org/10.1016/j.ympev.2024.108168
 
-Landau, W. M. (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. *Journal of Open Source Software*, 6(57), 2959.
+Landau, W. M. (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. *Journal of Open Source Software*, 6(57), 2959. https://doi.org/10.21105/joss.02959
 
 Landau, W. M. (2026). crew: a distributed worker launcher framework. R package version 1.3.3. doi:10.32614/CRAN.package.crew.
 
-Legendre, P., & Gallagher, E. D. (2001). Ecologically meaningful transformations for ordination of species data. *Oecologia*, 129, 271–280.
+Legendre, P., & Gallagher, E. D. (2001). Ecologically meaningful transformations for ordination of species data. *Oecologia*, 129, 271–280. https://doi.org/10.1007/s004420100716
 
-Liedtke, H. C. (2019). AmphiNom: an amphibian systematics tool. *Systematics and Biodiversity*, 17, 1–6.
+Liedtke, H. C. (2019). AmphiNom: an amphibian systematics tool. *Systematics and Biodiversity*, 17, 1–6. https://doi.org/10.1080/14772000.2018.1518935
 
 Mantel, N. (1967). The detection of disease clustering and a generalized regression approach. *Cancer Research*, 27, 209–220.
 
 Oksanen, J., Simpson, G. L., Blanchet, F. G., Kindt, R., Legendre, P., Minchin, P. R., et al. (2026). vegan: community ecology package. R package version 2.7-6. doi:10.32614/CRAN.package.vegan.
 
-Pagel, M. (1999). Inferring the historical patterns of biological evolution. *Nature*, 401, 877–884.
+Pagel, M. (1999). Inferring the historical patterns of biological evolution. *Nature*, 401, 877–884. https://doi.org/10.1038/44766
 
-Paradis, E., & Schliep, K. (2019). ape 5.0: an environment for modern phylogenetics and evolutionary analyses in R. *Bioinformatics*, 35, 526–528.
+Paradis, E., & Schliep, K. (2019). ape 5.0: an environment for modern phylogenetics and evolutionary analyses in R. *Bioinformatics*, 35, 526–528. https://doi.org/10.1093/bioinformatics/bty633
 
-Pavoine, S. (2016). A guide through a family of phylogenetic dissimilarity measures among sites. *Oikos*, 125, 1719–1732.
+Pavoine, S. (2016). A guide through a family of phylogenetic dissimilarity measures among sites. *Oikos*, 125, 1719–1732. https://doi.org/10.1111/oik.03262
 
-Pavoine, S. (2020). adiv: an R package to analyse biodiversity in ecology. *Methods in Ecology and Evolution*, 11, 1106–1112.
+Pavoine, S. (2020). adiv: an R package to analyse biodiversity in ecology. *Methods in Ecology and Evolution*, 11, 1106–1112. https://doi.org/10.1111/2041-210X.13430
 
-Peres-Neto, P. R., & Kembel, S. W. (2015). Phylogenetic gradient analysis: environmental drivers of phylogenetic variation across ecological communities. *Plant Ecology*, 216, 709–724.
+Peres-Neto, P. R., & Kembel, S. W. (2015). Phylogenetic gradient analysis: environmental drivers of phylogenetic variation across ecological communities. *Plant Ecology*, 216, 709–724. https://doi.org/10.1007/s11258-014-0405-0
 
-Peres-Neto, P. R., Leibold, M. A., & Dray, S. (2012). Assessing the effects of spatial contingency and environmental filtering on metacommunity phylogenetics. *Ecology*, 93, S14–S30.
+Peres-Neto, P. R., Leibold, M. A., & Dray, S. (2012). Assessing the effects of spatial contingency and environmental filtering on metacommunity phylogenetics. *Ecology*, 93, S14–S30. https://doi.org/10.1890/11-0494.1
 
-Pillar, V. D., & Duarte, L. D. S. (2010). A framework for metacommunity analysis of phylogenetic structure. *Ecology Letters*, 13, 587–596.
+Pillar, V. D., & Duarte, L. D. S. (2010). A framework for metacommunity analysis of phylogenetic structure. *Ecology Letters*, 13, 587–596. https://doi.org/10.1111/j.1461-0248.2010.01456.x
 
-Portik, D. M., Streicher, J. W., & Wiens, J. J. (2023). Frog phylogeny: a time-calibrated, species-level tree based on hundreds of loci and 5,242 species. *Molecular Phylogenetics and Evolution*, 188, 107907.
+Portik, D. M., Streicher, J. W., & Wiens, J. J. (2023). Frog phylogeny: a time-calibrated, species-level tree based on hundreds of loci and 5,242 species. *Molecular Phylogenetics and Evolution*, 188, 107907. https://doi.org/10.1016/j.ympev.2023.107907
 
-Prado, V. H. M., & Rossa-Feres, D. C. (2014). The influence of niche and neutral processes on a neotropical anuran metacommunity. *Austral Ecology*, 39, 540–547.
+Prado, V. H. M., & Rossa-Feres, D. C. (2014). The influence of niche and neutral processes on a neotropical anuran metacommunity. *Austral Ecology*, 39, 540–547. https://doi.org/10.1111/aec.12114
 
 Provete, D. B. (2018). Canopy cover and structural complexity affect the phylogenetic composition of a pond-dwelling Neotropical anuran metacommunity. *bioRxiv*, doi:10.1101/252478.
 
-Provete, D. B., Gonçalves-Souza, T., Garey, M. V., Martins, I. A., & Rossa-Feres, D. C. (2014). Broad-scale spatial patterns of canopy cover and pond morphology affect the structure of a Neotropical amphibian metacommunity. *Hydrobiologia*, 734, 69–79.
+Provete, D. B., Gonçalves-Souza, T., Garey, M. V., Martins, I. A., & Rossa-Feres, D. C. (2014). Broad-scale spatial patterns of canopy cover and pond morphology affect the structure of a Neotropical amphibian metacommunity. *Hydrobiologia*, 734, 69–79. https://doi.org/10.1007/s10750-014-1870-0
 
-Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary models using incomplete molecular phylogenies. *Proceedings of the Royal Society B*, 267, 2267–2272.
+Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary models using incomplete molecular phylogenies. *Proceedings of the Royal Society B*, 267, 2267–2272. https://doi.org/10.1098/rspb.2000.1278
 
 R Core Team (2026). *R: a language and environment for statistical computing*. Vienna: R Foundation for Statistical Computing. doi:10.32614/R.manuals.
 
-Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329.
+Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329. https://doi.org/10.1111/ele.13568
 
 Ushey, K., & Wickham, H. (2026). renv: project environments. R package version 1.3.1. doi:10.32614/CRAN.package.renv.
 
-Washburne, A. D., Silverman, J. D., Leff, J. W., Bennett, D. J., Darcy, J. L., Mukherjee, S., Fierer, N., & David, L. A. (2017). Phylogenetic factorization of compositional data yields lineage-level associations in microbiome datasets. *PeerJ*, 5, e2969.
+Washburne, A. D., Silverman, J. D., Leff, J. W., Bennett, D. J., Darcy, J. L., Mukherjee, S., Fierer, N., & David, L. A. (2017). Phylogenetic factorization of compositional data yields lineage-level associations in microbiome datasets. *PeerJ*, 5, e2969. https://doi.org/10.7717/peerj.2969
 
-Williams, C., Yang, Y., Lagisz, M., Morrison, K., Ricolfi, L., Warton, D. I., & Nakagawa, S. (2024). Transparent reporting items for simulation studies evaluating statistical methods: foundations for reproducibility and reliability. *Methods in Ecology and Evolution*, 15, 1926–1939.
+Williams, C., Yang, Y., Lagisz, M., Morrison, K., Ricolfi, L., Warton, D. I., & Nakagawa, S. (2024). Transparent reporting items for simulation studies evaluating statistical methods: foundations for reproducibility and reliability. *Methods in Ecology and Evolution*, 15, 1926–1939. https://doi.org/10.1111/2041-210X.14415
