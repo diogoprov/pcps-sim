@@ -175,3 +175,4 @@ pools had γ between −2.5 and −3.9.
 - I did not read the tree-balance discussion in Vamosi et al. (2009) or the full text of Blum & François (2006).
 - I found no study that tested PCPS, PCC or evoPCA performance across γ or imbalance gradients. This appears to be a gap that our study fills (based on these searches, not an exhaustive review).
 - Billaud et al. (bioRxiv 2019, DOI 10.1101/586420) reports diversity decline in Archaeobatrachia but no γ. It was not included, and the published version was not verified.
+- LeapSpace (Scopus) report 1 (2026-10-20, query on tree shape × phylogenetic signal): only Brock et al. 2011 (Syst. Biol. 60: 410–419, doi:10.1093/sysbio/syr007; abstract read on OpenAlex) added to the Discussion.
