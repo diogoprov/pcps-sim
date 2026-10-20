@@ -21,6 +21,7 @@ rm -f "$dest"/CLAUDE.md "$dest"/CITATION.cff \
       "$dest"/docs/resumo_projeto.qmd "$dest"/docs/GUIAS_RELATO_MEE.md \
       "$dest"/manuscript/*.qmd "$dest"/manuscript/*.docx "$dest"/manuscript/*.py
 rm -rf "$dest"/docs/lit_review "$dest"/tools
+cp "$root/tools/review_bundle_README.md" "$dest/README_REVIEW.md"
 
 # names in the remaining files (BSD sed, as on macOS)
 scrub() {
