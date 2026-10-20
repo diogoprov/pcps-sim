@@ -1,6 +1,6 @@
 ---
 title: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
-subtitle: "Abstract, Methods, Results and Discussion (draft)"
+subtitle: "Full draft"
 date: 2026-10-20
 crossref:
   fig-prefix: Fig.
@@ -20,25 +20,35 @@ manuscript/supporting_information.qmd). Unverified references are marked
 
 # Abstract
 
-1. Methods that relate the phylogenetic structure of metacommunities to environmental gradients, like the principal coordinates of phylogenetic structure (PCPS) and the phylogenetic community composition approach (PCC), were validated with static simulations on trees close to the Yule model. However, real phylogenies vary in topological imbalance and in the distribution of branching times, and dispersal and competition assemble metacommunities, so their published performance may not hold for empirical data.
+1. Tests relating the phylogenetic structure of metacommunities to environmental gradients, such as the principal coordinates of phylogenetic structure (PCPS) and the phylogenetic community composition approach (PCC), were validated with static simulations, on trees close to Yule and with niche breadth independent of the phylogeny. However, real phylogenies vary in imbalance and branching times, and dispersal and competition assemble metacommunities, so their published performance may not hold for empirical data.
 
 2. We simulated metacommunities on a grid of tree shapes that crossed the distribution of branching times (γ) with topological imbalance (Colless index), with levels from anuran clades, in a static layer that reproduces the original validations and in a process-based layer with species sorting, mass effects and phylogenetic competition. We estimated the type I error and power of six tests, and how often four ordination and factorization methods recovered a clade planted along the gradient, with beta-binomial models of these rates.
 
-3. Tree imbalance did not affect the type I error of any test. Phylogenetic signal in niche breadth inflated the type I error of the linear model on the second PCPS axis, up to 0.36 in trees with low γ, and of the PCC, up to 0.22. Low γ reduced the power of the linear model on the first PCPS axis by 0.40 and that of the PCC by 0.25, whereas PERMANOVA was almost insensitive to tree shape. Mass effects reduced power more than tree shape and almost abolished that of the PCC. The evoPCA and phylofactorization recovered the planted clade in 0.44–0.88 of the replicates in every tree shape, whereas PCPS depended strongly on γ and PCC rarely found the clade.
+3. Tree imbalance did not affect the type I error of any test. Phylogenetic signal in niche breadth inflated the type I error of the linear model on the second PCPS axis, up to 0.36 in trees with low γ, and of the PCC, up to 0.22. Low γ reduced the power of the linear model on the first PCPS axis by 0.40 and that of the PCC by 0.25, whereas PERMANOVA was less sensitive to tree shape. Mass effects reduced the power of almost every test more than tree shape did and almost abolished that of the PCC. The evoPCA and phylofactorization recovered the planted clade in 0.44–0.88 of the replicates regardless of γ, whereas PCPS depended strongly on γ and PCC rarely found the clade.
 
-4. The performance of these methods seems to depend on the distribution of branching times and on the assembly process rather than on tree imbalance. Three regional anuran pools fell inside the simulated grid, so these results seem to apply to real metacommunities. We therefore recommend reporting γ of the analysed tree, caution with the second PCPS axis when niche breadth may be phylogenetically conserved, and using evoPCA or phylofactorization to identify the clades associated with a gradient.
+4. Performance seems to depend on branching times and on the assembly process rather than on tree imbalance. Three regional anuran pools fell at moderate levels of the simulated grid. We recommend reporting γ of the analysed tree, not relying on a single test, interpreting the second PCPS axis and the PCC with caution when niche breadth may be phylogenetically conserved, and using evoPCA or phylofactorization to identify the clades associated with a gradient.
 
 Data and code availability for review: the code, the rates aggregated by condition and the scripts that reproduce every table and figure are available in an anonymized archive for review (https://doi.org/10.5281/zenodo.23500661); the public repository and its Zenodo archive will be cited after review.
 
 Keywords: γ statistic, metacommunity phylogenetics, phylogenetic fuzzy weighting, phylogenetic signal, simulation study, species sorting, tree balance, type I error
 
+# Introduction
+
+The phylogenetic composition of communities along environmental gradients carries information about how lineages respond to the environment and how metacommunities are assembled (Leibold et al., 2010; Pillar & Duarte, 2010). Several methods relate the phylogenetic structure of a metacommunity to an environmental gradient. Phylogenetic fuzzy weighting summarizes each site by the phylogeny-weighted composition of its species, the matrix $\mathbf{P}$, whose principal coordinates of phylogenetic structure (PCPS) can then be related to the gradient (Pillar & Duarte, 2010; Duarte, 2011; Duarte et al., 2016). The phylogenetic community composition approach (PCC) relates species composition to phylogenetic eigenvectors and the gradient (Peres-Neto & Kembel, 2015), whereas evolutionary principal component analysis (evoPCA) and phylofactorization treat branches as units and point to the lineages that drive differences among sites (Pavoine, 2016; Washburne et al., 2017, 2019). These methods have been applied to plants and to animals, including the amphibians of the Americas, where the association between climate and phylogenetic composition depended on the depth of the nodes considered (Duarte et al., 2012, 2014). As a result, an empirical study can choose among tests that differ in what they summarize from the tree, and their behaviour under realistic conditions determines whether the inferences drawn from them are sound.
+
+The validation of these methods has focused on the type I error of permutation tests. When either the phylogeny or the environment alone structures species distributions, tests that permute only sites or only species reject the null hypothesis too often, and the largest of the two P-values (max test) is needed to control the type I error (ter Braak et al., 2012; Peres-Neto & Kembel, 2015; Duarte et al., 2016). The same problem affects tests on community-weighted means (Peres-Neto et al., 2017; Zelený, 2018), whose type I error also increases when traits and species distributions carry phylogenetic signal (Duarte et al., 2018). However, the simulations that established these results drew species niches from a static Gaussian response model (Peres-Neto et al., 2012), on trees close to the Yule model or from a pure-birth process (Duarte et al., 2016; Pavoine, 2016), and with niche breadth and maximum abundance independent of the phylogeny (Duarte et al., 2016; Peres-Neto et al., 2017). Real phylogenies and real metacommunities depart from each of these assumptions.
+
+First, real trees are more imbalanced than Yule trees (Heard, 1992; Blum & François, 2006), and a slowdown in diversification towards the present, that is, a negative γ statistic (Pybus & Harvey, 2000), was found in most clades of a large compilation of phylogenies (McPeek, 2008) and in many clades of birds (Phillimore & Price, 2008). Anurans are a clear case, since most living frogs descend from a few lineages that radiated rapidly in the late Cretaceous and early Paleogene (Roelants et al., 2007; Feng et al., 2017). Tree shape changes the expected values and the power of phylogenetic statistics (Münkemüller et al., 2012), the phylogenetic depth that community metrics respond to (Mazel et al., 2016) and the eigenstructure of phylogenetic matrices (Diniz-Filho et al., 1998), which is what PCPS and the PCC summarize. Nonetheless, to our knowledge, no study has evaluated how the distribution of branching times and the imbalance of the tree affect tests on phylogeny-weighted composition. Second, species are not sorted along gradients in isolation. In metacommunities, dispersal and competition interact with environmental filtering (Leibold et al., 2004), and high dispersal homogenizes composition among sites (Mouquet & Loreau, 2003). Dispersal can alter the outcome of community phylogenetic tests (Kembel, 2009; Mason & Pavoine, 2013), and inferring assembly from diversity patterns requires accounting for these processes (Münkemüller et al., 2020). Process-based models now generate species sorting, mass effects and competition from local population dynamics and dispersal (Thompson et al., 2020), which allows these methods to be evaluated under the processes they are meant to detect.
+
+Third, a significant association between phylogenetic composition and the environment does not tell which lineages are responsible for it. Identifying the clades that respond to a gradient is a recurrent aim of metacommunity phylogenetics (Parra et al., 2010; Borregaard et al., 2014), and PCPS has been used for that purpose by examining the nodes associated with its axes (Duarte et al., 2012). However, how often PCPS, PCC and branch-wise methods identify the correct clade, and whether this depends on tree shape, has not been evaluated with a known answer.
+
+Here, we evaluate tests and methods that relate phylogenetic composition to environmental gradients with a simulation study designed following the aims, data-generating mechanisms, estimands, methods and performance measures structure (DiRenzo et al., 2023; Williams et al., 2024). Our aims were (i) to estimate how the distribution of branching times (γ; Pybus & Harvey, 2000) and the imbalance of the topology (the Colless index; Colless, 1982) affect the type I error and power of these tests, including under phylogenetic signal in niche breadth or maximum abundance; (ii) to estimate how the same tests perform under species sorting, mass effects and phylogenetic competition; and (iii) to estimate how well ordination and factorization methods recover a clade associated with the gradient. We expected that (i) tree imbalance would move the type I error of the taxa shuffle away from the nominal level, since the phylogenetic weights of matrix $\mathbf{P}$ are heterogeneous among tips in imbalanced trees (H1); (ii) phylogenetic signal in niche breadth or maximum abundance would inflate the type I error of all tests, with a magnitude that depends on tree shape (H2); (iii) very negative γ, that is, long internal branches near the root, would concentrate variation on the first PCPS axis and favour the recovery of basal over recent clades (H3); and (iv) the ranking of the methods in power and in clade recovery would change with tree shape (H4). Finally, we placed real regional pools of anurans on the simulated grid of tree shapes and applied all methods to three tadpole metacommunities (Box 1).
+
 # Methods
 
 ## Overview of the simulation study
 
-We designed the simulation study following the aims, data-generating mechanisms, estimands, methods and performance measures structure recommended for simulation studies that evaluate statistical methods (DiRenzo et al., 2023; Williams et al., 2024). The study had three aims: (i) to estimate how the shape of the phylogenetic tree, measured as the distribution of branching times (the γ statistic; Pybus & Harvey, 2000) and the imbalance of the topology (the Colless index; Colless, 1982), affects the type I error and the power of tests that relate the phylogenetic structure of metacommunities to an environmental gradient; (ii) to estimate how the same tests perform under different processes of metacommunity assembly, which, to the best of our knowledge, neither the articles that proposed these tests nor later evaluations of them have addressed (Peres-Neto & Kembel, 2015; Duarte et al., 2016); and (iii) to estimate how well ordination and factorization methods recover a clade associated with the gradient. We generated metacommunities in two layers (@fig-design). Layer A follows the static protocol of Peres-Neto, Leibold and Dray (2012), which was also used to validate the tests we evaluated, so our results can be compared directly with the published ones. Layer B simulates metacommunity dynamics with the process-based framework of Thompson et al. (2020), in which species sorting, mass effects and competition emerge from local population dynamics and dispersal.
-
-We stated four hypotheses before the main runs. We expected that (i) tree imbalance would move the type I error of the taxa shuffle away from the nominal level, since the phylogenetic weights of matrix $\mathbf{P}$ are heterogeneous among tips in imbalanced trees (H1); (ii) phylogenetic signal in niche breadth or maximum abundance would inflate the type I error of all tests, with a magnitude that depends on tree shape (H2); (iii) very negative γ, that is, long internal branches near the root, would concentrate variation on the first PCPS axis and favour the recovery of basal over recent clades (H3); and (iv) the ranking of the methods in power and in clade recovery would change with tree shape (H4). The study was not registered. However, we wrote the design and the hypotheses down before the main runs (docs/PLANO_SIMULACAO.md, first committed on 16 October 2026 as commit 668fa60 of the code repository), and we report the departures from that plan in Appendix S1.
+We generated metacommunities in two layers (@fig-design). Layer A follows the static protocol of Peres-Neto, Leibold and Dray (2012), which was also used to validate the tests we evaluated, so our results can be compared directly with the published ones. Layer B simulates metacommunity dynamics with the process-based framework of Thompson et al. (2020), in which species sorting, mass effects and competition emerge from local population dynamics and dispersal. In both layers, the trees came from a grid of shapes that crosses the distribution of branching times with the imbalance of the topology. The study was not registered. However, we wrote the design and the hypotheses down before the main runs, in a planning document first committed to the code repository on 16 October 2026, and we report the departures from that plan in Appendix S1.
 
 ![Schematic of the simulation design. Notice that tree shape is controlled before traits are simulated, so that every trait scenario and every assembly process is crossed with the same grid of tree shapes, and that the inference step uses the same two permutation null models for all tests on matrix $\mathbf{P}$.](figures/fig1_schematic.png){#fig-design width=100%}
 
@@ -159,9 +169,13 @@ Beverton, R. J. H., & Holt, S. J. (1957). *On the dynamics of exploited fish pop
 
 Blomberg, S. P., Garland, T., & Ives, A. R. (2003). Testing for phylogenetic signal in comparative data: behavioral traits are more labile. *Evolution*, 57, 717–745. https://doi.org/10.1111/j.0014-3820.2003.tb00285.x
 
+Blum, M. G. B., & François, O. (2006). Which random processes describe the tree of life? A large-scale study of phylogenetic tree imbalance. *Systematic Biology*, 55, 685–691. https://doi.org/10.1080/10635150600889625
+
 Borregaard, M. K., Rahbek, C., Fjeldså, J., Parra, J. L., Whittaker, R. J., & Graham, C. H. (2014). Node-based analysis of species distributions. *Methods in Ecology and Evolution*, 5, 1225–1235. https://doi.org/10.1111/2041-210X.12283
 
 Both, C., Melo, A. S., Cechin, S. Z., & Hartz, S. M. (2011). Tadpole co-occurrence in ponds: when do guilds and time matter? *Acta Oecologica*, 37, 140–145. https://doi.org/10.1016/j.actao.2011.01.008
+
+ter Braak, C. J. F., Cormont, A., & Dray, S. (2012). Improved testing of species traits–environment relationships in the fourth-corner problem. *Ecology*, 93, 1525–1526. https://doi.org/10.1890/12-0126.1
 
 ter Braak, C. J. F., Peres-Neto, P. R., & Dray, S. (2017). A critical issue in model-based inference for studying trait-based community assembly and a solution. *PeerJ*, 5, e2885. https://doi.org/10.7717/peerj.2885
 
@@ -189,6 +203,8 @@ DiRenzo, G. V., Hanks, E., & Miller, D. A. W. (2023). A practical guide to under
 
 Duarte, L. D. S. (2011). Phylogenetic habitat filtering influences forest nucleation in grasslands. *Oikos*, 120, 208–215. https://doi.org/10.1111/j.1600-0706.2010.18898.x
 
+Duarte, L. D. S., Both, C., Debastiani, V. J., Carlucci, M. B., Gonçalves, L. O., Cappelatti, L., Seger, G. D. S., Bastazini, V. A. G., Brum, F. T., Salengue, E. V., & Bernardo-Silva, J. S. (2014). Climate effects on amphibian distributions depend on phylogenetic resolution and the biogeographical history of taxa. *Global Ecology and Biogeography*, 23, 213–222. https://doi.org/10.1111/geb.12089
+
 Duarte, L. D. S., Debastiani, V. J., Carlucci, M. B., & Diniz-Filho, J. A. F. (2018). Analyzing community-weighted trait means across environmental gradients: should phylogeny stay or should it go? *Ecology*, 99, 385–398. https://doi.org/10.1002/ecy.2081
 
 Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946. https://doi.org/10.1111/2041-210X.12547
@@ -207,6 +223,8 @@ Godoy, O., Kraft, N. J. B., & Levine, J. M. (2014). Phylogenetic relatedness and
 
 Hardy, O. J. (2008). Testing the spatial phylogenetic structure of local communities: statistical performances of different null models and test statistics on a locally neutral community. *Journal of Ecology*, 96, 914–926. https://doi.org/10.1111/j.1365-2745.2008.01421.x
 
+Heard, S. B. (1992). Patterns in tree balance among cladistic, phenetic, and randomly generated phylogenetic trees. *Evolution*, 46, 1818–1826. https://doi.org/10.1111/j.1558-5646.1992.tb01171.x
+
 Janzen, T., & Etienne, R. S. (2024). Phylogenetic tree statistics: a systematic overview using the new R package treestats. *Molecular Phylogenetics and Evolution*, 200, 108168. https://doi.org/10.1016/j.ympev.2024.108168
 
 Kembel, S. W. (2009). Disentangling niche and neutral influences on community assembly: assessing the performance of community phylogenetic structure tests. *Ecology Letters*, 12, 949–960. https://doi.org/10.1111/j.1461-0248.2009.01354.x
@@ -214,6 +232,10 @@ Kembel, S. W. (2009). Disentangling niche and neutral influences on community as
 Landau, W. M. (2021). The targets R package: a dynamic Make-like function-oriented pipeline toolkit for reproducibility and high-performance computing. *Journal of Open Source Software*, 6(57), 2959. https://doi.org/10.21105/joss.02959
 
 Landau, W. M. (2026). crew: a distributed worker launcher framework. R package version 1.3.3. doi:10.32614/CRAN.package.crew.
+
+Leibold, M. A., Economo, E. P., & Peres-Neto, P. (2010). Metacommunity phylogenetics: separating the roles of environmental filters and historical biogeography. *Ecology Letters*, 13, 1290–1299. https://doi.org/10.1111/j.1461-0248.2010.01523.x
+
+Leibold, M. A., Holyoak, M., Mouquet, N., Amarasekare, P., Chase, J. M., Hoopes, M. F., Holt, R. D., Shurin, J. B., Law, R., Tilman, D., Loreau, M., & Gonzalez, A. (2004). The metacommunity concept: a framework for multi-scale community ecology. *Ecology Letters*, 7, 601–613. https://doi.org/10.1111/j.1461-0248.2004.00608.x
 
 Li, D., & Ives, A. R. (2017). The statistical need to include phylogeny in trait-based analyses of community composition. *Methods in Ecology and Evolution*, 8, 1192–1199. https://doi.org/10.1111/2041-210X.12767
 
@@ -233,6 +255,8 @@ Molina-Venegas, R., & Roquet, C. (2014). Directional biases in phylogenetic stru
 
 Mouquet, N., & Loreau, M. (2003). Community patterns in source-sink metacommunities. *The American Naturalist*, 162, 544–557. https://doi.org/10.1086/378857
 
+Münkemüller, T., Gallien, L., Pollock, L. J., Barros, C., Carboni, M., Chalmandrier, L., Mazel, F., Mokany, K., Roquet, C., Smyčka, J., Talluto, M. V., & Thuiller, W. (2020). Dos and don'ts when inferring assembly rules from diversity patterns. *Global Ecology and Biogeography*, 29, 1212–1229. https://doi.org/10.1111/geb.13098
+
 Münkemüller, T., Lavergne, S., Bzeznik, B., Dray, S., Jombart, T., Schiffers, K., & Thuiller, W. (2012). How to measure and test phylogenetic signal. *Methods in Ecology and Evolution*, 3, 743–756. https://doi.org/10.1111/j.2041-210X.2012.00196.x
 
 Oksanen, J., Simpson, G. L., Blanchet, F. G., Kindt, R., Legendre, P., Minchin, P. R., et al. (2026). vegan: community ecology package. R package version 2.7-6. doi:10.32614/CRAN.package.vegan.
@@ -240,6 +264,8 @@ Oksanen, J., Simpson, G. L., Blanchet, F. G., Kindt, R., Legendre, P., Minchin, 
 Pagel, M. (1999). Inferring the historical patterns of biological evolution. *Nature*, 401, 877–884. https://doi.org/10.1038/44766
 
 Paradis, E., & Schliep, K. (2019). ape 5.0: an environment for modern phylogenetics and evolutionary analyses in R. *Bioinformatics*, 35, 526–528. https://doi.org/10.1093/bioinformatics/bty633
+
+Parra, J. L., McGuire, J. A., & Graham, C. H. (2010). Incorporating clade identity in analyses of phylogenetic community structure: an example with hummingbirds. *The American Naturalist*, 176, 573–587. https://doi.org/10.1086/656619
 
 Pavoine, S. (2016). A guide through a family of phylogenetic dissimilarity measures among sites. *Oikos*, 125, 1719–1732. https://doi.org/10.1111/oik.03262
 
@@ -267,6 +293,8 @@ Pybus, O. G., & Harvey, P. H. (2000). Testing macro-evolutionary models using in
 
 R Core Team (2026). *R: a language and environment for statistical computing*. Vienna: R Foundation for Statistical Computing. doi:10.32614/R.manuals.
 
+Roelants, K., Gower, D. J., Wilkinson, M., Loader, S. P., Biju, S. D., Guillaume, K., Moriau, L., & Bossuyt, F. (2007). Global patterns of diversification in the history of modern amphibians. *Proceedings of the National Academy of Sciences*, 104, 887–892. https://doi.org/10.1073/pnas.0608378104
+
 Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329. https://doi.org/10.1111/ele.13568
 
 Tsang, T. P. N., & Cadotte, M. W. (2025). Species overlap and phylogenetic relatedness result in community statistical non-independence (and what to do about it). *Ecology Letters*, 28, e70267. https://doi.org/10.1111/ele.70267
@@ -278,3 +306,5 @@ Washburne, A. D., Silverman, J. D., Leff, J. W., Bennett, D. J., Darcy, J. L., M
 Washburne, A. D., Silverman, J. D., Morton, J. T., Becker, D. J., Crowley, D., Mukherjee, S., David, L. A., & Plowright, R. K. (2019). Phylofactorization: a graph partitioning algorithm to identify phylogenetic scales of ecological data. *Ecological Monographs*, 89, e01353. https://doi.org/10.1002/ecm.1353
 
 Williams, C., Yang, Y., Lagisz, M., Morrison, K., Ricolfi, L., Warton, D. I., & Nakagawa, S. (2024). Transparent reporting items for simulation studies evaluating statistical methods: foundations for reproducibility and reliability. *Methods in Ecology and Evolution*, 15, 1926–1939. https://doi.org/10.1111/2041-210X.14415
+
+Zelený, D. (2018). Which results of the standard test for community-weighted mean approach are too optimistic? *Journal of Vegetation Science*, 29, 953–966. https://doi.org/10.1111/jvs.12688
