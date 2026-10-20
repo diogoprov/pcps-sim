@@ -960,3 +960,31 @@ Próximos passos sugeridos:
     × tipo de dado nem g:cl × cenário; PPC só in-sample (cobertura otimista; a
     dispersão de 13,8 no poder sugere estrutura faltando, provavelmente forma ×
     N). Falta um PPC agrupado por N × célula e o contraste de cenário para H2.
+- **Modelos formais, 2ª versão** (2026-10-19, pedido do Diogo: interações
+  forma × N e forma × tipo de dado, contraste de cenário para H2, PPC
+  agrupado). Diogo aceitou γ e Colless como fatores. Fórmulas: camada A
+  `test * scenario * (g + cl) + test * (g:cl + n_f + data_type) +
+  test:(g + cl):(n_f + data_type)`; clados `method * (g * depth + cl + g:cl +
+  shift_f + n_f + data_type) + method:(g + cl):(n_f + data_type + shift_f)`.
+  Beta-binomial, mesmos priors. Convergência: R-hat ≤ 1,005, ESS bulk ≥ 914,
+  tail ≥ 1712, 0 divergências, 0 treedepth. PPC in-sample: 95% → 0,97–0,98;
+  agrupado por teste/método × N × célula: 95% → 1,00, 50% → 0,94–0,99
+  (conservador). Dispersão quasibinomial do poder segue alta (13), então resta
+  estrutura não modelada (provavelmente cenário × N ou tipo de dado × cenário).
+  Contrastes em `data/derived/models/contrasts.csv` (`analysis/19_shape_contrasts.R`).
+  - **H1:** |tipo I − 0,05| com Colless alto − Yule: nenhum dos 75 contrastes
+    (teste × cenário H0 × N) tem IC que exclua 0; máx. |mediana| 0,011. Sem
+    evidência de efeito do desbalanço.
+  - **H2** (S2sigma ou S2h − S2, no Colless Yule; N = 50/100/200): sinal em σ
+    infla o tipo I só no GLM PCPS2 (Yule +0,03; γ baixo +0,11/+0,16 com N =
+    100/200) e no PCC (Yule +0,045; γ baixo +0,02); ADONIS, GLM PCPS1 e Mantel
+    ficam mais conservadores (−0,01 a −0,025). Sinal em h: nenhum efeito (ICs
+    com 0). H2 parcial: só σ, só dois testes, e a magnitude depende de γ em
+    sentidos opostos nos dois.
+  - **Poder, γ baixo − Yule** (N = 50/100/200): GLM PCPS1 −0,32 a −0,46 (piora
+    com N); PCC −0,20 a −0,48 (S3b/S3sigma: −0,48/−0,23/−0,10, melhora com N);
+    Mantel −0,01 a −0,23 (melhora com N); ADONIS −0,17 a +0,08 (com N = 200 o
+    γ baixo até ajuda). A forma × N importa: os contrastes mudam bastante com N.
+  - **Clados, γ baixo − Yule:** PCPS +0,23 a +0,45 (cresce com N; antigos >
+    recentes); PCC −0,10 a −0,14 (antigos) e +0,07 a +0,09 (recentes); evoPCA
+    e phylofactor ≈ 0 em todos os N.

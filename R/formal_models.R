@@ -49,12 +49,19 @@ fit_diagnostics <- function(fit, max_treedepth = 10) {
 
 #' Posterior predictive check: coverage of the observed successes
 #'
-#' @param fit a beta-binomial `brmsfit` with `k | trials(n)`.
-#' @return one-row tibble with the fraction of conditions whose observed `k`
-#'   falls in the 50% and 95% posterior predictive intervals.
-ppc_coverage <- function(fit) {
-  yrep <- brms::posterior_predict(fit)
-  k <- fit$data$k
+#' In-sample (the conditions the model was fit to), so the coverage is
+#' optimistic; with `groups`, the successes are summed within each group first,
+#' which checks the structure shared by the conditions of a group.
+#' @param k observed successes, one per condition.
+#' @param yrep draws x conditions matrix from `brms::posterior_predict()`.
+#' @param groups optional factor, one value per condition.
+#' @return one-row tibble with the fraction of conditions (or groups) whose
+#'   observed successes fall in the 50% and 95% posterior predictive intervals.
+ppc_coverage <- function(k, yrep, groups = NULL) {
+  if (!is.null(groups)) {
+    k <- tapply(k, groups, sum)
+    yrep <- t(apply(yrep, 1, \(y) tapply(y, groups, sum)))
+  }
   inside <- function(level) {
     q <- apply(yrep, 2, stats::quantile, probs = c((1 - level) / 2, (1 + level) / 2))
     mean(k >= q[1, ] & k <= q[2, ])
@@ -66,11 +73,10 @@ ppc_coverage <- function(fit) {
 #'
 #' In-sample: the same conditions the model was fit to, so the agreement is
 #' optimistic.
-#' @param fit a beta-binomial `brmsfit` with `k | trials(n)`.
+#' @param k,n successes and trials, one per condition.
+#' @param yrep draws x conditions matrix from `brms::posterior_predict()`.
 #' @return tibble with `observed`, `pred_lo`, `pred_mid` and `pred_hi`.
-ppc_table <- function(fit) {
-  rate <- sweep(brms::posterior_predict(fit), 2, fit$data$n, "/")
-  q <- apply(rate, 2, stats::quantile, probs = c(0.025, 0.5, 0.975))
-  tibble::tibble(observed = fit$data$k / fit$data$n, pred_lo = q[1, ], pred_mid = q[2, ],
-                 pred_hi = q[3, ])
+ppc_table <- function(k, n, yrep) {
+  q <- apply(sweep(yrep, 2, n, "/"), 2, stats::quantile, probs = c(0.025, 0.5, 0.975))
+  tibble::tibble(observed = k / n, pred_lo = q[1, ], pred_mid = q[2, ], pred_hi = q[3, ])
 }

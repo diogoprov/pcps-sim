@@ -29,18 +29,21 @@ alpha <- 0.05
 max_treedepth <- 10
 
 # H2 needs the shape effects to differ among scenarios (scenario x shape); H4
-# needs them to differ among tests or methods; H3 needs gamma x depth
+# needs them to differ among tests or methods; H3 needs gamma x depth. The
+# shape effects may also differ with N and data type (shape x N, shape x data
+# type), so the contrasts at one N do not stand for the others by construction
+layer_a <- paste("test * scenario * (g + cl) + test * (g:cl + n_f + data_type) +",
+                 "test:(g + cl):(n_f + data_type)")
 spec <- list(
   type_I = list(file = c("full", "results.csv"), group = "test",
-                scenarios = c("S0", "S1", "S2", "S2sigma", "S2h"),
-                fixed = "test * scenario * (g + cl) + test * (g:cl + n_f + data_type)",
+                scenarios = c("S0", "S1", "S2", "S2sigma", "S2h"), fixed = layer_a,
                 intercept_mean = -2.9),
   power = list(file = c("full", "results.csv"), group = "test",
-               scenarios = c("S3a", "S3b", "S3sigma"),
-               fixed = "test * scenario * (g + cl) + test * (g:cl + n_f + data_type)",
+               scenarios = c("S3a", "S3b", "S3sigma"), fixed = layer_a,
                intercept_mean = 0),
   clade = list(file = c("clade", "results.csv"), group = "method",
-               fixed = "method * (g * depth + cl + g:cl + shift_f + n_f + data_type)",
+               fixed = paste("method * (g * depth + cl + g:cl + shift_f + n_f + data_type) +",
+                             "method:(g + cl):(n_f + data_type + shift_f)"),
                intercept_mean = 0)
 )[[model]]
 
@@ -87,7 +90,13 @@ fit <- brms::brm(
   file = file.path(out_dir, "brms_fit"), file_refit = "on_change", refresh = 0
 )
 message("brms: ", format(Sys.time() - t0))
-diag <- dplyr::bind_cols(fit_diagnostics(fit, max_treedepth), ppc_coverage(fit))
+yrep <- brms::posterior_predict(fit)
+# grouped check: sums over the conditions of each test (or method) x N x cell,
+# where the fixed structure must reproduce the shape x N pattern
+groups <- interaction(agg[[spec$group]], agg$n_f, agg$cell, drop = TRUE)
+diag <- dplyr::bind_cols(fit_diagnostics(fit, max_treedepth), ppc_coverage(fit$data$k, yrep),
+                         dplyr::rename_with(ppc_coverage(fit$data$k, yrep, groups),
+                                            \(x) paste0(x, "_grouped")))
 readr::write_csv(diag, file.path(out_dir, "diagnostics.csv"))
 print(diag)
 if (diag$rhat_max > 1.01 || diag$divergent > 0 || diag$ess_bulk_min < 400 ||
@@ -97,7 +106,7 @@ readr::write_csv(tibble::as_tibble(brms::fixef(fit), rownames = "term"),
                  file.path(out_dir, "fixef.csv"))
 
 # Posterior predictive check: observed rate vs prediction
-ppc <- ppc_table(fit)
+ppc <- ppc_table(fit$data$k, fit$data$n, yrep)
 readr::write_csv(ppc, file.path(out_dir, "ppc.csv"))
 p <- ggplot2::ggplot(ppc, ggplot2::aes(pred_mid, observed)) +
   ggplot2::geom_abline(linetype = 2, colour = "grey50") +
