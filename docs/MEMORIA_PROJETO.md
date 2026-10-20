@@ -1117,3 +1117,10 @@ Próximos passos sugeridos:
 - Pedido do autor após ler o docx: equações nativas do Word (math LaTeX no qmd → OMML via pandoc), subscritos em math, Methods/Results enxutos, detalhes movidos para Appendix S1 (métodos estendidos) e S2 (resultados estendidos) em manuscript/supporting_information.qmd, que tem lista de referências própria. Results sem subtítulos; Box 1 mantido.
 - Figuras: Figs 2, 3 e 5 em YlGnBu com rótulo branco em célula escura; Fig. 4 e Box 1 em Okabe–Ito; ícone RDA da Fig. 1 com quatro setinhas; Box 1 com ponto = mediana bootstrap e losango = árvore pontual. Rótulos σ nos painéis.
 - Novo no S1, tirado do código: σ = √2 σ_T de Thompson, imigração multinomial, só o estado final.
+
+## Submissão: anonimização, Zenodo e Discussion (2026-10-20)
+- MEE é duplo-cega (confirmado no PDF de normas). Manuscrito e SI sem autor; links do GitHub fora do texto; folha de rosto separada (title_page.qmd) com DOIs do Zenodo (conceito 10.5281/zenodo.23500104; v0.1.0 10.5281/zenodo.23500105).
+- `tools/make_review_bundle.sh` gera review_bundle/pcps-sim-review.zip (gitignored), anonimizado e checado; inclui README_REVIEW.md (tools/review_bundle_README.md). Exclui notas internas, fontes do manuscrito e os scripts 21 e 23 (nomeiam provedores de dados). Depósito anônimo no Zenodo a fazer pelo Diogo, no modelo do registro 23438248 (criador "Anonymous, Anonymous").
+- PENDENTE (decisão do Diogo): analysis/21_regional_pools.R no repositório público (desde 2026-10-19) lista provedores, localidades e a tabela código→espécie de Mainara (dados possivelmente não publicados).
+- Figuras de submissão em manuscript/figures/submission/ (PDF + PNG 600 dpi). Fig. 1 a 180 mm tem textos de ~3 pt: precisa de novo layout.
+- Discussion redigida (≈1.650 palavras) com revisão de literatura em docs/lit_review/A–C. Total do texto ≈ 8.500 palavras sem Introduction (limite 7.000–8.000 com referências): cortes necessários.

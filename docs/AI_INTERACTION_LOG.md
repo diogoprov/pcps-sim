@@ -112,3 +112,18 @@ decisions, commands and results). The full history of changes is in git.
   move; they caught a wrong pointer (N = 200 vs N = 100), six dropped facts and
   missing SI references, all fixed. Appendix S1 now states three model details
   taken from the code (σ = √2 σ_T, multinomial immigration, final state only).
+
+### 2026-10-20 — Submission material, anonymization and Discussion
+- Figures exported to the Wiley specifications (vector PDF and 600 dpi PNG,
+  80–180 mm, Figure_N) in manuscript/figures/submission/.
+- GitHub release v0.1.0 archived on Zenodo (concept DOI 10.5281/zenodo.23500104),
+  after the author enabled the integration.
+- Numbered abstract, keywords, title page and data statement drafted; the
+  author's name and identifying links removed from the manuscript for
+  double-anonymous review; tools/make_review_bundle.sh builds an anonymized
+  zip of the repository for an anonymous Zenodo deposit to be made by the author.
+- Discussion drafted from three literature reviews run by subagents with
+  Scholar Gateway, Undermind, Consensus and OpenAlex (docs/lit_review/), plus
+  two Scopus/LeapSpace reports supplied by the author; every reference was
+  verified on Crossref. An accuracy review corrected 18 over-claims or
+  attributions beyond what the sources say.

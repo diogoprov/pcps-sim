@@ -265,3 +265,4 @@ Empirical anuran metacommunities show both conserved niches (Leão-Pires et al. 
 - Leibold & Chase 2018 não foi lido; só cite de forma genérica.
 - Não encontrei, nesta busca, outro estudo que compare PCPS/PCC com evoPCA/phylofactorization na recuperação de clados. A ausência sustenta a novidade do estudo, mas uma busca negativa não prova inexistência. Sugiro um deep search no Undermind antes de afirmar "first".
 - Não verifiquei nenhuma referência sobre sinal filogenético em metacomunidades de girinos além de Leão-Pires et al. 2024 e do preprint do autor; se necessário, use [CITAR: phylogenetic signal tadpole metacommunity].
+- LeapSpace (Scopus) report 2 (2026-10-20, query on PFW/PCPS): mostly empirical applications of PCPS (e.g. Brum et al. 2013; Cavalheri et al. 2015; Duarte et al. 2014 PLoS ONE); none added to the Discussion; candidates for the Introduction, to be verified when used.
