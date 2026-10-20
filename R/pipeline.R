@@ -10,6 +10,9 @@
 #' `full`: objective 1, all cells, scenarios and data types (docs/PLANO_SIMULACAO.md).
 #' `axes`: as `full`, without PCC, adding the GLM with Procrustes and the RDA on
 #' PCPS axes 1-2 (diagnosis of S2sigma, analysis/09_diag_s2sigma.R).
+#' `optima_uniform`: as `full` in the power scenarios, with the optima given the
+#' same evenly spaced marginal distribution in every tree (separates the effect
+#' of tree shape on the optima from that on the analysis), with the extra axes.
 #' `layerB`: layer B (process-based dynamics) on the four corner cells and the
 #' centre of the grid, the four archetypes and the eight scenarios, incidence
 #' only; the cell sets the (beta, c) of the pool tree (option B of 2026-10-18,
@@ -47,6 +50,9 @@ design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
     full = full,
     axes = utils::modifyList(full, list(name = name, methods = c("pfw", "glm"),
                                         extra_axes = TRUE)),
+    optima_uniform = utils::modifyList(full, list(name = name,
+                                                  scenarios = c("S3a", "S3b", "S3sigma"),
+                                                  optima = "uniform", extra_axes = TRUE)),
     layerB = utils::modifyList(full, list(
       name = name, layer = "B",
       cells = c("g_yule__c_yule", "g_low__c_yule", "g_yule__c_high", "g_low__c_high",
@@ -138,7 +144,8 @@ run_chunk <- function(design_row, cell_trees, profile) {
   purrr::map(reps, \(r) {
     mc <- sim_metacommunity_A(
       trees[[r]], design_row$lambda, design_row$sigma_signal, design_row$h_signal,
-      design_row$env_original, incidence = design_row$data_type == "incidence"
+      design_row$env_original, incidence = design_row$data_type == "incidence",
+      optima = if (is.null(profile$optima)) "bm" else profile$optima
     )
     analyse_metacommunity(mc, profile$methods, profile$nperm, profile$nperm_pcc,
                           extra_axes = isTRUE(profile$extra_axes)) |>

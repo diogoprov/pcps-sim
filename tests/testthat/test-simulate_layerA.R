@@ -25,3 +25,15 @@ test_that("sim_metacommunity_A returns aligned comm, tree and env", {
     expect_equal(ape::Ntip(mc$tree) + mc$n_dropped_spp, 40)
   }
 })
+
+test_that("uniform optima share one marginal distribution and keep the BM order", {
+  set.seed(3)
+  tr <- ape::rcoal(40)
+  set.seed(11)
+  a <- sim_species_traits(tr, 1, FALSE, FALSE, optima = "uniform")
+  expect_equal(sort(a$u), seq(-1, 101, length.out = 40))
+  set.seed(11)
+  b <- sim_species_traits(tr, 1, FALSE, FALSE)
+  expect_equal(rank(a$u), rank(b$u))
+  expect_equal(range(b$u), c(-1, 101))
+})

@@ -46,11 +46,18 @@ rank_to_marginal <- function(x, target) {
 #' u_j: BM with Pagel's lambda, rescaled to [-1, 101]. sigma_j ~ N(mu_tol, 10)
 #' truncated at > 0; h_j ~ U(h_range); sigma and h either drawn independently or
 #' ranked by a BM trait.
+#' @param optima "bm" (the BM values rescaled) or "uniform": the BM values are
+#'   replaced by ranks by evenly spaced values on [-1, 101], so the marginal
+#'   distribution of the optima is the same whatever the shape of the tree and
+#'   only their arrangement on the tree differs (reviewer check, 2026-10-20).
 #' @return data.frame (u, sigma, h), one row per tip in tip order.
 sim_species_traits <- function(tree, lambda, sigma_signal, h_signal, mu_tol = 10,
-                               h_range = c(0, 30)) {
+                               h_range = c(0, 30), optima = c("bm", "uniform")) {
+  optima <- match.arg(optima)
   k <- ape::Ntip(tree)
-  u <- rescale_to(sim_trait_lambda(tree, lambda))
+  u <- sim_trait_lambda(tree, lambda)
+  u <- if (optima == "uniform") rank_to_marginal(u, seq(-1, 101, length.out = k)) else
+    rescale_to(u)
   sigma <- numeric(0)
   while (length(sigma) < k) {
     s <- stats::rnorm(2 * k, mu_tol, 10)
@@ -87,8 +94,9 @@ finish_metacommunity <- function(comm, tree, env, env_original, traits) {
 #' from [sim_species_traits()] and E ~ U(0, 100) on `n_sites` sites.
 #' @return see [finish_metacommunity()].
 sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_original,
-                                incidence = TRUE, n_sites = 100, mu_tol = 10) {
-  tr <- sim_species_traits(tree, lambda, sigma_signal, h_signal, mu_tol)
+                                incidence = TRUE, n_sites = 100, mu_tol = 10,
+                                optima = "bm") {
+  tr <- sim_species_traits(tree, lambda, sigma_signal, h_signal, mu_tol, optima = optima)
   env <- stats::runif(n_sites, 0, 100)
   finish_metacommunity(sim_comm_traits(tr, env, tree$tip.label, incidence), tree, env,
                        env_original, tr)
