@@ -1035,21 +1035,6 @@ Próximos passos sugeridos:
     0,075 (máx. mediana 0,088). As taxas brutas passam do limite quase só com
     N = 200: PCC em S2h (mass effects/Yule 0,143; sorting/Yule 0,111) e GLM
     PCPS2 em S2sigma com sorting (0,104–0,129).
-- **Pools regionais, passo 1** (2026-10-19, `analysis/21_regional_pools.R`; dados
-  locais em `data/raw/nri_pcps/`, fora do git: compilados da literatura e com
-  dados não publicados cedidos ao Diogo). Rótulos dos .nex de 14
-  metacomunidades (259 rótulos); códigos abreviados resolvidos por prefixo de
-  gênero e de epíteto contra os nomes de 2012 e os nomes e sinônimos do ASW
-  (AmphiNom 1.1.0, dados internos de 16/10/2025) para espécies de BR, AR, PY,
-  UY, BO e PE; harmonização com `asw_sync`; 105 espécies casadas com a árvore de
-  Portik. Para o Diogo revisar (coluna `decision`):
-  `data/derived/pools/names_to_review.csv` (70 rótulos: erros de digitação,
-  morfoespécies, códigos sem resolução, com candidatos) e
-  `codes_resolved_to_check.csv` (79 códigos resolvidos automaticamente).
-  Localidades: **Crivelari = Paraná (Diogo)**; as demais são inferência minha,
-  marcadas em `datasets.csv`. Espécies casadas por região: Mata Atlântica SE 32,
-  Mata Atlântica S (Crivelari) 29, interior de SP 24, Cerrado GO 17, Sul
-  (Both + Peltzer) 19, Amazônia (Peru) 12, Costa e Motta 14 cada; todas 105.
 - **Guias da MEE** (docs/GUIAS_RELATO_MEE.md, v0.2 com o PDF completo de
   Williams et al. 2024). Ajustes propostos ao fluxo: MCSE em todas as taxas e
   justificativa de K = 1000 e das 999 permutações; arquivo com DOI (Zenodo);
@@ -1057,25 +1042,34 @@ Próximos passos sugeridos:
   alvo estatístico, versões, sementes, ausência de pré-registro e desvios do
   PLANO nos Métodos; corrigir o comentário de `rejection_rates()` (diz que
   calcula IC binomial e não calcula).
-- **Pools regionais, passo 2** (2026-10-19). Decisões do Diogo: Crivelari =
-  Paraná; Vasconcelos e Motta = noroeste de SP; três pools aninhados; estudo de
-  caso com as metacomunidades empíricas (pode virar um box); não revisar
-  planilhas, excluir as indeterminadas. Regras aplicadas: indeterminadas
-  (sp., aff., cf., gr., códigos "Xsp") e códigos ambíguos excluídos; erros de
-  digitação corrigidos pelo nome do ASW mais próximo (≤ 2 edições, único);
-  nomes casados com Portik pela sinonímia do ASW. Dúvidas mantidas e marcadas
-  até o Diogo decidir: Lma (Both; L. macrosternum ou L. latrans), Stra (Mainara;
-  S. trachythorax, que o ASW sincroniza com S. fuscovarius), Eova (Mainara;
-  E. ovalis) e V.uranoscopa (Crivelari; o ASW sincroniza com V. parvula).
-  Exclusões que podem ser revistas: Loc (Both; provavelmente L. ocellatus =
-  L. latrans), Crossodactylus dispar, Scinax caldarum e S. hiemalis (válidos,
-  mas fora da árvore de Portik). **115 espécies mantidas.** Pools
-  (`data/derived/pools/pool_shapes.csv`; γ e Colless normalizado pelo Yule na
-  árvore de Portik, IC 95% dos 100 bootstraps): Mata Atlântica (SE + S), n = 54,
-  γ −1,93 [−1,98; −1,18], Colless 0,65 [0,62; 1,11]; Mata Atlântica + interior de
-  SP, n = 75, γ −2,61 [−2,72; −1,82], Colless 0,60 [0,50; 1,05]; América do Sul,
-  n = 115, γ −3,44 [−3,65; −2,70], Colless 1,22 [1,05; 1,50]. Os três caem
-  dentro da grade, entre os níveis Yule e médio nos dois eixos (alvos com N = 50:
-  γ −5,58/−3,79/0, Colless 0/0,94/2,39; N = 100: γ −6,54/−4,94/0, Colless
-  0/1,31/2,74). A estimativa pontual de γ fica na borda do intervalo dos
-  bootstraps.
+- **Pools regionais (definidos em 2026-10-19)** (`analysis/21_regional_pools.R`;
+  dados locais em `data/raw/nri_pcps/`, fora do git: compilados da literatura
+  e com dados não publicados cedidos ao Diogo; saídas em `data/derived/pools/`).
+  Decisões do Diogo: três pools aninhados; estudo de caso com as metacomunidades
+  empíricas (pode virar um box); não revisar planilhas; excluir indeterminadas;
+  localidades Crivelari = Paraná, Vasconcelos e Motta = noroeste de SP (as demais
+  inferidas, marcadas em `datasets.csv`); confirmados Vitreorana uranoscopa,
+  Elachistocleis ovalis (Mainara) e Ololygon trapicheiroi (Mainara "Stra"); Both
+  tem L. latrans. Fontes dos nomes: .nex de cada metacomunidade; Both pelos nomes
+  completos de `Both_tree.txt` (Lma = Limnomedusa macroglossa, Loc = L. latrans);
+  Mainara por uma tabela de códigos inferida dos clados de `Mainara_phylo.txt` e
+  da fauna do litoral SP/RJ (18 nomes "kept: inferred (Mainara)"). Regras:
+  indeterminadas (sp., aff., cf., gr., "Xsp") e códigos ambíguos excluídos; nome
+  que o ASW não conhece trocado pelo nome do ASW mais próximo (≤ 2 edições,
+  único; pode aplicar também a sinonímia do ASW, por exemplo A. callipygius → A.
+  albosignatus, L. chaquensis → L. macrosternum); casamento com Portik pela
+  sinonímia do ASW. Fora da árvore de Portik: Crossodactylus dispar, Scinax
+  caldarum, Ololygon hiemalis. **123 espécies.** Pools (γ e Colless
+  normalizado pelo Yule na árvore de Portik; entre parênteses a variação entre os
+  100 bootstraps, mediana [2,5%; 97,5%]; não é IC da estimativa pontual, porque
+  os bootstraps diferem em topologia e têm raiz mais profunda):
+  - Mata Atlântica (SE + S), n = 60: γ −2,51 (−2,21 [−2,63; −1,81]), Colless 0,67
+    (0,86 [0,65; 1,10]);
+  - Mata Atlântica + interior de SP, n = 81: γ −3,16 (−2,81 [−3,29; −2,38]),
+    Colless 0,67 (0,83 [0,58; 1,14]);
+  - América do Sul, n = 123: γ −3,90 (−3,60 [−4,13; −3,19]), Colless 1,99 (2,05
+    [1,12; 2,26]).
+  Em relação à grade (alvos com N = 50: γ −5,58/−3,79/0, Colless 0/0,94/2,39;
+  N = 100: γ −6,54/−4,94/0, Colless 0/1,31/2,74): γ dos três fica entre os
+  níveis Yule e médio; Colless entre Yule e médio nos dois primeiros e entre
+  médio e alto na América do Sul.

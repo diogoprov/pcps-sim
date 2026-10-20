@@ -78,3 +78,9 @@ decisions, commands and results). The full history of changes is in git.
 - Fitted the layer B formal model; reviews found missing N interactions (fit
   misses concentrated at N = 50 and 200) and a stale cached fit reused after a
   sampler change; both fixed and the model refitted.
+- Built the regional pools: names from the author's 14 empirical tadpole
+  metacommunities resolved (codes, spelling) and harmonized with the ASW
+  (AmphiNom), matched to the Portik tree; three nested pools (60, 81, 123
+  species). The author set the rules (exclude undetermined taxa, no manual
+  review) and resolved the doubtful names; reviews caught bugs in code
+  resolution and an over-claimed bootstrap interval, fixed before reporting.
