@@ -1,0 +1,52 @@
+---
+title: "Supporting Information"
+subtitle: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
+author: "Diogo B. Provete"
+format:
+  docx:
+    reference-doc: reference.docx
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+<!-- Render: quarto render manuscript/supporting_information.qmd, after
+Rscript analysis/24_si_tables.R (tables in manuscript/si/). -->
+
+```{r}
+#| label: setup
+si <- function(file) readr::read_csv(file.path("si", file), show_col_types = FALSE)
+```
+
+# Table S1
+
+Targets of the tree-shape grid for each pool size N. Levels of γ are zero (Yule), the median and the 10% quantile of the anuran clades with 40–250 tips of Portik et al. (2023); levels of the Colless index (normalized against its Yule expectation) are zero, the median and the 90% quantile. c and β are the calibrated parameters of the generator, and acceptance is the proportion of simulated trees that fell within 0.5 units of both targets.
+
+```{r}
+#| label: tbl-s1
+knitr::kable(si("table_S1_grid.csv"))
+```
+
+# Table S2
+
+Every rate of the study (rejection rate of each test, or hit rate of each clade-recovery method) by condition, with its Monte Carlo standard error, MCSE = [p(1 − p)/K]^½ with K = 1,000 replicates, and the 95% Monte Carlo interval. The full table (file table_S2_rates_mcse.csv) has one row per condition; below we summarize the range of the MCSE by group of conditions.
+
+```{r}
+#| label: tbl-s2
+s2 <- si("table_S2_rates_mcse.csv")
+s2 |>
+  dplyr::group_by(model) |>
+  dplyr::summarise(conditions = dplyr::n(), rate_min = min(rate), rate_max = max(rate),
+                   mcse_min = min(mcse), mcse_max = max(mcse), .groups = "drop") |>
+  knitr::kable(digits = 3)
+```
+
+# Table S3
+
+Convergence and posterior predictive diagnostics of the beta-binomial models: maximum rank-normalized R̂, minimum bulk and tail effective sample sizes, numbers of divergent transitions and of transitions at the maximum tree depth, coverage of the 50% and 95% posterior predictive intervals for each condition and for the sums over the conditions of each test (or method), N and cell, and the dispersion of the quasibinomial model with the same structure.
+
+```{r}
+#| label: tbl-s3
+knitr::kable(si("table_S3_diagnostics.csv"), digits = 3)
+```
