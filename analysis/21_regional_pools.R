@@ -45,7 +45,7 @@ datasets <- tibble::tribble(
   "decio_assis", "Decio_phylo.nex",           "Assis, SP",                "Interior SP",        "inferred",
   "dias",        "Dias2007.nex",              "Ubatuba?, SP",             "Atlantic Forest SE", "inferred",
   "gomes",       "Gomes.nex",                 "Campos do Jordao?, SP",    "Atlantic Forest SE", "inferred",
-  "mainara",     "Mainara.nex",               "coastal SP/RJ",            "Atlantic Forest SE", "inferred",
+  "mainara",     "Mainara.nex",               "Picinguaba, Ubatuba, SP",  "Atlantic Forest SE", "published",
   "motta",       "Motta_phylo.nex",           "NW Sao Paulo",             "Interior SP",        "author",
   "peltzer",     "Peltzer_phylo.nex",         "Santa Fe?, Argentina",     "South (Argentina)",  "inferred",
   "rogerio",     "Rogeio_phylo.nex",          "SW Goias",                 "Cerrado GO",         "inferred",
@@ -62,7 +62,9 @@ labels <- purrr::map2(datasets$dataset, file.path(raw_dir, datasets$file), \(d, 
 
 # Mainara: codes only; names from the clades of Mainara_phylo.txt and the
 # coastal SP/RJ fauna (inferred), except where confirmed (2026-10-19), in a
-# local table (data/raw/nri_pcps/mainara_codes.csv, not in git: unpublished)
+# local table (data/raw/nri_pcps/mainara_codes.csv, not in git); all 20 names
+# are in the species list of Jordani et al. (2017, Herpetol. J. 27: 299-306),
+# the published source of these data (checked 2026-10-20)
 mainara <- readr::read_csv(file.path(raw_dir, "mainara_codes.csv"), show_col_types = FALSE)
 
 # names a code may stand for (R/taxonomy.R)
