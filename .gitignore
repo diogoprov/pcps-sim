@@ -28,3 +28,4 @@ data/raw/portik2023_timetree_bootstraps.tre
 docs/*.html
 docs/*_cache/
 docs/*_files/
+data/raw/nri_pcps/
