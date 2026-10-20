@@ -3,7 +3,8 @@
 # (Methods in Ecology and Evolution): git HEAD without the author's internal
 # notes, title page and manuscript sources, with names, the GitHub account and
 # the licence holder removed. Fails if an identifying string is left.
-# Usage: tools/make_review_bundle.sh   (writes review_bundle/pcps-sim-review.zip)
+# Usage: tools/make_review_bundle.sh   (writes review_bundle/pcps-sim-review.zip
+#        and review_bundle/zenodo_description.html)
 set -euo pipefail
 
 root="$(git rev-parse --show-toplevel)"
@@ -59,4 +60,8 @@ grep -rIn -i 'provete' "$dest" | sed -E 's/Provete( et al\.)?,? \(?(2014|2018)//
 
 rm -f "$out_dir/pcps-sim-review.zip"
 (cd "$work" && zip -qr "$out_dir/pcps-sim-review.zip" pcps-sim)
+# description of the anonymous Zenodo deposit (Zenodo takes HTML)
+quarto pandoc "$root/tools/review_bundle_README.md" -f markdown -t html-auto_identifiers --wrap=none \
+  -o "$out_dir/zenodo_description.html"
+echo "Written: $out_dir/zenodo_description.html"
 echo "Written: $out_dir/pcps-sim-review.zip ($(du -h "$out_dir/pcps-sim-review.zip" | cut -f1))"
