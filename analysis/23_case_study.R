@@ -1,5 +1,5 @@
 # Case study (Box 1): the tests and the clade-recovery methods applied to the
-# author's empirical tadpole metacommunities that have at least 10 ponds and
+# empirical tadpole metacommunities that have at least 10 ponds and
 # pond depth measured in every pond: Serra da Bocaina (Provete et al. 2014,
 # Hydrobiologia), Both et al. (southern Brazil) and "vitao" (Prado &
 # Rossa-Feres 2014, Austral Ecology); local copies in data/raw/nri_pcps/, not in

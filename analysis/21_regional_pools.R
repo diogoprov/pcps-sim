@@ -1,4 +1,4 @@
-# Regional species pools from the author's empirical tadpole metacommunities
+# Regional species pools from the empirical tadpole metacommunities
 # (project "NRI vs PCPS", 2012; local copy in data/raw/nri_pcps/, not in git:
 # compiled from the literature and from unpublished data shared with the
 # author), as an empirical reference for the tree-shape grid.
@@ -16,7 +16,7 @@
 #   - names harmonized with the Amphibian Species of the World (ASW synonymy,
 #     then asw_sync) and matched to the tips of the Portik et al. 2023 tree,
 #     harmonized the same way;
-#   - the author's rules (2026-10-19): undetermined taxa (sp., aff., cf., gr.,
+#   - the rules set on 2026-10-19: undetermined taxa (sp., aff., cf., gr.,
 #     "Xsp" codes) and codes that stay ambiguous are excluded; a name the ASW
 #     does not know is replaced by the closest ASW name within 2 edits, when
 #     unique (spelling errors; the replacement may also apply ASW synonymy).
@@ -33,7 +33,7 @@ out_dir <- file.path("data", "derived", "pools")
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
 # one file per metacommunity (Wild19961.nex duplicates Wild1996.nex), with its
-# locality and region; `locality_source` says whether the author confirmed it
+# locality and region; `locality_source` says whether it was confirmed
 # or it is inferred from the file names, the coordinates file and the species
 datasets <- tibble::tribble(
   ~dataset,      ~file,                       ~locality,                  ~region,              ~locality_source,
@@ -61,7 +61,7 @@ labels <- purrr::map2(datasets$dataset, file.path(raw_dir, datasets$file), \(d, 
   dplyr::left_join(dplyr::select(datasets, dataset, region), by = "dataset")
 
 # Mainara: codes only; names from the clades of Mainara_phylo.txt and the
-# coastal SP/RJ fauna (inferred), except where the author confirmed (2026-10-19)
+# coastal SP/RJ fauna (inferred), except where confirmed (2026-10-19)
 mainara <- tibble::tribble(
   ~label,  ~name,                         ~source,
   "Hfab",  "Hypsiboas faber",             "inferred",

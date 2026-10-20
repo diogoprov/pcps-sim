@@ -38,10 +38,10 @@ while IFS= read -r -d '' f; do scrub "$f"; done < <(find "$dest" -type f \
   \( -name '*.R' -o -name '*.md' -o -name '*.sh' -o -name 'LICENSE*' -o -name 'Dockerfile' \) -print0)
 
 # self-citations stay (third person, as in the manuscript); anything else fails
-left="$(grep -rIl -i -E 'diogo|diogoprov|dbprovete|borges' "$dest" || true)"
+left="$(grep -rIl -i -E "diogo|diogoprov|dbprovete|borges|author's" "$dest" || true)"
 if [[ -n "$left" ]]; then
   echo "Identifying strings left in:" >&2
-  grep -rIn -i -E 'diogo|diogoprov|dbprovete|borges' "$dest" >&2
+  grep -rIn -i -E "diogo|diogoprov|dbprovete|borges|author's" "$dest" >&2
   exit 1
 fi
 grep -rIn -i 'provete' "$dest" | grep -v -E 'Provete( et al\.)?,? \(?(2014|2018)' >&2 && {
