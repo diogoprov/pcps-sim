@@ -58,6 +58,16 @@ rate_table <- function(d, scenarios, ...) {
     pivot_wider(names_from = test, values_from = r) |>
     kable3()
 }
+models_dir <- file.path(root, "data", "derived", "models")
+model_names <- c("type_I", "power", "clade")
+# posterior contrasts (median [95% CI]), one column per N
+show_contrast <- function(d, ...) {
+  d |>
+    select(..., n_f, ci) |>
+    pivot_wider(names_from = n_f, values_from = ci) |>
+    select(..., any_of(c("50", "100", "200"))) |>
+    kable3()
+}
 ```
 
 Este documento resume o estado do projeto em 19 de outubro de 2026. O registro
@@ -508,11 +518,13 @@ clade |>
   forma da árvore.
 - **PCPS** acerta bem menos (0,12–0,42) e depende muito do γ: com N = 100,
   clados antigos 0,55 com γ baixo contra 0,19 em árvores Yule; recentes 0,28
-  contra 0,03. A ponderação filogenética de P espalha o sinal pelos parentes do
-  clado, e o PCPS tende a escolher um clado maior.
+  contra 0,03. Interpretação minha, não verificada nos dados: a ponderação
+  filogenética de P espalha o sinal pelos parentes do clado, e o PCPS tende a
+  escolher um clado maior.
 - **PCC**, com os 4 primeiros autovetores, quase não isola clados desse
-  tamanho (0,08–0,12), porque esses autovetores seguem as divisões profundas.
-- Com deslocamento 0,5 todos os métodos ficam em 0,05–0,21.
+  tamanho (0,08–0,12); suponho que porque esses autovetores seguem as divisões
+  profundas.
+- Com deslocamento 0,5 todos os métodos ficam em 0,04–0,21.
 
 # Modelos formais
 
@@ -532,8 +544,7 @@ beta-binomial resolveu. Código em `analysis/18_formal_models.R` e
 
 ```{r}
 #| label: model-diagnostics
-models_dir <- file.path(root, "data", "derived", "models")
-purrr::map(c("type_I", "power", "clade"), \(m) {
+purrr::map(model_names, \(m) {
   readr::read_csv(file.path(models_dir, m, "diagnostics.csv"), show_col_types = FALSE) |>
     mutate(model = m, .before = 1)
 }) |>
@@ -550,15 +561,8 @@ o que indica estrutura ainda não modelada (talvez cenário × N).
 
 ```{r}
 #| label: contrasts
-contr <- readr::read_csv(file.path(models_dir, "contrasts.csv"), show_col_types = FALSE) |>
+contrasts <- readr::read_csv(file.path(models_dir, "contrasts.csv"), show_col_types = FALSE) |>
   mutate(ci = sprintf("%+.3f [%+.3f, %+.3f]", median, lower, upper))
-show_contrast <- function(d, ...) {
-  d |>
-    select(..., n_f, ci) |>
-    pivot_wider(names_from = n_f, values_from = ci) |>
-    select(..., any_of(c("50", "100", "200"))) |>
-    knitr::kable()
-}
 ```
 
 **Contrastes** (mediana [IC 95%] da diferença de taxa; γ baixo − Yule no
@@ -569,7 +573,7 @@ sem sinal), incidência:
 
 ```{r}
 #| label: contrasts-h2
-contr |>
+contrasts |>
   filter(model == "type_I", grepl("^S2", contrast), data_type == "incidence") |>
   show_contrast(contrast, test)
 ```
@@ -578,7 +582,7 @@ contr |>
 
 ```{r}
 #| label: contrasts-power
-contr |>
+contrasts |>
   filter(model == "power", contrast == "gamma low - yule", data_type == "incidence") |>
   show_contrast(test, scenario)
 ```
@@ -587,20 +591,20 @@ contr |>
 
 ```{r}
 #| label: contrasts-clade
-contr |>
+contrasts |>
   filter(model == "clade", contrast == "gamma low - yule", data_type == "incidence") |>
   show_contrast(method, depth)
 ```
 
-*Abundância* (N = 100 nos clados; N = 50/100/200 na camada A), γ baixo − Yule:
+*Abundância*, γ baixo − Yule (camada A com N = 50/100/200; nos clados só
+existe N = 100):
 
 ```{r}
 #| label: contrasts-abundance
-contr |>
-  filter(contrast == "gamma low - yule", data_type == "abundance", n_f == "100") |>
+contrasts |>
+  filter(contrast == "gamma low - yule", data_type == "abundance") |>
   mutate(group = coalesce(test, method), level = coalesce(scenario, depth)) |>
-  select(model, group, level, ci) |>
-  knitr::kable()
+  show_contrast(model, group, level)
 ```
 
 ```{r}
@@ -618,17 +622,17 @@ knitr::include_graphics(file.path(models_dir, "clade", "shape_surface.png"))
 - **Colless** quase não importa em nada: no erro tipo I, |taxa − 0,05| com
   Colless alto − Yule fica em ±0,011 e nenhum dos 75 contrastes (teste ×
   cenário × N) exclui zero, com incidência ou abundância. No poder e nos
-  clados, Colless alto reduz as taxas em 0,01–0,08.
+  clados, Colless alto muda as taxas de −0,10 a 0 (−0,01 a −0,08 com N = 100).
 - **Sinal em σ** (S2sigma) infla o erro tipo I só no GLM PCPS2 (+0,03 em
   Yule; +0,09/+0,11/+0,16 com γ baixo e N = 50/100/200) e no PCC (+0,045 em
-  Yule; +0,02 com γ baixo). ADONIS, GLM PCPS1 e Mantel ficam mais
+  Yule; +0,02 com γ baixo, ICs que se sobrepõem). ADONIS, GLM PCPS1 e Mantel ficam mais
   conservadores (−0,01 a −0,03). Com abundância, o mesmo padrão, mais fraco no
   GLM PCPS2 (+0,09 com γ baixo e N = 100). **Sinal em h** não tem efeito.
 - **Poder:** com γ baixo o GLM PCPS1 perde 0,32–0,46 (pior com N maior); o PCC
   perde 0,07–0,48 (em S3b e S3sigma a perda diminui com N; em S3a aumenta); o
-  Mantel perde até 0,23; o ADONIS quase não muda e, com N = 200, até ganha
-  (+0,04 a +0,08). A ordem dos métodos muda: em S3a o GLM PCPS1 cai de 2º para
-  4º; em S3b o PCC cai de 1º para 3º.
+  Mantel perde até 0,23; o ADONIS vai de −0,17 a +0,08 (perde com N = 50 e em
+  S3a, ganha com N = 200). A ordem dos métodos muda (N = 100): em S3a o GLM
+  PCPS1 cai de 2º para 4º; em S3b o PCC cai de 1º para 3º.
 - **Clados:** com γ baixo o PCPS ganha +0,23 a +0,45 (mais com N maior, mais
   nos antigos); evoPCA e phylofactor não mudam; o PCC perde nos antigos
   (−0,10 a −0,14) e ganha nos recentes (+0,07 a +0,09).
@@ -648,16 +652,21 @@ Leitura a partir dos modelos formais (seção anterior) e das tabelas descritiva
   métodos, com magnitude dependente da forma): **rejeitada como enunciada.**
   Só o sinal em σ infla, e só no GLM PCPS2 e no PCC; os outros três testes
   ficam mais conservadores. No GLM PCPS2 a inflação cresce muito com γ baixo;
-  no PCC ela diminui. O sinal em h não muda nada na camada A; na camada B, o
-  PCC em S2h fica na borda (0,076–0,078).
+  no PCC ela parece diminuir, mas os ICs se sobrepõem. O sinal em h não muda
+  nada na camada A; na camada B, o PCC em S2h fica na borda (0,076–0,078).
+  Ressalvas: contraste só no Colless Yule, e a resposta é o teste max, não o
+  componente filogenético isolado.
 - **H3** (γ muito negativo concentra a variação no PCPS1 e favorece a
   recuperação de clados basais, não a dos recentes): **parcial.** A fração no
-  PCPS1 *diminui* com γ baixo (contraria a primeira parte). Na recuperação, o
+  PCPS1 *diminui* com γ baixo (contraria a primeira parte; leitura das tabelas
+  descritivas, sem modelo formal). Na recuperação, o
   PCPS melhora muito com γ baixo, nos clados antigos e também nos recentes; a
   vantagem dos antigos é só de grau. Não há nível com γ acima de Yule.
 - **H4** (a ordem dos métodos muda com a forma da árvore): **sustentada para o
-  poder** (S3a e S3b) e nas duas camadas; na recuperação de clados, evoPCA e
-  phylofactor ficam sempre no topo e só PCPS e PCC trocam de lugar.
+  poder** (modelo formal da camada A, S3a e S3b com N = 100; na camada B, só
+  descritivo). Na recuperação de clados, evoPCA e phylofactor ficam sempre no
+  topo; PCPS e PCC trocam de lugar só nos clados recentes (em Yule, PCC 0,045
+  contra PCPS 0,028 com N = 100).
 
 # Infraestrutura e custo
 
@@ -668,7 +677,7 @@ Leitura a partir dos modelos formais (seção anterior) e das tabelas descritiva
 | full | 432.000 | ~8 h |
 | axes | 432.000 | ~6,6 h |
 | layerB (+ reexecução) | 440.000 | 6,6 h + 0,9 h |
-| clade (local, 16 núcleos) | 216.000 | 1,2 h |
+| clade (local, 16 núcleos) | 216.000 metacomunidades (× 4 métodos) | 1,2 h |
 | Modelos `brms` (local) | — | ~5 min |
 
 Pelo preço spot registrado (US$ 2,6–3,3/h), as quatro rodadas grandes custam
