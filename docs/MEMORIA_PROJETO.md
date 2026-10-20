@@ -912,3 +912,32 @@ Próximos passos sugeridos:
     0,22 alto → 0,31 Yule). Leitura preliminar: H3 sustentada para o PCPS
     (γ muito negativo favorece a recuperação de clados basais); H4 sustentada
     (a distância entre PCPS e os demais muda com γ). Falta o modelo formal.
+- **Modelos formais (brms) feitos** (2026-10-19; `R/formal_models.R`,
+  `analysis/18_formal_models.R`, `analysis/19_shape_contrasts.R`; saídas em
+  `data/derived/models/`, fora do git). Binomial agregado por condição (1000
+  réplicas): erro tipo I (1350 condições), poder (810) e clados (864). Forma da
+  árvore como **fatores** γ (Yule/médio/baixo) × Colless (Yule/médio/alto) com
+  interação, porque cada célula tem um só alvo por eixo e a camada A não guardou
+  o γ de cada árvore (o PLANO pedia contínuo; decisão minha, a confirmar com o
+  Diogo). Tipo I e poder: `test * scenario * (g + cl) + test * (g:cl + n_f +
+  data_type)`; clados: `method * (g * depth + cl + g:cl + shift_f + n_f +
+  data_type)`. **Beta-binomial** (a 1ª versão com efeito aleatório por condição
+  batia no treedepth máximo em 99% das transições). Priors: normal(0, 1,5) nos
+  b; intercepto normal(−2,9, 1,5) no tipo I e normal(0, 1,5) nos outros; φ
+  gamma(2, 0,01). 4 cadeias × 2000 iterações, cmdstanr.
+  - Convergência: R-hat máx. 1,00; ESS bulk ≥ 1237, tail ≥ 1816; 0 divergências;
+    0 transições no treedepth máximo. PPC: 97% das condições no IC preditivo de
+    95% e 58–66% no de 50% (levemente conservador). Dispersão quasibinomial:
+    3,0 (tipo I), 13,8 (poder), 5,0 (clados).
+  - Contrastes (N = 100, incidência; mediana [IC 95%]), γ baixo − Yule:
+    - Tipo I: GLM PCPS2 em S2sigma +0,078 [0,062; 0,095] (0,08 → 0,16); PCC em
+      S2sigma −0,021 [−0,035; −0,007]. Nos demais, |Δ| ≤ 0,02 (em S0 os testes
+      ficam mais conservadores com γ baixo). Colless alto − Yule: todos
+      |Δ| ≤ 0,005, ICs incluem 0 → **H1 não sustentada**; **H2 parcial**
+      (só σ, GLM PCPS2 e PCC, em sentidos opostos).
+    - Poder: GLM PCPS1 −0,41 a −0,46; PCC −0,20 a −0,36; Mantel −0,09 a −0,18;
+      ADONIS ≈ 0 em S3b/S3sigma (−0,09 em S3a). Colless alto: −0,01 a −0,08.
+      **H4 sustentada.**
+    - Clados: PCPS +0,29 a +0,31 com γ baixo (antigos e recentes); evoPCA e
+      phylofactor ≈ 0; PCC −0,12 (antigos) e +0,08 (recentes). Colless alto:
+      −0,02 a −0,07 em todos. **H3 sustentada para o PCPS.**

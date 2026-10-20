@@ -8,23 +8,25 @@
 #' @param d one row per replicate and test (or method), with a logical or 0/1
 #'   column `success`.
 #' @param by grouping columns (the design condition).
-#' @return tibble with `by`, `k` (successes), `n` (trials) and `obs` (one id
-#'   per row, for an observation-level random effect).
+#' @return tibble with `by`, `k` (successes) and `n` (trials).
 aggregate_binomial <- function(d, by) {
   d |>
     dplyr::group_by(dplyr::across(dplyr::all_of(by))) |>
-    dplyr::summarise(k = sum(success), n = dplyr::n(), .groups = "drop") |>
-    dplyr::mutate(obs = factor(dplyr::row_number()))
+    dplyr::summarise(k = sum(success), n = dplyr::n(), .groups = "drop")
 }
 
 #' Priors on the logit scale (declared explicitly, docs/PLANO_SIMULACAO.md)
 #'
+#' Beta-binomial: phi is the precision of the replicate-level probabilities.
+#' With 1000 trials per condition, an overdispersion of ~5 times the binomial
+#' (quasibinomial fits) means phi ~ 250; gamma(2, 0.01) (mean 200, sd 141) is
+#' weakly informative on that scale.
 #' @param intercept_mean prior mean of the intercept (logit(0.05) ~ -2.9 for
 #'   type I error, 0 for power and recovery).
 model_priors <- function(intercept_mean = 0) {
   c(brms::set_prior(sprintf("normal(%g, 1.5)", intercept_mean), class = "Intercept"),
     brms::set_prior("normal(0, 1.5)", class = "b"),
-    brms::set_prior("exponential(1)", class = "sd"))
+    brms::set_prior("gamma(2, 0.01)", class = "phi"))
 }
 
 #' Convergence diagnostics of a brms fit
@@ -47,14 +49,11 @@ fit_diagnostics <- function(fit, max_treedepth = 10) {
 
 #' Posterior predictive check: coverage of the observed successes
 #'
-#' The predictions draw new levels of the observation-level random effect, so
-#' they integrate over it; with the fitted levels every condition would be
-#' reproduced almost exactly and the check would be trivially passed.
-#' @param fit a `brmsfit` with an observation-level random effect `obs`.
+#' @param fit a beta-binomial `brmsfit` with `k | trials(n)`.
 #' @return one-row tibble with the fraction of conditions whose observed `k`
 #'   falls in the 50% and 95% posterior predictive intervals.
 ppc_coverage <- function(fit) {
-  yrep <- predict_new_obs(fit)
+  yrep <- brms::posterior_predict(fit)
   k <- fit$data$k
   inside <- function(level) {
     q <- apply(yrep, 2, stats::quantile, probs = c((1 - level) / 2, (1 + level) / 2))
@@ -63,17 +62,9 @@ ppc_coverage <- function(fit) {
   tibble::tibble(cover_50 = inside(0.5), cover_95 = inside(0.95))
 }
 
-#' Posterior predictive draws with new levels of the observation effect
-predict_new_obs <- function(fit) {
-  new <- fit$data
-  new$obs <- paste0("new_", new$obs)
-  brms::posterior_predict(fit, newdata = new, allow_new_levels = TRUE,
-                          sample_new_levels = "gaussian")
-}
-
 #' Observed rate and posterior predictive rate (median, 95%) of every condition
 ppc_table <- function(fit) {
-  rate <- sweep(predict_new_obs(fit), 2, fit$data$n, "/")
+  rate <- sweep(brms::posterior_predict(fit), 2, fit$data$n, "/")
   q <- apply(rate, 2, stats::quantile, probs = c(0.025, 0.5, 0.975))
   tibble::tibble(observed = fit$data$k / fit$data$n, pred_lo = q[1, ], pred_mid = q[2, ],
                  pred_hi = q[3, ])

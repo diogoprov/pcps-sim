@@ -9,10 +9,11 @@
 # and layer A did not keep the shape of each tree, so a "continuous" term would
 # only interpolate three points (mostly Yule vs the rest); the factors keep the
 # surface without assuming a form. Each model: an exploratory quasibinomial GLM
-# (for the dispersion) and the final brms model (binomial, observation-level
-# random effect for the overdispersion, explicit priors, 4 chains), with R-hat,
-# ESS, divergences and a posterior predictive check. Outputs in
-# <out_root>/<model>/.
+# (for the dispersion) and the final brms model (beta-binomial for the
+# overdispersion, explicit priors, 4 chains), with R-hat, ESS, divergences and a
+# posterior predictive check. An observation-level random effect was tried
+# first: with 1000 trials per condition its ~1000 latent values made almost
+# every transition hit the maximum tree depth. Outputs in <out_root>/<model>/.
 # Usage: Rscript analysis/18_formal_models.R <type_I|power|clade> [chains] [iter] [out_root]
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -75,8 +76,8 @@ message("Quasibinomial: dispersion ", round(summary(glm_fit)$dispersion, 2))
 # brms (final) ---------------------------------------------------------------------
 t0 <- Sys.time()
 fit <- brms::brm(
-  stats::as.formula(paste("k | trials(n) ~", spec$fixed, "+ (1 | obs)")),
-  data = agg, family = stats::binomial(), prior = model_priors(spec$intercept_mean),
+  stats::as.formula(paste("k | trials(n) ~", spec$fixed)),
+  data = agg, family = brms::beta_binomial(), prior = model_priors(spec$intercept_mean),
   chains = chains, cores = chains, iter = iter, warmup = iter %/% 2, seed = 20261019,
   backend = "cmdstanr",
   control = list(adapt_delta = 0.95, max_treedepth = max_treedepth),
@@ -91,7 +92,7 @@ if (diag$rhat_max > 1.01 || diag$divergent > 0 || diag$ess_bulk_min < 400)
 readr::write_csv(tibble::as_tibble(brms::fixef(fit), rownames = "term"),
                  file.path(out_dir, "fixef.csv"))
 
-# Posterior predictive check: observed rate vs prediction with new obs levels
+# Posterior predictive check: observed rate vs prediction
 ppc <- ppc_table(fit)
 readr::write_csv(ppc, file.path(out_dir, "ppc.csv"))
 p <- ggplot2::ggplot(ppc, ggplot2::aes(pred_mid, observed)) +
@@ -104,7 +105,7 @@ p <- ggplot2::ggplot(ppc, ggplot2::aes(pred_mid, observed)) +
 ggplot2::ggsave(file.path(out_dir, "ppc.png"), p, width = 6, height = 6, dpi = 150)
 
 # Key figure: rate over the gamma x Colless grid by test or method, at N = 100 and
-# incidence (clade: shift 2), fixed effects only
+# incidence (clade: shift 2)
 grid <- tidyr::crossing(g = levels(agg$g), cl = levels(agg$cl),
                         grp = levels(agg[[spec$group]]), n_f = "100",
                         data_type = "incidence", n = 1)
@@ -114,7 +115,7 @@ grid <- if (model == "clade") {
 } else {
   tidyr::crossing(grid, scenario = levels(agg$scenario))
 }
-ep <- brms::posterior_epred(fit, newdata = grid, re_formula = NA)
+ep <- brms::posterior_epred(fit, newdata = grid)
 grid$rate <- apply(ep, 2, stats::median)
 readr::write_csv(grid, file.path(out_dir, "shape_surface.csv"))
 facet_row <- if (model == "clade") "depth" else "scenario"
