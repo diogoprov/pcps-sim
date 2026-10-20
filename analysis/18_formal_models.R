@@ -14,10 +14,13 @@
 # posterior predictive check. An observation-level random effect was tried
 # first: with 1000 trials per condition its ~1000 latent values made almost
 # every transition hit the maximum tree depth. Outputs in <out_root>/<model>/.
-# Usage: Rscript analysis/18_formal_models.R <type_I|power|clade> [chains] [iter] [out_root]
+# type_I_axes and power_axes: the same models on the second run of Layer A with
+# the extra PCPS tests (GLM with Procrustes of the null axes, RDA on axes 1-2;
+# data/derived/axes/results.csv, without the PCC).
+# Usage: Rscript analysis/18_formal_models.R <type_I|power|clade|type_I_axes|power_axes> [chains] [iter] [out_root]
 
 args <- commandArgs(trailingOnly = TRUE)
-model <- match.arg(args[[1]], c("type_I", "power", "clade"))
+model <- match.arg(args[[1]], c("type_I", "power", "clade", "type_I_axes", "power_axes"))
 chains <- if (length(args) >= 2) as.integer(args[[2]]) else 4L
 iter <- if (length(args) >= 3) as.integer(args[[3]]) else 2000L
 out_root <- if (length(args) >= 4) args[[4]] else file.path("data", "derived", "models")
@@ -43,6 +46,12 @@ spec <- list(
   power = list(file = c("full", "results.csv"), group = "test",
                scenarios = c("S3a", "S3b", "S3sigma"), fixed = layer_a,
                intercept_mean = 0),
+  type_I_axes = list(file = c("axes", "results.csv"), group = "test",
+                     scenarios = c("S0", "S1", "S2", "S2sigma", "S2h"), fixed = layer_a,
+                     intercept_mean = -2.9),
+  power_axes = list(file = c("axes", "results.csv"), group = "test",
+                    scenarios = c("S3a", "S3b", "S3sigma"), fixed = layer_a,
+                    intercept_mean = 0),
   clade = list(file = c("clade", "results.csv"), group = "method",
                fixed = paste("method * (g * depth + cl + g:cl + shift_f + n_f + data_type) +",
                              "method:(g + cl):(n_f + data_type + shift_f)"),

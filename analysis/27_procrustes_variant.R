@@ -1,5 +1,6 @@
 # GLM on PCPS axes with symmetric Procrustes of the null axes onto the observed
-# ones (as in PCPS::pcps.sig), against the plain GLM used in the main text: raw
+# ones (as in PCPS::pcps.sig), and RDA of PCPS axes 1-2 on the gradient (which
+# needs no Procrustes), against the plain GLM used in the main text: raw
 # rejection rates of the max test, with Monte Carlo standard errors, by layer,
 # scenario, gamma level, N and data type (Layer B: archetype and pool cell).
 # Layer A from the run with extra axes (data/derived/axes/results.csv),
@@ -7,7 +8,7 @@
 # Writes data/derived/models/procrustes_rates.csv.
 # Usage: Rscript analysis/27_procrustes_variant.R
 
-tests <- c("glm_pcps1", "glm_pcps1_proc", "glm_pcps2", "glm_pcps2_proc")
+tests <- c("glm_pcps1", "glm_pcps1_proc", "glm_pcps2", "glm_pcps2_proc", "rda_pcps")
 rate_table <- function(file, by) {
   d <- data.table::fread(file, select = c(by, "test", "p_max"))
   d <- d[test %in% tests]
