@@ -41,7 +41,7 @@ Diogo B. Provete conceived the study, designed and ran the simulations, analysed
 
 # Data availability statement
 
-The code of the simulations, the rates aggregated by condition, the outputs of the formal models and the scripts that reproduce every table and figure are available at https://github.com/diogoprov/pcps-sim and archived at Zenodo ([CITAR: Zenodo DOI]). The tadpole metacommunity data of Box 1 come from published studies (Both et al., 2011; Prado & Rossa-Feres, 2014; Provete et al., 2014) and from unpublished data shared with the author, which cannot be redistributed; the repository holds the species lists and the tree shapes of the regional pools derived from them.
+The code of the simulations, the rates aggregated by condition, the outputs of the formal models and the scripts that reproduce every table and figure are available at https://github.com/diogoprov/pcps-sim and archived at Zenodo (https://doi.org/10.5281/zenodo.23500104, all versions; v0.1.0, https://doi.org/10.5281/zenodo.23500105). For peer review, an anonymized copy is provided as a separate deposit. The tadpole metacommunity data of Box 1 come from published studies (Both et al., 2011; Prado & Rossa-Feres, 2014; Provete et al., 2014) and from unpublished data shared with the author, which cannot be redistributed; the repository holds only the tree shapes of the regional pools derived from them and the results of the case study.
 
 # Use of artificial intelligence
 
