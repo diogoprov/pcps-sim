@@ -893,3 +893,22 @@ Próximos passos sugeridos:
   balance ILR de log(x + 0,5) regredida em E, igual ao `choice = "var"`; o
   melhor nó bate com o `PhyloFactor` (teste). Bug achado na revisão: nó
   verdadeiro sem escore (glm sem convergir) ficava com posto 1; agora NA.
+- **Objetivo 2: rodada completa feita** (2026-10-19, local, 16 núcleos,
+  18h53 → 20h05: árvores 1,7 min, blocos 1h09; ~0,29 s por réplica).
+  `data/derived/clade/results.csv` (fora do git): 864.000 linhas (216 blocos ×
+  1000 réplicas × 4 métodos), nenhum NA em acerto, posto ou Jaccard. O log tem
+  ≥ 50 avisos (provavelmente glm sem convergir em algum nó; nenhum nó plantado
+  ficou sem posto).
+  - Acerto do nó plantado, incidência, shift 2, antigo/recente: N = 100 —
+    evoPCA 0,79/0,66, phylofactor 0,79/0,67, PCPS 0,38/0,15, PCC 0,11/0,09;
+    N = 200 — evoPCA 0,88/0,80, phylofactor 0,88/0,82, PCPS 0,42/0,16. Com
+    shift 0,5 todos ficam em 0,05–0,21.
+  - Abundância (N = 100, shift 2): evoPCA 0,78/0,65, phylofactor
+    composicional 0,68/0,56, PCPS 0,32/0,10, PCC 0,09/0,08.
+  - **Formato da árvore** (incidência, N = 100, shift 2): o PCPS depende muito
+    do γ: clados antigos 0,55 (γ baixo) → 0,41 (médio) → 0,19 (Yule);
+    recentes 0,28 → 0,14 → 0,03. evoPCA e phylofactor quase não mudam com γ
+    (0,78–0,80 antigos; 0,65–0,69 recentes). Colless pesa pouco (PCPS
+    0,22 alto → 0,31 Yule). Leitura preliminar: H3 sustentada para o PCPS
+    (γ muito negativo favorece a recuperação de clados basais); H4 sustentada
+    (a distância entre PCPS e os demais muda com γ). Falta o modelo formal.
