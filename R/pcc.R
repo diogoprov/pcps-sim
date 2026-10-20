@@ -60,16 +60,23 @@ pcc_stat <- function(comm, pev, env) {
 }
 
 #' Row (site) and column (species) permutation tests of the PCC statistic
-test_pcc <- function(comm, tree, env, nperm = 99, squared = FALSE) {
+#'
+#' With `site_env`, the permuted gradients replace the row permutations.
+test_pcc <- function(comm, tree, env, nperm = 99, squared = FALSE, site_env = NULL) {
   comm <- comm[, tree$tip.label, drop = FALSE]
   pev <- phylo_eigenvectors(tree, squared = squared)
   obs <- pcc_stat(comm, pev, env)
   env <- as.matrix(env)
 
-  rows <- replicate(nperm, {
-    i <- sample.int(nrow(comm))
-    pcc_stat(comm[i, , drop = FALSE], pev, env)[["var_r2"]]
-  })
+  rows <- if (is.null(site_env)) {
+    replicate(nperm, {
+      i <- sample.int(nrow(comm))
+      pcc_stat(comm[i, , drop = FALSE], pev, env)[["var_r2"]]
+    })
+  } else {
+    # restricted site permutations given as permuted gradients ([test_dp_all()])
+    vapply(seq_len(nrow(site_env)), \(b) pcc_stat(comm, pev, as.matrix(site_env[b, ]))[["var_r2"]], 0)
+  }
   cols <- replicate(nperm, {
     j <- sample.int(ncol(comm))
     pcc_stat(comm[, j, drop = FALSE], pev, env)[["var_r2"]]

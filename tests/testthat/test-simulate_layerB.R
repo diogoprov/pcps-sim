@@ -46,7 +46,8 @@ test_that("sim_metacommunity_B returns the layer-A structure", {
   tr <- sim_tree_shape(40)
   mc <- sim_metacommunity_B(tr, 1, TRUE, TRUE, TRUE, dispersal = 0.01,
                             competition = "phylo", n_steps = 200)
-  expect_named(mc, c("comm", "tree", "env", "n_dropped_sites", "n_dropped_spp", "traits"))
+  expect_named(mc, c("comm", "tree", "env", "n_dropped_sites", "n_dropped_spp", "traits",
+                    "env_all", "kept_sites"))
   expect_identical(colnames(mc$comm), mc$tree$tip.label)
   expect_equal(nrow(mc$comm), length(mc$env))
   expect_true(all(mc$comm %in% c(0, 1)))
@@ -74,4 +75,32 @@ test_that("feasible_pools drops only cells more than tol off target", {
   out <- suppressMessages(feasible_pools(path))
   expect_equal(out$n_pool, c(110, 480))
   expect_named(out, c("archetype", "scenario", "target", "n_pool"))
+})
+
+test_that("spatial landscape: torus rearrangements keep distances, dispersal rows sum to 1", {
+  sp <- spatial_landscape(side = 6)
+  expect_equal(nrow(sp$site_perms), 6^2 * 8 - 1)
+  expect_true(all(apply(sp$site_perms, 1, \(p) all(sort(p) == seq_len(36)))))
+  ok <- apply(sp$site_perms, 1, \(p) isTRUE(all.equal(sp$dist[p, p], sp$dist)))
+  expect_true(all(ok))
+  expect_equal(unname(rowSums(sp$disp)), rep(1, 36))
+  expect_equal(unname(diag(sp$disp)), rep(0, 36))
+  set.seed(2)
+  e <- spatial_env(sp)
+  expect_equal(length(e), 36)
+  expect_true(all(e >= 0 & e <= 100))
+})
+
+test_that("spatial layer-B metacommunity runs and gives torus-permuted gradients", {
+  sp <- spatial_landscape(side = 5)
+  set.seed(4)
+  tr <- ape::rcoal(20)
+  mc <- sim_metacommunity_B(tr, 1, FALSE, FALSE, TRUE, dispersal = 0.5, n_steps = 60,
+                            incidence = FALSE, space = sp)
+  se <- torus_site_env(mc, sp)
+  expect_equal(dim(se), c(nrow(sp$site_perms), nrow(mc$comm)))
+  expect_equal(sort(se[1, ]), sort(mc$env_all[sp$site_perms[1, ]][mc$kept_sites]))
+  res <- analyse_metacommunity(mc, c("pfw", "glm", "pcc"), nperm = 9, extra_axes = TRUE,
+                               site_env = se[1:9, , drop = FALSE])
+  expect_true(all(res$p_site >= 0.1 & res$p_site <= 1))
 })

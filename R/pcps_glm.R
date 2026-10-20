@@ -85,8 +85,11 @@ f_rda <- function(y, x) {
 #' - `rda_pcps`: RDA of all `axes` on env (invariant to rotations of the axes,
 #'   so it needs no Procrustes).
 #' It also adds the share of each axis in the total variation (`eig_share<a>`).
+#' With `site_env` (a matrix of permuted gradients, one row per permutation),
+#' those gradients replace the site shuffle, e.g. torus translations of a
+#' spatially autocorrelated gradient.
 test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
-                        extra_axes = FALSE) {
+                        extra_axes = FALSE, site_env = NULL) {
   q <- phylo_q(tree)
   comm <- comm[, tree$tip.label, drop = FALSE]
   de <- as.matrix(stats::dist(env))
@@ -104,10 +107,18 @@ test_dp_all <- function(comm, tree, env, axes = 1:2, nperm = 999,
   }
   obs <- stats_dp(dp, env, de, g, y)
 
-  site <- replicate(nperm, {
-    i <- sample.int(length(env))
-    stats_dp(dp, env[i], de[i, i], g, y)
-  })
+  site <- if (is.null(site_env)) {
+    replicate(nperm, {
+      i <- sample.int(length(env))
+      stats_dp(dp, env[i], de[i, i], g, y)
+    })
+  } else {
+    # restricted site permutations given as permuted gradients
+    vapply(seq_len(nrow(site_env)), \(b) {
+      x <- site_env[b, ]
+      stats_dp(dp, x, as.matrix(stats::dist(x)), g, y)
+    }, obs)
+  }
   k <- ncol(comm)
   taxa <- replicate(nperm, {
     j <- sample.int(k)

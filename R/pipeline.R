@@ -17,6 +17,10 @@
 #' centre of the grid, the four archetypes and the eight scenarios, incidence
 #' only; the cell sets the (beta, c) of the pool tree (option B of 2026-10-18,
 #' docs/MEMORIA_PROJETO.md), and the shape of the pruned tree is recorded.
+#' `layerB_spatial`: layer B on a spatial landscape (10 x 10 torus, autocorrelated
+#' gradient, exponential dispersal kernel; [spatial_landscape()]) at N = 100,
+#' with incidence and abundance data from the same dynamics, the extra PCPS
+#' axes, and torus translations instead of the site shuffle (reviewer check).
 #' `smoke_B`: tiny layer-B run.
 #' `extra_axes` defaults to FALSE in all other profiles.
 #' @param name profile name; defaults to the environment variable PCPS_PROFILE.
@@ -59,6 +63,14 @@ design_profile <- function(name = Sys.getenv("PCPS_PROFILE", "pilot_glm")) {
                 "g_mid__c_mid"),
       archetypes = archetypes_layerB()$archetype, data_types = "incidence",
       extra_axes = TRUE, pool_file = layerB_pool_file()
+    )),
+    layerB_spatial = utils::modifyList(full, list(
+      name = name, layer = "B",
+      cells = c("g_yule__c_yule", "g_low__c_yule", "g_yule__c_high", "g_low__c_high",
+                "g_mid__c_mid"),
+      n_spp = 100, archetypes = archetypes_layerB()$archetype,
+      data_types = c("incidence", "abundance"), extra_axes = TRUE, spatial = TRUE,
+      pool_file = layerB_pool_file()
     )),
     smoke_B = list(
       name = name, layer = "B", cells = c("g_yule__c_yule", "g_low__c_high"),
@@ -209,6 +221,8 @@ design_table_B <- function(profile, pools, pool_cells) {
 #' @param design_row one row of [design_table_B()].
 run_chunk_B <- function(design_row, profile) {
   reps <- chunk_reps(design_row$chunk, profile)
+  space <- if (isTRUE(profile$spatial)) spatial_landscape() else NULL
+  data_types <- if (is.null(profile$data_types)) "incidence" else profile$data_types
   t0 <- Sys.time()
   purrr::map(reps, \(r) {
     pool <- sim_tree_cell(1, design_row$n_pool, design_row$beta, design_row$c,
@@ -216,14 +230,24 @@ run_chunk_B <- function(design_row, profile) {
                           max_tries = 5000)
     stopifnot(length(pool) == 1)
     pool <- pool[[1]]
+    # counts are simulated once; incidence is derived from them, so both data
+    # types share the metacommunity (the spatial profile analyses both)
     mc <- sim_metacommunity_B(pool, design_row$lambda, design_row$sigma_signal,
                               design_row$h_signal, design_row$env_original,
                               dispersal = design_row$dispersal,
-                              competition = design_row$competition)
+                              competition = design_row$competition,
+                              incidence = identical(data_types, "incidence"), space = space)
+    site_env <- if (is.null(space)) NULL else torus_site_env(mc, space)
     shape_pool <- tree_shape(pool)
     shape_obs <- tree_shape(mc$tree)
-    analyse_metacommunity(mc, profile$methods, profile$nperm, profile$nperm_pcc,
-                          extra_axes = isTRUE(profile$extra_axes)) |>
+    purrr::map(data_types, \(dt) {
+      mc_dt <- mc
+      if (dt == "incidence") mc_dt$comm <- (mc$comm > 0) * 1
+      analyse_metacommunity(mc_dt, profile$methods, profile$nperm, profile$nperm_pcc,
+                            extra_axes = isTRUE(profile$extra_axes), site_env = site_env) |>
+        dplyr::mutate(data_type = dt)
+    }) |>
+      dplyr::bind_rows() |>
       dplyr::mutate(rep = r, n_realized = ncol(mc$comm),
                     gamma_pool = shape_pool[["gamma"]], colless_pool = shape_pool[["colless"]],
                     gamma = shape_obs[["gamma"]], colless = shape_obs[["colless"]])
@@ -231,6 +255,7 @@ run_chunk_B <- function(design_row, profile) {
     dplyr::bind_rows() |>
     dplyr::mutate(scenario = design_row$scenario, archetype = design_row$archetype,
                   cell = design_row$cell, n_spp = design_row$target,
-                  n_pool = design_row$n_pool, data_type = "incidence", .before = 1) |>
+                  n_pool = design_row$n_pool, .before = 1) |>
+    dplyr::relocate(data_type, .after = n_pool) |>
     dplyr::mutate(chunk_seconds = as.numeric(Sys.time() - t0, units = "secs"))
 }

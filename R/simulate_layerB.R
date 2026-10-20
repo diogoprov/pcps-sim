@@ -66,7 +66,8 @@ competition_matrix <- function(tree, type = c("none", "random", "phylo"),
 #'   species are added to every site (initial colonisation).
 #' @return sites x species abundances at the last step.
 mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
-                        seed_steps = seq(10, 100, 10), seed_mean = 0.5) {
+                        seed_steps = seq(10, 100, 10), seed_mean = 0.5,
+                        disp_matrix = NULL) {
   m <- nrow(r)
   k <- ncol(r)
   dispersal <- rep_len(dispersal, k)
@@ -91,7 +92,12 @@ mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
     n <- matrix(stats::rpois(m * k, lam), m, k)
     em <- matrix(stats::rbinom(m * k, n, p_em), m, k)
     tot <- colSums(em)
-    if (any(tot > 0)) {
+    if (!is.null(disp_matrix)) {
+      # spatial version: emigrants of site s reach site t with probability
+      # disp_matrix[s, t]; immigrants drawn as Poisson around the expected flow
+      if (any(tot > 0))
+        n <- n - em + matrix(stats::rpois(m * k, crossprod(disp_matrix, em)), m, k)
+    } else if (any(tot > 0)) {
       w <- sweep(-em, 2, tot, "+")
       imm <- matrix(0L, m, k)
       for (j in which(tot > 0)) imm[, j] <- stats::rmultinom(1, tot[j], w[, j])
@@ -114,16 +120,70 @@ mc_dynamics <- function(r, alpha, dispersal, n_steps = 1000,
 sim_metacommunity_B <- function(tree, lambda, sigma_signal, h_signal, env_original,
                                 dispersal = 0.01, competition = "none",
                                 incidence = TRUE, n_sites = 100, mu_tol = 10,
-                                rmax_range = c(2, 8), n_steps = 1000) {
+                                rmax_range = c(2, 8), n_steps = 1000, space = NULL) {
   tr <- sim_species_traits(tree, lambda, sigma_signal, h_signal, mu_tol, rmax_range)
   alpha <- competition_matrix(tree, competition)
-  env <- stats::runif(n_sites, 0, 100)
+  if (!is.null(space)) n_sites <- nrow(space$dist)
+  new_env <- if (is.null(space)) function(n) stats::runif(n, 0, 100) else
+    function(n) spatial_env(space)
+  env <- new_env(n_sites)
   r <- exp(-sweep(outer(env, tr$u, "-")^2, 2, 2 * tr$sigma^2, "/"))
   r <- sweep(r, 2, tr$h, "*")
   colnames(r) <- tree$tip.label
-  comm <- mc_dynamics(r, alpha, dispersal, n_steps = n_steps)
+  comm <- mc_dynamics(r, alpha, dispersal, n_steps = n_steps,
+                      disp_matrix = if (is.null(space)) NULL else space$disp)
   if (incidence) comm <- (comm > 0) * 1
-  finish_metacommunity(comm, tree, env, env_original, tr)
+  finish_metacommunity(comm, tree, env, env_original, tr, new_env = new_env)
+}
+
+#' Spatial landscape for layer B (reviewer check, 2026-10-20)
+#'
+#' Sites on a `side` x `side` grid wrapped as a torus (no edges). The gradient
+#' is spatially autocorrelated: independent normal deviates smoothed by a
+#' Gaussian kernel of `env_bandwidth` cells and given the U(0, 100) marginal
+#' of the non-spatial version by ranks. Emigrants reach the other sites with
+#' probability proportional to exp(-d / `disp_scale`) (d in cells, toroidal).
+#' Site permutations that keep the spatial autocorrelation of the gradient are
+#' the torus translations and the eight symmetries of the square
+#' (`site_perms`, side^2 x 8 - 1 non-identity rearrangements).
+#' @return list with dist (toroidal distances), kernel (smoothing weights),
+#'   disp (row-stochastic dispersal matrix, zero diagonal) and site_perms
+#'   (matrix, one permutation of the site indices per row).
+spatial_landscape <- function(side = 10, env_bandwidth = 2, disp_scale = 2) {
+  xy <- expand.grid(x = seq_len(side) - 1, y = seq_len(side) - 1)
+  dx <- abs(outer(xy$x, xy$x, "-"))
+  dy <- abs(outer(xy$y, xy$y, "-"))
+  d <- sqrt(pmin(dx, side - dx)^2 + pmin(dy, side - dy)^2)
+  disp <- exp(-d / disp_scale)
+  diag(disp) <- 0
+  disp <- disp / rowSums(disp)
+  maps <- list(\(x, y) cbind(x, y), \(x, y) cbind(y, x), \(x, y) cbind(-x, y),
+               \(x, y) cbind(x, -y), \(x, y) cbind(-x, -y), \(x, y) cbind(-y, x),
+               \(x, y) cbind(y, -x), \(x, y) cbind(-y, -x))
+  perms <- list()
+  for (f in maps) for (sx in seq_len(side) - 1) for (sy in seq_len(side) - 1) {
+    p <- f(xy$x, xy$y)
+    p <- cbind((p[, 1] + sx) %% side, (p[, 2] + sy) %% side)
+    perms[[length(perms) + 1]] <- p[, 1] + side * p[, 2] + 1
+  }
+  perms <- unique(do.call(rbind, perms))
+  perms <- perms[!apply(perms, 1, \(p) all(p == seq_len(side^2))), , drop = FALSE]
+  list(dist = d, kernel = exp(-d^2 / (2 * env_bandwidth^2)), disp = disp,
+       site_perms = perms)
+}
+
+#' Spatially autocorrelated gradient on a [spatial_landscape()]
+spatial_env <- function(space) {
+  z <- drop(space$kernel %*% stats::rnorm(nrow(space$kernel)))
+  rank_to_marginal(z, stats::runif(length(z), 0, 100))
+}
+
+#' Gradients permuted by the torus rearrangements, at the sites kept
+#'
+#' Row b holds the gradient at the kept sites after rearrangement b of all
+#' sites, for the `site_env` argument of [analyse_metacommunity()].
+torus_site_env <- function(mc, space) {
+  t(apply(space$site_perms, 1, \(p) mc$env_all[p][mc$kept_sites]))
 }
 
 #' Layer-B archetypes: dispersal regime x competition

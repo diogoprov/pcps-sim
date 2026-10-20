@@ -76,16 +76,21 @@ sim_species_traits <- function(tree, lambda, sigma_signal, h_signal, mu_tol = 10
 #' `env_original`, a new U(0, 100) draw. Empty sites are dropped, and species
 #' absent from all sites are dropped and pruned from the tree (as `PCPS` does
 #' and as with real data).
+#' @param new_env generator of the independent gradient (spatially structured
+#'   in the spatial version of layer B).
 #' @return list with comm (sites x species, tip order), tree, env (analysed),
-#'   n_dropped_sites, n_dropped_spp, and traits of the species kept.
-finish_metacommunity <- function(comm, tree, env, env_original, traits) {
-  env_used <- if (env_original) env else stats::runif(length(env), 0, 100)
+#'   n_dropped_sites, n_dropped_spp, traits of the species kept, and the
+#'   analysed gradient at all sites (`env_all`) with the sites kept
+#'   (`kept_sites`), used by restricted site permutations.
+finish_metacommunity <- function(comm, tree, env, env_original, traits,
+                                 new_env = function(n) stats::runif(n, 0, 100)) {
+  env_used <- if (env_original) env else new_env(length(env))
   ok <- drop_empty_sites(comm, env_used)
   present <- colSums(ok$comm) > 0
   tree_obs <- if (all(present)) tree else ape::keep.tip(tree, tree$tip.label[present])
   list(comm = ok$comm[, tree_obs$tip.label, drop = FALSE], tree = tree_obs,
        env = ok$env, n_dropped_sites = ok$n_dropped, n_dropped_spp = sum(!present),
-       traits = traits[present, ])
+       traits = traits[present, ], env_all = env_used, kept_sites = rowSums(comm) > 0)
 }
 
 #' One layer-A metacommunity
@@ -121,20 +126,25 @@ sim_comm_traits <- function(traits, env, species, incidence = TRUE) {
 #' @param methods subset of c("pfw", "glm", "pcc").
 #' @param extra_axes passed to [test_dp_all()] (Procrustes GLM and RDA on the
 #'   PCPS axes; needs both "pfw" and "glm").
+#' @param site_env optional matrix of permuted gradients (one row per
+#'   permutation) that replaces the site shuffle, e.g. torus translations in
+#'   the spatial version of layer B ([test_dp_all()], [test_pcc()]).
 analyse_metacommunity <- function(mc, methods = c("pfw", "glm", "pcc"),
-                                  nperm = 999, nperm_pcc = nperm, extra_axes = FALSE) {
+                                  nperm = 999, nperm_pcc = nperm, extra_axes = FALSE,
+                                  site_env = NULL) {
   stopifnot(!extra_axes || all(c("pfw", "glm") %in% methods))
+  stopifnot(is.null(site_env) || all(c("pfw", "glm") %in% methods))
   out <- list()
   if (all(c("pfw", "glm") %in% methods)) {
     out$dp <- test_dp_all(mc$comm, mc$tree, mc$env, axes = 1:2, nperm = nperm,
-                          extra_axes = extra_axes)
+                          extra_axes = extra_axes, site_env = site_env)
   } else if ("pfw" %in% methods) {
     out$pfw <- test_pfw(mc$comm, mc$tree, mc$env, nperm = nperm, sqrt_adonis = TRUE)
   } else if ("glm" %in% methods) {
     out$glm <- test_pcps_glm(mc$comm, mc$tree, mc$env, axes = 1:2, nperm = nperm)
   }
   if ("pcc" %in% methods)
-    out$pcc <- test_pcc(mc$comm, mc$tree, mc$env, nperm = nperm_pcc)
+    out$pcc <- test_pcc(mc$comm, mc$tree, mc$env, nperm = nperm_pcc, site_env = site_env)
   dplyr::bind_rows(out) |>
     dplyr::mutate(n_dropped_sites = mc$n_dropped_sites, n_dropped_spp = mc$n_dropped_spp)
 }
