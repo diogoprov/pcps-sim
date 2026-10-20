@@ -19,6 +19,64 @@ Rscript analysis/24_si_tables.R (tables in manuscript/si/). -->
 si <- function(file) readr::read_csv(file.path("si", file), show_col_types = FALSE)
 ```
 
+# Appendix S1. Extended methods
+
+## Tree generator and calibration of the grid
+
+We drew topologies from Aldous's β-splitting model (Aldous, 1996) and branching times from a pure-birth process in which each of the $k$ lineages diversifies at rate $k^{c}$, so that $c = 0$ corresponds to a Yule process and $c < 0$ to a slowdown in diversification, as under diversity dependence. We then ordered the nodes by a uniform linear extension of the partial order of the tree and set the root depth to one. Because γ depends only on the intervals between nodes and the Colless index only on the topology, this construction controls the two axes separately. This generator is our own design choice and not a published model; it replaced the library of trees from several generators, sampled by strata, that we had planned, because it gives independent control by construction.
+
+We calibrated $c$ and β for each N with curves of the mean statistic against the parameter, and accepted a tree only when both statistics fell within 0.5 units of the targets of its cell, which gave acceptance rates of 9–25% (Table S1). Thus, every cell of the 3 × 3 grid could be filled. The Yule × Yule cell approximates the trees used in previous validations (Peres-Neto & Kembel, 2015; Duarte et al., 2016), since the acceptance window truncates the Yule distribution of both statistics.
+
+## Phylogenetic signal in niche breadth and maximum abundance
+
+When $\sigma_j$ or $h_j$ carried phylogenetic signal, we simulated a Brownian trait on the tree (λ = 1) and imposed on it the marginal distribution of the scenario without signal by ranks, that is, the species with the $m$-th largest Brownian value received the $m$-th largest value of a sample from the original distribution. Scenarios with and without signal therefore differed only in how the values were arranged on the tree.
+
+## Layer B
+
+The dynamics followed Thompson et al. (2020), which we implemented in R from the published equations, because neither the original Julia code nor the R package mcomsimr carries a licence. The expected abundance of species $j$ at site $i$ at time $t + 1$ was
+
+$$\lambda_{ij}(t) = \frac{r_j \exp\left[-\dfrac{(E_i - u_j)^2}{2\sigma_j^2}\right] N_{ij}(t)}{1 + \sum_k \alpha_{jk} N_{ik}(t)},$$
+
+where $N_{ij}(t)$ is the abundance of species $j$ at site $i$ and $\alpha_{jk}$ is the effect of species $k$ on species $j$. We drew abundances from a Poisson distribution with mean $\lambda_{ij}(t)$; each individual then emigrated with probability $a$, and each site received the emigrants of each species from all other sites in proportion to their number (a multinomial draw), so that the dispersal kernel was uniform. Our σ is the standard deviation of the Gaussian response, as in Layer A, and equals $\sqrt{2}$ times the breadth parameter of Thompson et al. (2020). The environment was static. All species were seeded with Poisson(0.5) individuals per site every 10 steps during the first 100 steps, the dynamics ran for 1,000 steps, and we kept only the final state, a single survey, rather than a temporal mean. Maximum growth rate $r_j$, drawn from a uniform distribution between 2 and 8, took the role of $h_j$ in the trait scenarios.
+
+Under phylogenetic competition, interspecific coefficients came from a uniform distribution between 0 and 0.1, relative to an intraspecific coefficient of 1 (both multiplied by 0.05), and were assigned to species pairs by the rank of their phylogenetic similarity, so that close relatives competed more strongly. We calibrated the size of the pool for each archetype, scenario and N so that the mean number of species left after the dynamics was close to N, and drew the pool tree with the targets of its cell, recalibrating β and $c$ for each pool size. However, mass effects with phylogenetic competition could not reach N = 200, since pools of up to 2,900 species left only about 150 species, and we dropped this combination. We recorded γ and the Colless index of both the pool tree and the analysed tree.
+
+## Permutation tests
+
+We wrote the permutation loops ourselves for efficiency and checked, in unit tests, that the observed statistics equal those of the R packages vegan v. 2.7-6 (Oksanen et al., 2026) and PCPS v. 1.0.9 (Debastiani, 2026). The 999 permutations give P-values a resolution of 0.001.
+
+## Node scores of the clade-recovery methods
+
+For PCPS, PCC and evoPCA, each method took the axis most correlated with $E$ among its first four, and the score of each internal node was the absolute correlation between membership of its clade and the species scores on that axis. The species scores were the correlations of the columns of $\mathbf{P}$ with the PCPS axis, which equal the species scores of the R package PCPS; the values of the phylogenetic eigenvector for PCC; and the correlations of the species columns of the Hellinger-transformed table of evoPCA (Legendre & Gallagher, 2001). We did not use the branch loadings of evoPCA because, with incidence data, a branch is present wherever any of its descendants is, so the branch above a planted clade saturates and small subclades always correlate better with the axis. For phylofactorization (Washburne et al., 2017), the score of each split was the objective of the algorithm, the deviance explained by the phylogenetic factor in a binomial model with incidence data or the variance explained by the isometric log-ratio balance with abundance data; we computed it for every node, which gives the same best split as the R package phylofactor v. 0.0.1 (Washburne et al., 2017) while also ranking all nodes. The planted-clade objective replaced the per-node effect sizes under continuous Brownian motion that we had planned, because a planted clade defines unambiguously which answer is correct.
+
+## Formal models of the simulation results
+
+The plan was to treat γ and the Colless index as continuous covariates, but each cell of the grid has a single target per axis, and Layer A did not store the shape of every tree, so a continuous term would only interpolate three points. Therefore, we entered the levels of both statistics as factors. In Layer A, the shape effects could differ among tests and scenarios, which is what testing a nuisance effect that depends on tree shape requires, and with N and data type; in the R formula notation, the model was test \* scenario \* (γ + Colless) + test \* (γ:Colless + N + data type) + test:(γ + Colless):(N + data type) + test:scenario:N, where the last term lets the scenario effects, such as the inflation under nuisance structure, differ with N. In Layer B, where only five cells were simulated, the cell entered as a five-level factor, in test \* archetype \* (scenario + cell) + test \* N \* (archetype + scenario + cell). The clade-recovery model was method \* (γ \* depth + Colless + γ:Colless + shift + N + data type) + method:(γ + Colless):(N + data type + shift).
+
+We first fitted quasibinomial generalized linear models to the same structures, which showed a dispersion 2.1–8.5 times larger than binomial. The beta-binomial accounts for this extra variation with a single precision parameter φ, whereas a first version with an observation-level random effect hit the maximum tree depth of the sampler in almost every transition. We used normal(0, 1.5) for all coefficients on the logit scale; normal(−2.9, 1.5) for the intercept of the type I models, centred on logit(0.05), and normal(0, 1.5) for the other intercepts; and gamma(2, 0.01) for φ, which is weakly informative around the values implied by the quasibinomial dispersion (φ of about 130–910). We ran four chains of 2,000 iterations (1,000 of warm-up) with adapt_delta = 0.95 and a maximum tree depth of 12, since with the default of 10 a few transitions of the type I models reached the limit. Posterior predictive checks were in sample, both for each condition and for the sums over the conditions of each test, N and cell.
+
+## Computation
+
+The simulations of Layer A and Layer B ran in a Docker image on spot cloud instances with 192 virtual CPUs (190 workers); the pipeline seed was 20261018, from which the R package targets derives one seed per branch. Layer A took about 8 h for the 432,000 metacommunities of the main run and Layer B about 7.5 h for its 440,000. The clade-recovery runs took 1.2 h on a 16-core workstation, with one seed per tree, depth and replicate, and each formal model 1–7 min. The trait simulation, the β-splitting and branching-time generator and the calibration of the grid are our own R code in the repository.
+
+# Appendix S2. Extended results
+
+## Validation against published results
+
+The static layer reproduced the published validations. In the Yule trees of Duarte et al. (2016), the rejection rates of the site shuffle, the taxa shuffle and the max test fell within the 95% binomial interval of our estimates in 66 of 72 cells. The six exceptions came from four conditions (PERMANOVA with both components at N = 100, with environment only at N = 200 and with phylogeny only at N = 200, and the Mantel test with environment only at N = 200), slightly more than the 3.6 cells expected by chance. The mean PERMANOVA R² and Mantel ρ agreed to the second decimal place when we used the Bray–Curtis dissimilarity without the square root, as in the code of Duarte et al. (2016); in the rest of the study we used the square-rooted version. The PCC matched the published rates of Peres-Neto and Kembel (2015) in the scenarios that do not depend on the tree. Its power was lower than published (0.93 against 0.95), and it varied between 0.71 and 0.93 among 20 Yule trees, so the published values lie just above that range, which seems to reflect a single favourable tree. Thus, our implementation closely reproduces both benchmarks.
+
+## Type I error in Layer B
+
+Under the null hypothesis, no lower CI bound exceeded 0.075 at N = 100 (largest posterior median 0.088). However, raw rejection rates exceeded that limit for GLM PCPS2 in S2σ under species sorting (0.094 at N = 100 and 0.104–0.129 at N = 200 in the low- and mid-γ cells) and for the PCC in S2h (0.085–0.089 at N = 100; 0.111 under species sorting and 0.116–0.143 under mass effects at N = 200).
+
+## Clade recovery with abundance data
+
+With abundance data, recovery was lower for the compositional phylofactorization (0.68 and 0.56 for basal and recent clades at N = 100) than for evoPCA (0.78 and 0.65), and PCPS gained 0.29 (95% CI 0.25–0.33) and 0.23 (0.21–0.25) with low γ.
+
+## Convergence and fit of the formal models
+
+All models converged, with $\hat{R}$ ≤ 1.01, bulk effective sample size ≥ 908 and tail effective sample size ≥ 1,477, no divergent transitions and no transition at the maximum tree depth (Table S3). The in-sample 95% posterior predictive intervals contained 96–98% of the observed rates of each condition and the 50% intervals 61–70%, so the predictive intervals are slightly wider than needed; when we summed the conditions of each test, N and cell, every group fell within its 95% interval.
+
 # Table S1
 
 Targets of the tree-shape grid for each pool size N. Levels of γ are zero (Yule), the median and the 10% quantile of the anuran clades with 40–250 tips of Portik et al. (2023); levels of the Colless index (normalized against its Yule expectation) are zero, the median and the 90% quantile. c and β are the calibrated parameters of the generator, and acceptance is the proportion of simulated trees that fell within 0.5 units of both targets.
@@ -50,3 +108,21 @@ Convergence and posterior predictive diagnostics of the beta-binomial models: ma
 #| label: tbl-s3
 knitr::kable(si("table_S3_diagnostics.csv"), digits = 3)
 ```
+
+# References
+
+Aldous, D. (1996). Probability distributions on cladograms. In D. Aldous & R. Pemantle (Eds.), *Random discrete structures* (pp. 1–18). The IMA Volumes in Mathematics and its Applications, Vol. 76. Springer. https://doi.org/10.1007/978-1-4612-0719-1_1
+
+Debastiani, V. J. (2026). PCPS: principal coordinates of phylogenetic structure. R package version 1.0.9. doi:10.32614/CRAN.package.PCPS.
+
+Duarte, L. D. S., Debastiani, V. J., Freitas, A. V. L., & Pillar, V. D. (2016). Dissecting phylogenetic fuzzy weighting: theory and application in metacommunity phylogenetics. *Methods in Ecology and Evolution*, 7, 937–946. https://doi.org/10.1111/2041-210X.12547
+
+Legendre, P., & Gallagher, E. D. (2001). Ecologically meaningful transformations for ordination of species data. *Oecologia*, 129, 271–280. https://doi.org/10.1007/s004420100716
+
+Oksanen, J., Simpson, G. L., Blanchet, F. G., Kindt, R., Legendre, P., Minchin, P. R., et al. (2026). vegan: community ecology package. R package version 2.7-6. doi:10.32614/CRAN.package.vegan.
+
+Peres-Neto, P. R., & Kembel, S. W. (2015). Phylogenetic gradient analysis: environmental drivers of phylogenetic variation across ecological communities. *Plant Ecology*, 216, 709–724. https://doi.org/10.1007/s11258-014-0405-0
+
+Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329. https://doi.org/10.1111/ele.13568
+
+Washburne, A. D., Silverman, J. D., Leff, J. W., Bennett, D. J., Darcy, J. L., Mukherjee, S., Fierer, N., & David, L. A. (2017). Phylogenetic factorization of compositional data yields lineage-level associations in microbiome datasets. *PeerJ*, 5, e2969. https://doi.org/10.7717/peerj.2969

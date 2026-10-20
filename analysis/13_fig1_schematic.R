@@ -191,7 +191,7 @@ add('<linearGradient id="envh" x1="0" y1="0" x2="1" y2="0">',
 add('<linearGradient id="envv" x1="0" y1="0" x2="0" y2="1">',
     paste(sprintf('<stop offset="%s" stop-color="%s"/>', seq(0, 1, length.out = 6), pal_env), collapse = ""),
     '</linearGradient>')
-for (m in list(c("arr", col_line), c("arrg", "#9aa5b4"), c("arrp", col_phylo))) {
+for (m in list(c("arr", col_line), c("arrg", "#9aa5b4"), c("arrp", col_phylo), c("arrh", col_h1))) {
   add(sprintf('<marker id="%s" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="%s"/></marker>',
               m[1], m[2]))
 }
@@ -463,8 +463,12 @@ for (k in seq_along(spx)) {
   line(tcx[4] + spx[k], ty + 28 + spy[k], tcx[4] + spx[k], ty + 34 + spy[k],
        stroke = col_phylo, sw = 1.3)
 }
-line(tcx[4], ty + 31, tcx[4] + 22, ty + 13, stroke = col_h1, sw = 2.4, marker = "arr")
-text(tcx[4] + 22, ty + 12, "E", size = 11, style = "italic", weight = "bold", anchor = "start",
+# biplot arrows: several short ones, as in a triplot with a few constraints
+arx <- c(20, 15, -14, 6)
+ary <- c(-15, 9, -10, 16)
+for (k in seq_along(arx)) line(tcx[4], ty + 31, tcx[4] + arx[k], ty + 31 + ary[k],
+                               stroke = col_h1, sw = 1.1, marker = "arrh")
+text(tcx[4] + 21, ty + 15, "E", size = 10, style = "italic", weight = "bold", anchor = "start",
      fill = col_h1)
 # PCC: tree + eigenvector bars
 draw_tree({set.seed(2); ape::rcoal(6)}, tcx[5] - 24, ty + 8, 48, 22,

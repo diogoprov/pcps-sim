@@ -13,6 +13,7 @@ method_labels <- c(pcps = "PCPS", pcc = "PCC", evopca = "evoPCA",
                    phylofactor = "Phylofactorization")
 level_labels <- c(g_yule = "Yule", g_mid = "mid", g_low = "low",
                   c_yule = "Yule", c_mid = "mid", c_high = "high")
+scenario_label <- function(x) sub("sigma", "\u03c3", x)
 theme_ms <- ggplot2::theme_bw(base_size = 9) +
   ggplot2::theme(panel.grid = ggplot2::element_blank(),
                  strip.background = ggplot2::element_rect(fill = "grey95"))
@@ -23,11 +24,15 @@ surface_plot <- function(d, group, row, labels, fill_limits, fill_name) {
     dplyr::mutate(g = factor(level_labels[g], c("low", "mid", "Yule")),
                   cl = factor(level_labels[cl], c("Yule", "mid", "high")),
                   group = factor(labels[.data[[group]]], labels),
-                  row = .data[[row]])
+                  row = scenario_label(.data[[row]]))
   ggplot2::ggplot(d, ggplot2::aes(cl, g, fill = rate)) +
     ggplot2::geom_tile(colour = "white") +
-    ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", rate)), size = 2.2) +
-    ggplot2::scale_fill_viridis_c(limits = fill_limits, name = fill_name) +
+    ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f", rate),
+                                    colour = rate > fill_limits[1] + 0.5 * diff(fill_limits)),
+                       size = 2.2, show.legend = FALSE) +
+    ggplot2::scale_colour_manual(values = c(`FALSE` = "black", `TRUE` = "white")) +
+    ggplot2::scale_fill_distiller(palette = "YlGnBu", direction = 1, limits = fill_limits,
+                                  oob = scales::squish, name = fill_name) +
     ggplot2::facet_grid(row ~ group) +
     ggplot2::labs(x = "Colless level", y = expression(gamma ~ "level")) +
     theme_ms
@@ -60,12 +65,13 @@ cell_labels <- c(g_yule__c_yule = "Yule/Yule", g_low__c_yule = "low/Yule",
 b_power <- readr::read_csv(file.path(models, "B_power", "rates.csv"), show_col_types = FALSE) |>
   dplyr::mutate(test = factor(test_labels[test], test_labels),
                 archetype = factor(archetype_labels[archetype], archetype_labels),
-                cell = factor(cell_labels[cell], cell_labels))
+                cell = factor(cell_labels[cell], cell_labels),
+                scenario = scenario_label(scenario))
 p <- ggplot2::ggplot(b_power, ggplot2::aes(cell, median, colour = archetype)) +
   ggplot2::geom_pointrange(ggplot2::aes(ymin = lower, ymax = upper), size = 0.15,
                            position = ggplot2::position_dodge(width = 0.6)) +
   ggplot2::facet_grid(scenario ~ test) +
-  ggplot2::scale_colour_manual(values = c("#1b9e77", "#66a61e", "#d95f02", "#e7298a"),
+  ggplot2::scale_colour_manual(values = c("#0072B2", "#56B4E9", "#D55E00", "#CC79A7"),
                                name = NULL) +
   ggplot2::labs(x = expression("Pool tree cell (" * gamma * "/Colless level)"),
                 y = "Power (N = 100)") +
@@ -94,7 +100,10 @@ p <- ggplot2::ggplot() +
                                                     xmin = colless_boot_lo, xmax = colless_boot_hi,
                                                     colour = pool), width = 0,
                          orientation = "y") +
-  ggplot2::geom_point(data = pools, ggplot2::aes(colless, gamma, colour = pool), size = 2.4) +
+  ggplot2::geom_point(data = pools, ggplot2::aes(colless_boot_median, gamma_boot_median,
+                                                 colour = pool), size = 2.4) +
+  ggplot2::geom_point(data = pools, ggplot2::aes(colless, gamma, colour = pool), shape = 5,
+                      size = 2.2, stroke = 0.8, show.legend = FALSE) +
   ggplot2::scale_shape_manual(values = c(1, 2, 0), name = "Grid targets, N") +
   ggplot2::scale_colour_manual(values = c("#1b9e77", "#7570b3", "#d95f02"), name = "Regional pool") +
   ggplot2::labs(x = "Colless index (normalized against Yule)", y = expression(gamma)) +
