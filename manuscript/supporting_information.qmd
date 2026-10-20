@@ -1,7 +1,6 @@
 ---
 title: "Supporting Information"
 subtitle: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
-author: "Diogo B. Provete"
 format:
   docx:
     reference-doc: reference.docx

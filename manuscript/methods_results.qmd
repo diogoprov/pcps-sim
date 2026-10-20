@@ -1,7 +1,6 @@
 ---
 title: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
 subtitle: "Abstract, Methods, Results and Discussion (draft)"
-author: "Diogo B. Provete"
 date: 2026-10-20
 crossref:
   fig-prefix: Fig.

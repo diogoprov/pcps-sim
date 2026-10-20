@@ -183,7 +183,10 @@ env01 <- (env - min(env)) / diff(range(env))
 # Canvas ------------------------------------------------------------------------
 W <- 1800
 H <- 820
-add(sprintf('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d">', W, H, W, H))
+# physical size of 180 mm wide (Wiley maximum width), so that the PDF has the
+# printed size
+add(sprintf('<svg xmlns="http://www.w3.org/2000/svg" width="180mm" height="%smm" viewBox="0 0 %d %d">',
+            formatC(180 * H / W, format = "f", digits = 1), W, H))
 add('<defs>')
 add('<linearGradient id="envh" x1="0" y1="0" x2="1" y2="0">',
     paste(sprintf('<stop offset="%s" stop-color="%s"/>', seq(0, 1, length.out = 6), pal_env), collapse = ""),
@@ -562,9 +565,9 @@ system2(rsvg, c("-f", "pdf", "-o", shQuote(file.path(out_dir, "fig1_schematic.pd
 system2(rsvg, c("-w", "2400", "-o", shQuote(file.path(out_dir, "fig1_schematic.png")),
                 shQuote(svg_file)))
 # submission files (Wiley figure guidelines): vector PDF, and PNG at 600 dpi
-# for a 180 mm width (4252 px)
 sub_dir <- file.path(out_dir, "submission")
 dir.create(sub_dir, showWarnings = FALSE)
 system2(rsvg, c("-f", "pdf", "-o", shQuote(file.path(sub_dir, "Figure_1.pdf")), shQuote(svg_file)))
-system2(rsvg, c("-w", "4252", "-o", shQuote(file.path(sub_dir, "Figure_1.png")), shQuote(svg_file)))
+system2(rsvg, c("-d", "600", "-p", "600", "-o", shQuote(file.path(sub_dir, "Figure_1.png")),
+                shQuote(svg_file)))
 message("Written: ", svg_file, " (+ .pdf, .png)")
