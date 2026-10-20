@@ -89,7 +89,7 @@ p <- ggplot2::ggplot(b_power, ggplot2::aes(cell, median, colour = archetype)) +
                  legend.position = "bottom")
 save_figure(p, "fig4_layerB_power", 4, width = 17, height = 11)
 
-# Box 1: regional pools, empirical anuran clades and the grid targets
+# Fig. S1 (Appendix S3): regional pools, empirical anuran clades and the grid targets
 grid <- readr::read_csv(file.path("manuscript", "si", "table_S1_grid.csv"), show_col_types = FALSE) |>
   dplyr::transmute(n_spp = factor(N), gamma = gamma_target, colless = colless_target)
 clades <- readr::read_csv(file.path("data", "derived", "trees", "empirical_shape_portik2023.csv"),
@@ -115,4 +115,4 @@ p <- ggplot2::ggplot() +
   ggplot2::scale_colour_manual(values = c("#009E73", "#0072B2", "#D55E00"), name = "Regional pool") +
   ggplot2::labs(x = "Colless index (normalized against Yule)", y = expression(gamma)) +
   theme_ms
-save_figure(p, "box1_pools", 6, width = 15, height = 10)
+save_figure(p, "box1_pools", "S1", width = 15, height = 10)
