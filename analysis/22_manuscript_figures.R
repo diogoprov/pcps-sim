@@ -90,9 +90,8 @@ p <- ggplot2::ggplot(b_power, ggplot2::aes(cell, median, colour = archetype)) +
 save_figure(p, "fig4_layerB_power", 4, width = 17, height = 11)
 
 # Box 1: regional pools, empirical anuran clades and the grid targets
-grid <- readRDS(file.path("data", "derived", "trees", "tree_grid_k200.rds")) |>
-  dplyr::transmute(n_spp = factor(n), gamma = unname(gamma_target),
-                   colless = unname(colless_target))
+grid <- readr::read_csv(file.path("manuscript", "si", "table_S1_grid.csv"), show_col_types = FALSE) |>
+  dplyr::transmute(n_spp = factor(N), gamma = gamma_target, colless = colless_target)
 clades <- readr::read_csv(file.path("data", "derived", "trees", "empirical_shape_portik2023.csv"),
                           show_col_types = FALSE) |>
   dplyr::filter(source == "clade")

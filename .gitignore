@@ -14,6 +14,17 @@ renv/staging/
 # large simulation outputs
 data/derived/*
 !data/derived/.gitkeep
+# small summaries that reproduce the tables and figures (no raw third-party data)
+!data/derived/models/
+data/derived/models/*/*
+!data/derived/models/*/*.csv
+!data/derived/trees/
+data/derived/trees/*
+!data/derived/trees/empirical_shape_portik2023.csv
+!data/derived/pools/
+data/derived/pools/*
+!data/derived/pools/pool_shapes.csv
+!data/derived/case_study/
 
 # OS
 .DS_Store
@@ -29,3 +40,6 @@ docs/*.html
 docs/*_cache/
 docs/*_files/
 data/raw/nri_pcps/
+
+# anonymized bundle for peer review (tools/make_review_bundle.sh)
+review_bundle/

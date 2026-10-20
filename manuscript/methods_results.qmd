@@ -1,6 +1,6 @@
 ---
 title: "Tree shape and metacommunity assembly govern the performance of phylogenetic community–environment methods"
-subtitle: "Methods and Results (draft)"
+subtitle: "Abstract, Methods and Results (draft)"
 author: "Diogo B. Provete"
 date: 2026-10-20
 crossref:
@@ -18,6 +18,20 @@ format:
 analysis/22_manuscript_figures.R; Supporting Information in
 manuscript/supporting_information.qmd). Unverified references are marked
 [CITAR: ...]. Numbers come from data/derived/ (see docs/MEMORIA_PROJETO.md). -->
+
+# Abstract
+
+1. Methods that relate the phylogenetic structure of metacommunities to environmental gradients, like the principal coordinates of phylogenetic structure (PCPS) and the phylogenetic community composition approach (PCC), were validated with static simulations on trees close to the Yule model. However, real phylogenies vary in topological imbalance and in the distribution of branching times, and dispersal and competition assemble metacommunities, so their published performance may not hold for empirical data.
+
+2. We simulated metacommunities on a grid of tree shapes that crossed the distribution of branching times (γ) with topological imbalance (Colless index), with levels from anuran clades, in a static layer that reproduces the original validations and in a process-based layer with species sorting, mass effects and phylogenetic competition. We estimated the type I error and power of six tests, and how often four ordination and factorization methods recovered a clade planted along the gradient, with beta-binomial models of these rates.
+
+3. Tree imbalance did not affect the type I error of any test. Phylogenetic signal in niche breadth inflated the type I error of the linear model on the second PCPS axis, up to 0.36 in trees with low γ, and of the PCC, up to 0.22. Low γ reduced the power of the linear model on the first PCPS axis by 0.40 and that of the PCC by 0.25, whereas PERMANOVA was almost insensitive to tree shape. Mass effects reduced power more than tree shape and almost abolished that of the PCC. The evoPCA and phylofactorization recovered the planted clade in 0.44–0.88 of the replicates in every tree shape, whereas PCPS depended strongly on γ and PCC rarely found the clade.
+
+4. The performance of these methods seems to depend on the distribution of branching times and on the assembly process rather than on tree imbalance. Three regional anuran pools fell inside the simulated grid, so these results seem to apply to real metacommunities. We therefore recommend reporting γ of the analysed tree, caution with the second PCPS axis when niche breadth may be phylogenetically conserved, and using evoPCA or phylofactorization to identify the clades associated with a gradient.
+
+Data and code availability for review: the code, the rates aggregated by condition and the scripts that reproduce every table and figure are available at https://github.com/diogoprov/pcps-sim (archived at Zenodo, [CITAR: Zenodo DOI]).
+
+Keywords: γ statistic, metacommunity phylogenetics, phylogenetic fuzzy weighting, phylogenetic signal, simulation study, species sorting, tree balance, type I error
 
 # Methods
 
@@ -84,7 +98,7 @@ To show where real regional species pools fall in the grid of tree shapes, and h
 
 ## Implementation and reproducibility
 
-We ran all analyses in R v. 4.6.1 (R Core Team, 2026), with the versions of every package recorded in the lockfile of renv v. 1.3.1 (Ushey & Wickham, 2026); trees were handled with ape v. 5.8-1 (Paradis & Schliep, 2019). We orchestrated the simulations with targets v. 1.12.0 (Landau, 2021) and crew v. 1.3.3 (Landau, 2026) in a Docker image, with seeds derived from a single pipeline seed (Appendix S1). Code is available at [CITAR: GitHub repository and Zenodo DOI], together with the rates aggregated by condition and the scripts that compute the performance measures and the models from them, which reproduce every table and figure without rerunning the simulations.
+We ran all analyses in R v. 4.6.1 (R Core Team, 2026), with the versions of every package recorded in the lockfile of renv v. 1.3.1 (Ushey & Wickham, 2026); trees were handled with ape v. 5.8-1 (Paradis & Schliep, 2019). We orchestrated the simulations with targets v. 1.12.0 (Landau, 2021) and crew v. 1.3.3 (Landau, 2026) in a Docker image, with seeds derived from a single pipeline seed (Appendix S1). Code is available at https://github.com/diogoprov/pcps-sim (archived at Zenodo, [CITAR: Zenodo DOI]), together with the rates aggregated by condition and the scripts that compute the performance measures and the models from them, which reproduce every table and figure without rerunning the simulations.
 
 # Results
 
