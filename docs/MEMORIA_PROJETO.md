@@ -974,15 +974,23 @@ Próximos passos sugeridos:
   Contrastes em `data/derived/models/contrasts.csv` (`analysis/19_shape_contrasts.R`).
   - **H1:** |tipo I − 0,05| com Colless alto − Yule: nenhum dos 75 contrastes
     (teste × cenário H0 × N) tem IC que exclua 0; máx. |mediana| 0,011. Sem
-    evidência de efeito do desbalanço.
+    evidência (não "sem efeito"): só Colless alto vs Yule, e a parte
+    comparativa da H1 (taxa shuffle vs métodos só de distância) não foi testada.
+  - Contrastes só com incidência; forma × tipo de dado foi ajustada mas não
+    reportada. Nos clados, abundância só existe com N = 100, então efeitos de
+    tipo de dado em outros N seriam extrapolação. O PPC agrupado (95% → 1,00)
+    quase não discrimina.
   - **H2** (S2sigma ou S2h − S2, no Colless Yule; N = 50/100/200): sinal em σ
-    infla o tipo I só no GLM PCPS2 (Yule +0,03; γ baixo +0,11/+0,16 com N =
-    100/200) e no PCC (Yule +0,045; γ baixo +0,02); ADONIS, GLM PCPS1 e Mantel
-    ficam mais conservadores (−0,01 a −0,025). Sinal em h: nenhum efeito (ICs
-    com 0). H2 parcial: só σ, só dois testes, e a magnitude depende de γ em
-    sentidos opostos nos dois.
+    infla o tipo I só no GLM PCPS2 (Yule +0,03; γ baixo +0,09/+0,11/+0,16) e
+    no PCC (Yule +0,045; γ baixo +0,02; os ICs de Yule e γ baixo se sobrepõem
+    no PCC); ADONIS, GLM PCPS1 e Mantel ficam mais conservadores (−0,01 a
+    −0,025). Sinal em h: nenhum efeito. **H2 rejeitada como enunciada** ("em
+    todos os métodos"); o efeito de σ fica restrito a GLM PCPS2 e PCC. O
+    modelo não tem cenário × N, então a variação com N desse contraste vem só
+    da escala logit; e o contraste só foi feito no Colless Yule.
   - **Poder, γ baixo − Yule** (N = 50/100/200): GLM PCPS1 −0,32 a −0,46 (piora
-    com N); PCC −0,20 a −0,48 (S3b/S3sigma: −0,48/−0,23/−0,10, melhora com N);
+    com N); PCC −0,07 a −0,48 (S3b −0,48/−0,23/−0,10 e S3sigma −0,43/−0,19/
+    −0,07 melhoram com N; S3a piora, −0,20 → −0,35);
     Mantel −0,01 a −0,23 (melhora com N); ADONIS −0,17 a +0,08 (com N = 200 o
     γ baixo até ajuda). A forma × N importa: os contrastes mudam bastante com N.
   - **Clados, γ baixo − Yule:** PCPS +0,23 a +0,45 (cresce com N; antigos >
