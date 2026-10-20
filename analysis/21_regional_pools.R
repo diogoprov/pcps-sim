@@ -45,7 +45,7 @@ datasets <- tibble::tribble(
   "decio_assis", "Decio_phylo.nex",           "Assis, SP",                "Interior SP",        "inferred",
   "dias",        "Dias2007.nex",              "Ubatuba?, SP",             "Atlantic Forest SE", "inferred",
   "gomes",       "Gomes.nex",                 "Campos do Jordao?, SP",    "Atlantic Forest SE", "inferred",
-  "mainara",     "Mainara.nex",               "Mainara (-23.36, -44.85)", "Atlantic Forest SE", "inferred",
+  "mainara",     "Mainara.nex",               "coastal SP/RJ",            "Atlantic Forest SE", "inferred",
   "motta",       "Motta_phylo.nex",           "NW Sao Paulo",             "Interior SP",        "author",
   "peltzer",     "Peltzer_phylo.nex",         "Santa Fe?, Argentina",     "South (Argentina)",  "inferred",
   "rogerio",     "Rogeio_phylo.nex",          "SW Goias",                 "Cerrado GO",         "inferred",
@@ -61,30 +61,9 @@ labels <- purrr::map2(datasets$dataset, file.path(raw_dir, datasets$file), \(d, 
   dplyr::left_join(dplyr::select(datasets, dataset, region), by = "dataset")
 
 # Mainara: codes only; names from the clades of Mainara_phylo.txt and the
-# coastal SP/RJ fauna (inferred), except where confirmed (2026-10-19)
-mainara <- tibble::tribble(
-  ~label,  ~name,                         ~source,
-  "Hfab",  "Hypsiboas faber",             "inferred",
-  "Halb",  "Hypsiboas albomarginatus",    "inferred",
-  "Aeug",  "Aplastodiscus eugenioi",      "inferred",
-  "Bhyl",  "Bokermannohyla hylax",        "inferred",
-  "Tmes",  "Trachycephalus mesophaeus",   "inferred",
-  "Dber",  "Dendropsophus berthalutzae",  "inferred",
-  "Dmin",  "Dendropsophus minutus",       "inferred",
-  "Dele",  "Dendropsophus elegans",       "inferred",
-  "Stra",  "Scinax trapicheiroi",         "author (Ololygon trapicheiroi)",
-  "Slit",  "Scinax littoralis",           "inferred",
-  "Sarg",  "Scinax argyreornatus",        "inferred",
-  "Sperp", "Scinax perpusillus",          "inferred",
-  "Sper",  "Scinax perereca",             "inferred",
-  "Shay",  "Scinax hayii",                "inferred",
-  "Salt",  "Scinax alter",                "inferred",
-  "Rorn",  "Rhinella ornata",             "inferred",
-  "Llat",  "Leptodactylus latrans",       "inferred",
-  "Patl",  "Physalaemus atlanticus",      "inferred",
-  "Eova",  "Elachistocleis ovalis",       "author",
-  "Ccar",  "Chiasmocleis carvalhoi",      "inferred"
-)
+# coastal SP/RJ fauna (inferred), except where confirmed (2026-10-19), in a
+# local table (data/raw/nri_pcps/mainara_codes.csv, not in git: unpublished)
+mainara <- readr::read_csv(file.path(raw_dir, "mainara_codes.csv"), show_col_types = FALSE)
 
 # names a code may stand for (R/taxonomy.R)
 labels$is_full <- grepl("^[A-Z][a-z]+_[a-z]", labels$label)
