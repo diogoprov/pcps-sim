@@ -17,7 +17,23 @@ We found that tree imbalance did not affect the type I error of any test, wherea
 
 The study follows the structure recommended for simulation studies by DiRenzo et al. (2023) and Williams et al. (2024), both published in *Methods in Ecology and Evolution*, and reports Monte Carlo errors, convergence diagnostics and posterior predictive checks for every formal model. The code, the rates aggregated by condition and the scripts that reproduce every table and figure are available to the reviewers in an anonymized archive (https://doi.org/10.5281/zenodo.23500661), and the public repository will be cited after review. The manuscript was prepared for double-anonymous review, and the title page is provided as a separate file.
 
-This manuscript has not been published and is not under consideration for publication elsewhere. The author declares no conflict of interest. [CITAR: suggested and opposed reviewers, if any]
+This manuscript has not been published and is not under consideration for publication elsewhere. The author declares no conflict of interest.
+
+We suggest the following reviewers, who have published on the methods evaluated here and on the simulation of metacommunities, and with whom the author has not collaborated:
+
+Sandrine Pavoine, Muséum national d'Histoire naturelle and CNRS, Paris, France (phylogenetic dissimilarity measures among sites, evoPCA) [CITAR: e-mail]
+
+Cajo J. F. ter Braak, Wageningen University & Research, Wageningen, the Netherlands (permutation tests of trait– and phylogeny–environment relationships, the max test) [CITAR: e-mail]
+
+David Zelený, National Taiwan University, Taipei, Taiwan (type I error of community-weighted mean approaches) [CITAR: e-mail]
+
+Tamara Münkemüller, CNRS, Laboratoire d'Écologie Alpine, Grenoble, France (phylogenetic signal and inference of assembly rules from diversity patterns) [CITAR: e-mail]
+
+Patrick L. Thompson, Fisheries and Oceans Canada and University of British Columbia, Canada (process-based metacommunity models) [CITAR: e-mail]
+
+Steven W. Kembel, Université du Québec à Montréal, Montréal, Canada (performance of community phylogenetic structure tests) [CITAR: e-mail]
+
+We have no opposed reviewers.
 
 Thank you for considering our manuscript.
 
