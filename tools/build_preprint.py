@@ -46,6 +46,12 @@ main = re.sub(r"Data and code availability for review: (.*?) are available in an
               lambda m: f"Data and code availability: {m.group(1)} are available at {public}.", main)
 main = re.sub(r"Code is available in an anonymized archive for review \([^)]*\),",
               f"Code is available at {public},", main)
+main = main.replace(
+    "a log of the interactions with the AI engines is kept in the public code repository "
+    "(docs/AI_INTERACTION_LOG.md), which will be cited after review",
+    "a log of the interactions with the AI engines is available at "
+    "https://github.com/diogoprov/pcps-sim/blob/main/docs/AI_INTERACTION_LOG.md")
+assert "will be cited after review" not in main, "an anonymized statement was left in the main text"
 assert "anonymized" not in main, "an anonymized-archive statement was left in the main text"
 
 # statements go before the references
