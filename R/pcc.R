@@ -75,7 +75,8 @@ test_pcc <- function(comm, tree, env, nperm = 99, squared = FALSE, site_env = NU
     })
   } else {
     # restricted site permutations given as permuted gradients ([test_dp_all()])
-    vapply(seq_len(nrow(site_env)), \(b) pcc_stat(comm, pev, as.matrix(site_env[b, ]))[["var_r2"]], 0)
+    vapply(seq_len(nrow(site_env)),
+           \(b) pcc_stat(comm, pev, as.matrix(site_env[b, ]))[["var_r2"]], 0)
   }
   cols <- replicate(nperm, {
     j <- sample.int(ncol(comm))

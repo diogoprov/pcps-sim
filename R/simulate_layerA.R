@@ -97,6 +97,7 @@ finish_metacommunity <- function(comm, tree, env, env_original, traits,
 #'
 #' L_ij = h_j exp(-(E_i - u_j)^2 / (2 sigma_j^2)), Poisson counts, with traits
 #' from [sim_species_traits()] and E ~ U(0, 100) on `n_sites` sites.
+#' @param optima "bm" or "uniform", passed to [sim_species_traits()].
 #' @return see [finish_metacommunity()].
 sim_metacommunity_A <- function(tree, lambda, sigma_signal, h_signal, env_original,
                                 incidence = TRUE, n_sites = 100, mu_tol = 10,

@@ -44,6 +44,7 @@ if (part == "glm") {
     fit <- readRDS(file.path(root, m, "brms_fit.rds"))
     agg <- fit$data
     raw <- readr::read_csv(file.path(root, m, "aggregated.csv"), show_col_types = FALSE)
+    stopifnot(nrow(raw) == nrow(agg), all(raw$k == agg$k))  # same rows, same order
     agg$condition <- condition_of(raw)
     fixed <- as.character(stats::formula(fit)$formula)[3]
     out_dir <- file.path(root, paste0(m, "_re"))
@@ -52,7 +53,7 @@ if (part == "glm") {
     re <- brms::brm(
       stats::as.formula(paste("k | trials(n) ~", fixed, "+ (1 | condition)")),
       data = agg, family = stats::binomial(),
-      prior = c(model_priors(if (grepl("type_I", m)) -2.9 else 0)[1:2, ],
+      prior = c(subset(model_priors(if (grepl("type_I", m)) -2.9 else 0), class != "phi"),
                 brms::prior(exponential(2), class = sd)),
       chains = 4, cores = 4, iter = iter, warmup = iter %/% 2, seed = 20261020,
       backend = "cmdstanr", control = list(adapt_delta = 0.95, max_treedepth = 12),
