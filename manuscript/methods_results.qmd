@@ -183,7 +183,7 @@ Bürkner, P.-C. (2017). brms: an R package for Bayesian multilevel models using 
 
 Cahill, J. F., Kembel, S. W., Lamb, E. G., & Keddy, P. A. (2008). Does phylogenetic relatedness influence the strength of competition among vascular plants? *Perspectives in Plant Ecology, Evolution and Systematics*, 10, 41–50. https://doi.org/10.1016/j.ppees.2007.10.001
 
-Colless, D. H. (1982). Review of Phylogenetics: the theory and practice of phylogenetic systematics. *Systematic Zoology*, 31, 100–104. [CITAR: conferir página final] https://doi.org/10.2307/2413420
+Colless, D. H. (1982). Review of: Phylogenetics: The theory and practice of phylogenetic systematics. *Systematic Zoology*, 31, 100–104. https://doi.org/10.2307/2413420
 
 Cusimano, N., & Renner, S. S. (2010). Slowdowns in diversification rates from real phylogenies may not be real. *Systematic Biology*, 59, 458–464. https://doi.org/10.1093/sysbio/syq032
 
