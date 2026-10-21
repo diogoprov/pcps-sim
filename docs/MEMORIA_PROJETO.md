@@ -1145,3 +1145,4 @@ Próximos passos sugeridos:
 - Cover letter: revisores sugeridos Pavoine, ter Braak, Zelený, Münkemüller, Thompson, Kembel (Peres-Neto excluído por coautoria). E-mails em manuscript/private/reviewer_emails.tsv (fora do git); faltam ter Braak e Münkemüller. Cópia com e-mails: tools/render_cover_letter.py.
 - Folha de rosto: cópia com e-mail via tools/render_title_page.sh.
 - Pendências: data da cover letter; e-mails de dois revisores; trocar o título do registro anônimo no Zenodo; revisão do Diogo.
+- Declaração de uso de IA no formato AIdIT v0.1 (Drobniak et al. 2026, Res. Integr. Peer Rev. 11: 57; modelo do app oficial github.com/szymekdr/AI_reporting/code/app.R), como seção 'AI disclosure statement' depois das referências do texto principal; saiu da folha de rosto (2026-10-21, pedido do Diogo: sempre usar AIdIT).

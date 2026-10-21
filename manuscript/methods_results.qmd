@@ -193,6 +193,8 @@ Diniz-Filho, J. A. F., de Sant'Ana, C. E. R., & Bini, L. M. (1998). An eigenvect
 
 DiRenzo, G. V., Hanks, E., & Miller, D. A. W. (2023). A practical guide to understanding and validating complex models using data simulations. *Methods in Ecology and Evolution*, 14, 203–217. https://doi.org/10.1111/2041-210X.14030
 
+Drobniak, S. M., Cendrowska-Pek, M., Gudowska, A., Janas, K., Podkowa, P., Skorb, K., Gronowska, M., Oleś, W., Bikmurzina, F., Boroń, N., Zagalska-Neubauer, M., Nakagawa, S., Łagisz, M., Arct, A., & Rutkowska, J. (2026). A systematic map of generative AI guidelines and reporting in ecology and evolutionary biology: towards the framework of AI disclosure for Improved Transparency (AIdIT). *Research Integrity and Peer Review*, 11, 57. https://doi.org/10.1186/s41073-026-00230-1
+
 Duarte, L. D. S. (2011). Phylogenetic habitat filtering influences forest nucleation in grasslands. *Oikos*, 120, 208–215. https://doi.org/10.1111/j.1600-0706.2010.18898.x
 
 Duarte, L. D. S., Both, C., Debastiani, V. J., Carlucci, M. B., Gonçalves, L. O., Cappelatti, L., Seger, G. D. S., Bastazini, V. A. G., Brum, F. T., Salengue, E. V., & Bernardo-Silva, J. S. (2014). Climate effects on amphibian distributions depend on phylogenetic resolution and the biogeographical history of taxa. *Global Ecology and Biogeography*, 23, 213–222. https://doi.org/10.1111/geb.12089
@@ -288,3 +290,12 @@ Washburne, A. D., Silverman, J. D., Morton, J. T., Becker, D. J., Crowley, D., M
 Williams, C., Yang, Y., Lagisz, M., Morrison, K., Ricolfi, L., Warton, D. I., & Nakagawa, S. (2024). Transparent reporting items for simulation studies evaluating statistical methods: foundations for reproducibility and reliability. *Methods in Ecology and Evolution*, 15, 1926–1939. https://doi.org/10.1111/2041-210X.14415
 
 Zelený, D. (2018). Which results of the standard test for community-weighted mean approach are too optimistic? *Journal of Vegetation Science*, 29, 953–966. https://doi.org/10.1111/jvs.12688
+
+# AI disclosure statement
+
+<!-- AIdIT v0.1 format (Drobniak et al. 2026, doi:10.1186/s41073-026-00230-1;
+sentences generated following the template of the official app,
+github.com/szymekdr/AI_reporting, code/app.R, checked 2026-10-21). The engines,
+areas of use, dates and the three add-on answers must be confirmed by the author. -->
+
+We used the following AI engines in the present study: Claude Opus 5.5 through Claude Code (Anthropic; v. claude-opus-5-5; timestamp: 2026-10-21); Consensus (timestamp: 2026-10-20); Undermind (timestamp: 2026-10-20); Scholar Gateway and Wiley Scholar Gateway (timestamp: 2026-10-20); LeapSpace (Elsevier; timestamp: 2026-10-20). Area(s) of generative AI usage: Claude Opus 5.5 - new code generation, refining existing code, code generation for visuals, statistical model formulation, identifying appropriate methods, error management, data cross-checking, bibliography management, identification of literature to cite, summarising multiple data sources, text generation based on prompts, text editing for style/grammar/spelling; Consensus - identification of literature to cite; Undermind - identification of literature to cite; Scholar Gateway and Wiley Scholar Gateway - identification of literature to cite; LeapSpace - identification of literature to cite, summarising multiple data sources. The authors declare that they have verified and approved all content generated or modified by the AI tools used. The use of AI in this paper was in compliance with the ethical regulations of all funders and host institutions. Representative prompts used in AI content generation are available upon request. AI tools were used between 2026-10-16 and 2026-10-21, following the AIdIT framework (Drobniak et al., 2026); all design decisions were made by the author, all numbers in the text are computed from the archived outputs of the analyses, and every reference was checked against its DOI.
