@@ -49,8 +49,8 @@ main = re.sub(r"Code is available in an anonymized archive for review \([^)]*\),
 assert "anonymized" not in main, "an anonymized-archive statement was left in the main text"
 
 # statements go before the references
-text, refs = main.split("# References (verified)", 1)
-out = f"---{yaml}---\n\n{head.strip()}\n\n{text.strip()}\n\n{statements.strip()}\n\n# References{refs}"
+text, refs = main.split("\n# References\n", 1)
+out = f"---{yaml}---\n\n{head.strip()}\n\n{text.strip()}\n\n{statements.strip()}\n\n# References\n{refs}"
 qmd = ms / "preprint.qmd"
 qmd.write_text(out)
 try:
