@@ -164,3 +164,15 @@ decisions, commands and results). The full history of changes is in git.
   cover letter with reviewers' e-mails found on institutional pages
   (tools/render_cover_letter.py); e-mails are kept out of the public repository.
   Two reviewers' e-mails were not found and were left blank rather than guessed.
+
+### 2026-10-21 — AI disclosure statement (AIdIT)
+- At the author's request, the free-form AI paragraph of the title page was
+  replaced by an "AI disclosure statement" in the AIdIT v0.1 format (Drobniak et
+  al. 2026), built from the template of the official app
+  (github.com/szymekdr/AI_reporting, code/app.R) and placed after the
+  references of the main text. The author confirmed the engines, areas of use,
+  dates and add-on answers, asked for the singular ("The author declares"), and
+  asked to state compliance with Portaria CNPq nº 2.664/2026 (details taken from
+  the author's page provetelab.org/ia-escrita-cientifica) and to point to this
+  log on GitHub; the link appears only in the preprint, since the submission
+  text is anonymized.
