@@ -46,3 +46,6 @@ review_bundle/
 
 # title page with the e-mail (tools/render_title_page.sh)
 manuscript/title_page_submission.*
+
+# preprint with the e-mail (tools/build_preprint.py)
+manuscript/preprint/
