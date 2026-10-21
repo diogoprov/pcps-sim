@@ -49,3 +49,7 @@ manuscript/title_page_submission.*
 
 # preprint with the e-mail (tools/build_preprint.py)
 manuscript/preprint/
+
+# reviewer e-mails and the cover letter with them (tools/render_cover_letter.py)
+manuscript/private/
+manuscript/cover_letter_submission.*

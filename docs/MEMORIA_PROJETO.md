@@ -1136,3 +1136,12 @@ Próximos passos sugeridos:
 - Item 3 concluído: modelos com (1 | condição) predizem quase as mesmas taxas (diferença mediana 0,002–0,014); texto e S2 atualizados.
 - Terminologia (2026-10-20): no texto, 'Layer A/B' virou 'static simulations' e 'process-based simulations' (escolha do Diogo); nomes internos do código (layerB, run_chunk_B) não mudaram.
 - (2026-10-21) AWS concluída. optima_uniform terminou às 23:23 de 20/10; layerB_spatial às 02:35 de 21/10 (7 relançamentos por falta de capacidade spot; custo total estimado ~US$ 30–35). Resultados: com ótimos uniformes, a perda de poder com γ baixo persiste (γ age pela análise). Na versão espacial, mass effects reduzem muito menos o poder (PERMANOVA 0,54 vs 0,29), exceto o PCC com incidência (0,02), que vai a 0,98 com abundância; efeito de γ igual; nenhum sítio vazio (nulo do toro exato); 3–4% das condições nulas > 0,075 (abundância um pouco liberal). Texto em 7.999 palavras sem legendas/tabela.
+
+## Estado em 2026-10-21 (pronto para revisão do Diogo)
+- Manuscrito (manuscript/methods_results.qmd → .docx): título "Branching times and dispersal, not tree imbalance, govern the performance of phylogenetic community–environment methods"; 7.996 palavras sem legendas/tabela (8.398 com tudo); abstract 348 palavras; terminologia "static" e "process-based simulations".
+- SI (supporting_information.qmd): Appendices S1 (métodos estendidos, incluindo ótimos uniformes e versão espacial com a aproximação Poisson declarada), S2 (resultados estendidos e checagens: priorsense, prior predictive, equivalência H1, pareamento, arco do PCPS2, RDA, idade do clado, δ = 0, falta de ajuste das médias, ótimos uniformes, versão espacial), S3 (pools e estudo de caso), Tabelas S1–S3, Fig. S1.
+- Depósito anônimo: DOI de conceito 10.5281/zenodo.23500660 (versão atual 10.5281/zenodo.23537244; o título do registro no Zenodo ainda é o antigo, trocar). Público: 10.5281/zenodo.23500104.
+- Preprint: tools/build_preprint.py <e-mail> → manuscript/preprint/preprint.docx (fora do git).
+- Cover letter: revisores sugeridos Pavoine, ter Braak, Zelený, Münkemüller, Thompson, Kembel (Peres-Neto excluído por coautoria). E-mails em manuscript/private/reviewer_emails.tsv (fora do git); faltam ter Braak e Münkemüller. Cópia com e-mails: tools/render_cover_letter.py.
+- Folha de rosto: cópia com e-mail via tools/render_title_page.sh.
+- Pendências: data da cover letter; e-mails de dois revisores; trocar o título do registro anônimo no Zenodo; revisão do Diogo.

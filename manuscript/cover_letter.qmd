@@ -3,7 +3,10 @@ format: docx
 ---
 
 <!-- Cover letter (draft). Render: quarto render manuscript/cover_letter.qmd.
-Fields in [CITAR: ...] are to be filled by the author. -->
+The reviewers' e-mails are not kept in this public file: tools/render_cover_letter.py
+writes manuscript/cover_letter_submission.docx (not in git) with the e-mails of
+manuscript/private/reviewer_emails.tsv (not in git). Fields in [CITAR: ...] are
+to be filled by the author. -->
 
 [CITAR: date]
 
@@ -21,17 +24,17 @@ This manuscript has not been published and is not under consideration for public
 
 We suggest the following reviewers, who have published on the methods evaluated here and on the simulation of metacommunities, and with whom the author has not collaborated:
 
-Sandrine Pavoine, Muséum national d'Histoire naturelle and CNRS, Paris, France (phylogenetic dissimilarity measures among sites, evoPCA) [CITAR: e-mail]
+Sandrine Pavoine, Muséum national d'Histoire naturelle and CNRS, Paris, France (phylogenetic dissimilarity measures among sites, evoPCA) REVIEWER_EMAIL_Pavoine
 
-Cajo J. F. ter Braak, Wageningen University & Research, Wageningen, the Netherlands (permutation tests of trait– and phylogeny–environment relationships, the max test) [CITAR: e-mail]
+Cajo J. F. ter Braak, Wageningen University & Research, Wageningen, the Netherlands (permutation tests of trait– and phylogeny–environment relationships, the max test) REVIEWER_EMAIL_ter_Braak
 
-David Zelený, National Taiwan University, Taipei, Taiwan (type I error of community-weighted mean approaches) [CITAR: e-mail]
+David Zelený, National Taiwan University, Taipei, Taiwan (type I error of community-weighted mean approaches) REVIEWER_EMAIL_Zelený
 
-Tamara Münkemüller, CNRS, Laboratoire d'Écologie Alpine, Grenoble, France (phylogenetic signal and inference of assembly rules from diversity patterns) [CITAR: e-mail]
+Tamara Münkemüller, CNRS, Laboratoire d'Écologie Alpine, Grenoble, France (phylogenetic signal and inference of assembly rules from diversity patterns) REVIEWER_EMAIL_Münkemüller
 
-Patrick L. Thompson, Fisheries and Oceans Canada and University of British Columbia, Canada (process-based metacommunity models) [CITAR: e-mail]
+Patrick L. Thompson, Fisheries and Oceans Canada and University of British Columbia, Canada (process-based metacommunity models) REVIEWER_EMAIL_Thompson
 
-Steven W. Kembel, Université du Québec à Montréal, Montréal, Canada (performance of community phylogenetic structure tests) [CITAR: e-mail]
+Steven W. Kembel, Université du Québec à Montréal, Montréal, Canada (performance of community phylogenetic structure tests) REVIEWER_EMAIL_Kembel
 
 We have no opposed reviewers.
 

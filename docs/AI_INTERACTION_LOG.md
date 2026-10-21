@@ -145,3 +145,22 @@ decisions, commands and results). The full history of changes is in git.
   autocorrelated gradient, kernel dispersal, torus-translation null validated
   in a local pilot, incidence and abundance). Spot interruptions were handled
   by aws/supervise.sh, which resumes from the S3 checkpoints.
+
+### 2026-10-21 — AWS results, terminology, accuracy review and submission files
+- Both AWS runs finished after several spot interruptions handled by
+  aws/supervise.sh. With optima of fixed marginal distribution, the loss of
+  power with low γ persisted (γ acts mainly through the analysis); in the
+  spatial process-based simulations, mass effects reduced power much less, and
+  the PCC kept its power with abundance but not incidence data. These results
+  were summarized by analysis/36–37 and written into the text and Appendix S2.
+- At the author's request, "Layer A/B" became "static" and "process-based
+  simulations" throughout the reader-facing text and Fig. 1.
+- A third accuracy review (subagent) found over-claims of scope (uniform
+  dispersal, the PCC with abundance data, γ acting through the analysis) and
+  literature attributions beyond what was read; all were corrected, and the
+  text was trimmed to 7,996 words.
+- Built a preprint (tools/build_preprint.py; single docx with the title page,
+  not anonymized, citing the public repository) and a submission copy of the
+  cover letter with reviewers' e-mails found on institutional pages
+  (tools/render_cover_letter.py); e-mails are kept out of the public repository.
+  Two reviewers' e-mails were not found and were left blank rather than guessed.
