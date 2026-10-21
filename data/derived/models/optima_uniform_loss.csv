@@ -1,0 +1,289 @@
+scenario,n_spp,data_type,test,yule,low,loss,run
+S3a,50,abundance,adonis,0.332,0.222,-0.11000000000000001,uniform optima
+S3a,50,abundance,glm_pcps1,0.269,0.118,-0.15100000000000002,uniform optima
+S3a,50,abundance,glm_pcps1_proc,0.188,0.057,-0.131,uniform optima
+S3a,50,abundance,glm_pcps2,0.044,0.011,-0.033,uniform optima
+S3a,50,abundance,glm_pcps2_proc,0.005,0.002,-0.003,uniform optima
+S3a,50,abundance,mantel,0.315,0.19,-0.125,uniform optima
+S3a,50,abundance,pcc,0.344,0.159,-0.18499999999999997,uniform optima
+S3a,50,abundance,rda_pcps,0.278,0.174,-0.10400000000000004,uniform optima
+S3a,50,incidence,adonis,0.414,0.273,-0.14099999999999996,uniform optima
+S3a,50,incidence,glm_pcps1,0.413,0.111,-0.302,uniform optima
+S3a,50,incidence,glm_pcps1_proc,0.346,0.069,-0.27699999999999997,uniform optima
+S3a,50,incidence,glm_pcps2,0.022,0.018,-0.004,uniform optima
+S3a,50,incidence,glm_pcps2_proc,0.001,0,-0.001,uniform optima
+S3a,50,incidence,mantel,0.434,0.242,-0.192,uniform optima
+S3a,50,incidence,pcc,0.369,0.164,-0.205,uniform optima
+S3a,50,incidence,rda_pcps,0.383,0.195,-0.188,uniform optima
+S3a,100,abundance,adonis,0.455,0.384,-0.07100000000000001,uniform optima
+S3a,100,abundance,glm_pcps1,0.404,0.167,-0.23700000000000002,uniform optima
+S3a,100,abundance,glm_pcps1_proc,0.292,0.078,-0.21399999999999997,uniform optima
+S3a,100,abundance,glm_pcps2,0.02,0.006,-0.014,uniform optima
+S3a,100,abundance,glm_pcps2_proc,0.004,0.002,-0.002,uniform optima
+S3a,100,abundance,mantel,0.445,0.324,-0.121,uniform optima
+S3a,100,abundance,pcc,0.567,0.305,-0.26199999999999996,uniform optima
+S3a,100,abundance,rda_pcps,0.383,0.274,-0.10899999999999999,uniform optima
+S3a,100,incidence,adonis,0.581,0.513,-0.06799999999999995,uniform optima
+S3a,100,incidence,glm_pcps1,0.573,0.164,-0.4089999999999999,uniform optima
+S3a,100,incidence,glm_pcps1_proc,0.494,0.115,-0.379,uniform optima
+S3a,100,incidence,glm_pcps2,0.007,0.01,0.003,uniform optima
+S3a,100,incidence,glm_pcps2_proc,0.002,0,-0.002,uniform optima
+S3a,100,incidence,mantel,0.634,0.473,-0.16100000000000003,uniform optima
+S3a,100,incidence,pcc,0.581,0.348,-0.23299999999999998,uniform optima
+S3a,100,incidence,rda_pcps,0.555,0.381,-0.17400000000000004,uniform optima
+S3a,200,abundance,adonis,0.623,0.602,-0.02100000000000002,uniform optima
+S3a,200,abundance,glm_pcps1,0.571,0.213,-0.358,uniform optima
+S3a,200,abundance,glm_pcps1_proc,0.483,0.105,-0.378,uniform optima
+S3a,200,abundance,glm_pcps2,0.009,0.001,-0.008,uniform optima
+S3a,200,abundance,glm_pcps2_proc,0.001,0,-0.001,uniform optima
+S3a,200,abundance,mantel,0.638,0.459,-0.179,uniform optima
+S3a,200,abundance,pcc,0.822,0.498,-0.32399999999999995,uniform optima
+S3a,200,abundance,rda_pcps,0.552,0.455,-0.09700000000000003,uniform optima
+S3a,200,incidence,adonis,0.732,0.763,0.031000000000000028,uniform optima
+S3a,200,incidence,glm_pcps1,0.739,0.202,-0.5369999999999999,uniform optima
+S3a,200,incidence,glm_pcps1_proc,0.667,0.148,-0.519,uniform optima
+S3a,200,incidence,glm_pcps2,0.004,0.007,0.003,uniform optima
+S3a,200,incidence,glm_pcps2_proc,0,0,0,uniform optima
+S3a,200,incidence,mantel,0.807,0.676,-0.131,uniform optima
+S3a,200,incidence,pcc,0.836,0.53,-0.30599999999999994,uniform optima
+S3a,200,incidence,rda_pcps,0.713,0.606,-0.10699999999999998,uniform optima
+S3b,50,abundance,adonis,0.539,0.436,-0.10300000000000004,uniform optima
+S3b,50,abundance,glm_pcps1,0.419,0.13,-0.289,uniform optima
+S3b,50,abundance,glm_pcps1_proc,0.317,0.066,-0.251,uniform optima
+S3b,50,abundance,glm_pcps2,0.026,0.008,-0.018,uniform optima
+S3b,50,abundance,glm_pcps2_proc,0.009,0.001,-0.008,uniform optima
+S3b,50,abundance,mantel,0.501,0.293,-0.20800000000000002,uniform optima
+S3b,50,abundance,pcc,0.85,0.438,-0.412,uniform optima
+S3b,50,abundance,rda_pcps,0.398,0.222,-0.17600000000000002,uniform optima
+S3b,50,incidence,adonis,0.671,0.591,-0.08000000000000007,uniform optima
+S3b,50,incidence,glm_pcps1,0.614,0.171,-0.44299999999999995,uniform optima
+S3b,50,incidence,glm_pcps1_proc,0.556,0.126,-0.43000000000000005,uniform optima
+S3b,50,incidence,glm_pcps2,0.019,0.008,-0.011,uniform optima
+S3b,50,incidence,glm_pcps2_proc,0.003,0,-0.003,uniform optima
+S3b,50,incidence,mantel,0.706,0.522,-0.18399999999999994,uniform optima
+S3b,50,incidence,pcc,0.866,0.459,-0.407,uniform optima
+S3b,50,incidence,rda_pcps,0.609,0.37,-0.239,uniform optima
+S3b,100,abundance,adonis,0.652,0.677,0.025000000000000022,uniform optima
+S3b,100,abundance,glm_pcps1,0.488,0.185,-0.303,uniform optima
+S3b,100,abundance,glm_pcps1_proc,0.392,0.097,-0.29500000000000004,uniform optima
+S3b,100,abundance,glm_pcps2,0.019,0.002,-0.017,uniform optima
+S3b,100,abundance,glm_pcps2_proc,0.006,0,-0.006,uniform optima
+S3b,100,abundance,mantel,0.615,0.483,-0.132,uniform optima
+S3b,100,abundance,pcc,0.984,0.735,-0.249,uniform optima
+S3b,100,abundance,rda_pcps,0.47,0.369,-0.10099999999999998,uniform optima
+S3b,100,incidence,adonis,0.811,0.895,0.08399999999999996,uniform optima
+S3b,100,incidence,glm_pcps1,0.77,0.245,-0.525,uniform optima
+S3b,100,incidence,glm_pcps1_proc,0.723,0.161,-0.5619999999999999,uniform optima
+S3b,100,incidence,glm_pcps2,0.004,0.001,-0.003,uniform optima
+S3b,100,incidence,glm_pcps2_proc,0.001,0,-0.001,uniform optima
+S3b,100,incidence,mantel,0.87,0.804,-0.06599999999999995,uniform optima
+S3b,100,incidence,pcc,0.992,0.799,-0.19299999999999995,uniform optima
+S3b,100,incidence,rda_pcps,0.733,0.644,-0.08899999999999997,uniform optima
+S3b,200,abundance,adonis,0.759,0.896,0.137,uniform optima
+S3b,200,abundance,glm_pcps1,0.621,0.23,-0.391,uniform optima
+S3b,200,abundance,glm_pcps1_proc,0.5,0.142,-0.358,uniform optima
+S3b,200,abundance,glm_pcps2,0.012,0.001,-0.011,uniform optima
+S3b,200,abundance,glm_pcps2_proc,0.004,0,-0.004,uniform optima
+S3b,200,abundance,mantel,0.728,0.677,-0.050999999999999934,uniform optima
+S3b,200,abundance,pcc,1,0.952,-0.04800000000000004,uniform optima
+S3b,200,abundance,rda_pcps,0.577,0.576,-0.0010000000000000009,uniform optima
+S3b,200,incidence,adonis,0.902,0.991,0.08899999999999997,uniform optima
+S3b,200,incidence,glm_pcps1,0.869,0.285,-0.5840000000000001,uniform optima
+S3b,200,incidence,glm_pcps1_proc,0.835,0.2,-0.635,uniform optima
+S3b,200,incidence,glm_pcps2,0.004,0,-0.004,uniform optima
+S3b,200,incidence,glm_pcps2_proc,0.001,0,-0.001,uniform optima
+S3b,200,incidence,mantel,0.94,0.936,-0.0039999999999998925,uniform optima
+S3b,200,incidence,pcc,1,0.976,-0.02400000000000002,uniform optima
+S3b,200,incidence,rda_pcps,0.815,0.849,0.03400000000000003,uniform optima
+S3sigma,50,abundance,adonis,0.524,0.365,-0.15900000000000003,uniform optima
+S3sigma,50,abundance,glm_pcps1,0.377,0.117,-0.26,uniform optima
+S3sigma,50,abundance,glm_pcps1_proc,0.31,0.065,-0.245,uniform optima
+S3sigma,50,abundance,glm_pcps2,0.041,0.006,-0.035,uniform optima
+S3sigma,50,abundance,glm_pcps2_proc,0.011,0.001,-0.009999999999999998,uniform optima
+S3sigma,50,abundance,mantel,0.455,0.242,-0.21300000000000002,uniform optima
+S3sigma,50,abundance,pcc,0.868,0.422,-0.446,uniform optima
+S3sigma,50,abundance,rda_pcps,0.384,0.187,-0.197,uniform optima
+S3sigma,50,incidence,adonis,0.636,0.617,-0.019000000000000017,uniform optima
+S3sigma,50,incidence,glm_pcps1,0.587,0.167,-0.41999999999999993,uniform optima
+S3sigma,50,incidence,glm_pcps1_proc,0.524,0.125,-0.399,uniform optima
+S3sigma,50,incidence,glm_pcps2,0.018,0.003,-0.015,uniform optima
+S3sigma,50,incidence,glm_pcps2_proc,0.003,0.001,-0.002,uniform optima
+S3sigma,50,incidence,mantel,0.669,0.502,-0.16700000000000004,uniform optima
+S3sigma,50,incidence,pcc,0.935,0.523,-0.41200000000000003,uniform optima
+S3sigma,50,incidence,rda_pcps,0.553,0.321,-0.23200000000000004,uniform optima
+S3sigma,100,abundance,adonis,0.623,0.675,0.052000000000000046,uniform optima
+S3sigma,100,abundance,glm_pcps1,0.486,0.211,-0.275,uniform optima
+S3sigma,100,abundance,glm_pcps1_proc,0.394,0.103,-0.29100000000000004,uniform optima
+S3sigma,100,abundance,glm_pcps2,0.018,0.003,-0.015,uniform optima
+S3sigma,100,abundance,glm_pcps2_proc,0.006,0,-0.006,uniform optima
+S3sigma,100,abundance,mantel,0.576,0.467,-0.10899999999999993,uniform optima
+S3sigma,100,abundance,pcc,0.995,0.809,-0.18599999999999994,uniform optima
+S3sigma,100,abundance,rda_pcps,0.464,0.357,-0.10700000000000004,uniform optima
+S3sigma,100,incidence,adonis,0.758,0.879,0.121,uniform optima
+S3sigma,100,incidence,glm_pcps1,0.707,0.22,-0.487,uniform optima
+S3sigma,100,incidence,glm_pcps1_proc,0.656,0.148,-0.508,uniform optima
+S3sigma,100,incidence,glm_pcps2,0.012,0.001,-0.011,uniform optima
+S3sigma,100,incidence,glm_pcps2_proc,0.001,0,-0.001,uniform optima
+S3sigma,100,incidence,mantel,0.805,0.736,-0.06900000000000006,uniform optima
+S3sigma,100,incidence,pcc,0.998,0.855,-0.14300000000000002,uniform optima
+S3sigma,100,incidence,rda_pcps,0.653,0.564,-0.08900000000000008,uniform optima
+S3sigma,200,abundance,adonis,0.75,0.897,0.14700000000000002,uniform optima
+S3sigma,200,abundance,glm_pcps1,0.595,0.239,-0.356,uniform optima
+S3sigma,200,abundance,glm_pcps1_proc,0.498,0.133,-0.365,uniform optima
+S3sigma,200,abundance,glm_pcps2,0.015,0.003,-0.012,uniform optima
+S3sigma,200,abundance,glm_pcps2_proc,0.003,0,-0.003,uniform optima
+S3sigma,200,abundance,mantel,0.698,0.645,-0.052999999999999936,uniform optima
+S3sigma,200,abundance,pcc,1,0.971,-0.029000000000000026,uniform optima
+S3sigma,200,abundance,rda_pcps,0.56,0.563,0.0029999999999998916,uniform optima
+S3sigma,200,incidence,adonis,0.863,0.988,0.125,uniform optima
+S3sigma,200,incidence,glm_pcps1,0.805,0.268,-0.537,uniform optima
+S3sigma,200,incidence,glm_pcps1_proc,0.762,0.184,-0.5780000000000001,uniform optima
+S3sigma,200,incidence,glm_pcps2,0.005,0.001,-0.004,uniform optima
+S3sigma,200,incidence,glm_pcps2_proc,0,0.001,0.001,uniform optima
+S3sigma,200,incidence,mantel,0.904,0.881,-0.02300000000000002,uniform optima
+S3sigma,200,incidence,pcc,1,0.991,-0.009000000000000008,uniform optima
+S3sigma,200,incidence,rda_pcps,0.746,0.756,0.010000000000000009,uniform optima
+S3a,50,abundance,adonis,0.359,0.236,-0.123,main
+S3a,50,abundance,glm_pcps1,0.262,0.088,-0.17400000000000002,main
+S3a,50,abundance,glm_pcps1_proc,0.21,0.047,-0.16299999999999998,main
+S3a,50,abundance,glm_pcps2,0.024,0.009,-0.015000000000000001,main
+S3a,50,abundance,glm_pcps2_proc,0.004,0.003,-0.001,main
+S3a,50,abundance,mantel,0.329,0.18,-0.14900000000000002,main
+S3a,50,abundance,pcc,0.354,0.174,-0.18,main
+S3a,50,abundance,rda_pcps,0.321,0.15,-0.171,main
+S3a,50,incidence,adonis,0.434,0.272,-0.16199999999999998,main
+S3a,50,incidence,glm_pcps1,0.418,0.131,-0.287,main
+S3a,50,incidence,glm_pcps1_proc,0.336,0.073,-0.263,main
+S3a,50,incidence,glm_pcps2,0.028,0.01,-0.018000000000000002,main
+S3a,50,incidence,glm_pcps2_proc,0.002,0.014,0.012,main
+S3a,50,incidence,mantel,0.474,0.254,-0.21999999999999997,main
+S3a,50,incidence,pcc,0.371,0.15,-0.221,main
+S3a,50,incidence,rda_pcps,0.419,0.197,-0.22199999999999998,main
+S3a,100,abundance,adonis,0.546,0.378,-0.16800000000000004,main
+S3a,100,abundance,glm_pcps1,0.376,0.074,-0.302,main
+S3a,100,abundance,glm_pcps1_proc,0.267,0.043,-0.22400000000000003,main
+S3a,100,abundance,glm_pcps2,0.02,0.01,-0.01,main
+S3a,100,abundance,glm_pcps2_proc,0.001,0.001,0,main
+S3a,100,abundance,mantel,0.494,0.282,-0.21200000000000002,main
+S3a,100,abundance,pcc,0.582,0.278,-0.30399999999999994,main
+S3a,100,abundance,rda_pcps,0.433,0.258,-0.175,main
+S3a,100,incidence,adonis,0.611,0.541,-0.06999999999999995,main
+S3a,100,incidence,glm_pcps1,0.58,0.206,-0.374,main
+S3a,100,incidence,glm_pcps1_proc,0.521,0.145,-0.376,main
+S3a,100,incidence,glm_pcps2,0.017,0.004,-0.013000000000000001,main
+S3a,100,incidence,glm_pcps2_proc,0.006,0.011,0.004999999999999999,main
+S3a,100,incidence,mantel,0.655,0.514,-0.14100000000000001,main
+S3a,100,incidence,pcc,0.537,0.261,-0.276,main
+S3a,100,incidence,rda_pcps,0.617,0.409,-0.20800000000000002,main
+S3a,200,abundance,adonis,0.68,0.62,-0.06000000000000005,main
+S3a,200,abundance,glm_pcps1,0.49,0.067,-0.423,main
+S3a,200,abundance,glm_pcps1_proc,0.347,0.031,-0.31599999999999995,main
+S3a,200,abundance,glm_pcps2,0.011,0.002,-0.009,main
+S3a,200,abundance,glm_pcps2_proc,0.002,0.001,-0.001,main
+S3a,200,abundance,mantel,0.65,0.473,-0.17700000000000005,main
+S3a,200,abundance,pcc,0.796,0.447,-0.34900000000000003,main
+S3a,200,abundance,rda_pcps,0.601,0.396,-0.20499999999999996,main
+S3a,200,incidence,adonis,0.759,0.785,0.026000000000000023,main
+S3a,200,incidence,glm_pcps1,0.74,0.311,-0.429,main
+S3a,200,incidence,glm_pcps1_proc,0.707,0.155,-0.5519999999999999,main
+S3a,200,incidence,glm_pcps2,0.02,0.001,-0.019,main
+S3a,200,incidence,glm_pcps2_proc,0.007,0.028,0.021,main
+S3a,200,incidence,mantel,0.819,0.758,-0.06099999999999994,main
+S3a,200,incidence,pcc,0.779,0.379,-0.4,main
+S3a,200,incidence,rda_pcps,0.785,0.657,-0.128,main
+S3b,50,abundance,adonis,0.566,0.424,-0.14199999999999996,main
+S3b,50,abundance,glm_pcps1,0.366,0.078,-0.288,main
+S3b,50,abundance,glm_pcps1_proc,0.299,0.028,-0.27099999999999996,main
+S3b,50,abundance,glm_pcps2,0.028,0.009,-0.019000000000000003,main
+S3b,50,abundance,glm_pcps2_proc,0.003,0,-0.003,main
+S3b,50,abundance,mantel,0.465,0.224,-0.24100000000000002,main
+S3b,50,abundance,pcc,0.863,0.377,-0.486,main
+S3b,50,abundance,rda_pcps,0.43,0.203,-0.22699999999999998,main
+S3b,50,incidence,adonis,0.677,0.575,-0.10200000000000009,main
+S3b,50,incidence,glm_pcps1,0.624,0.227,-0.397,main
+S3b,50,incidence,glm_pcps1_proc,0.61,0.157,-0.45299999999999996,main
+S3b,50,incidence,glm_pcps2,0.014,0.002,-0.012,main
+S3b,50,incidence,glm_pcps2_proc,0.002,0.016,0.014,main
+S3b,50,incidence,mantel,0.718,0.554,-0.16399999999999992,main
+S3b,50,incidence,pcc,0.858,0.402,-0.45599999999999996,main
+S3b,50,incidence,rda_pcps,0.646,0.369,-0.277,main
+S3b,100,abundance,adonis,0.698,0.656,-0.041999999999999926,main
+S3b,100,abundance,glm_pcps1,0.439,0.081,-0.358,main
+S3b,100,abundance,glm_pcps1_proc,0.295,0.038,-0.257,main
+S3b,100,abundance,glm_pcps2,0.015,0.004,-0.011,main
+S3b,100,abundance,glm_pcps2_proc,0.002,0.001,-0.001,main
+S3b,100,abundance,mantel,0.596,0.4,-0.19599999999999995,main
+S3b,100,abundance,pcc,0.985,0.714,-0.271,main
+S3b,100,abundance,rda_pcps,0.524,0.333,-0.191,main
+S3b,100,incidence,adonis,0.835,0.881,0.04600000000000004,main
+S3b,100,incidence,glm_pcps1,0.786,0.368,-0.41800000000000004,main
+S3b,100,incidence,glm_pcps1_proc,0.736,0.232,-0.504,main
+S3b,100,incidence,glm_pcps2,0.012,0.001,-0.011,main
+S3b,100,incidence,glm_pcps2_proc,0.005,0.02,0.015,main
+S3b,100,incidence,mantel,0.886,0.862,-0.02400000000000002,main
+S3b,100,incidence,pcc,0.99,0.72,-0.27,main
+S3b,100,incidence,rda_pcps,0.817,0.704,-0.11299999999999999,main
+S3b,200,abundance,adonis,0.794,0.876,0.08199999999999996,main
+S3b,200,abundance,glm_pcps1,0.474,0.041,-0.433,main
+S3b,200,abundance,glm_pcps1_proc,0.388,0.021,-0.367,main
+S3b,200,abundance,glm_pcps2,0.009,0.002,-0.006999999999999999,main
+S3b,200,abundance,glm_pcps2_proc,0.004,0.001,-0.003,main
+S3b,200,abundance,mantel,0.694,0.589,-0.10499999999999998,main
+S3b,200,abundance,pcc,1,0.913,-0.08699999999999997,main
+S3b,200,abundance,rda_pcps,0.649,0.491,-0.15800000000000003,main
+S3b,200,incidence,adonis,0.935,0.985,0.04999999999999993,main
+S3b,200,incidence,glm_pcps1,0.915,0.439,-0.47600000000000003,main
+S3b,200,incidence,glm_pcps1_proc,0.869,0.262,-0.607,main
+S3b,200,incidence,glm_pcps2,0.008,0,-0.008,main
+S3b,200,incidence,glm_pcps2_proc,0.007,0.039,0.032,main
+S3b,200,incidence,mantel,0.978,0.979,0.0010000000000000009,main
+S3b,200,incidence,pcc,1,0.934,-0.06599999999999995,main
+S3b,200,incidence,rda_pcps,0.895,0.917,0.02200000000000002,main
+S3sigma,50,abundance,adonis,0.541,0.435,-0.10600000000000004,main
+S3sigma,50,abundance,glm_pcps1,0.299,0.087,-0.212,main
+S3sigma,50,abundance,glm_pcps1_proc,0.263,0.054,-0.20900000000000002,main
+S3sigma,50,abundance,glm_pcps2,0.02,0.009,-0.011000000000000001,main
+S3sigma,50,abundance,glm_pcps2_proc,0.005,0.001,-0.004,main
+S3sigma,50,abundance,mantel,0.399,0.205,-0.19400000000000003,main
+S3sigma,50,abundance,pcc,0.863,0.41,-0.453,main
+S3sigma,50,abundance,rda_pcps,0.354,0.169,-0.18499999999999997,main
+S3sigma,50,incidence,adonis,0.626,0.531,-0.09499999999999997,main
+S3sigma,50,incidence,glm_pcps1,0.516,0.144,-0.372,main
+S3sigma,50,incidence,glm_pcps1_proc,0.464,0.106,-0.35800000000000004,main
+S3sigma,50,incidence,glm_pcps2,0.04,0.007,-0.033,main
+S3sigma,50,incidence,glm_pcps2_proc,0.012,0.012,0,main
+S3sigma,50,incidence,mantel,0.669,0.428,-0.24100000000000005,main
+S3sigma,50,incidence,pcc,0.913,0.458,-0.455,main
+S3sigma,50,incidence,rda_pcps,0.53,0.266,-0.264,main
+S3sigma,100,abundance,adonis,0.633,0.659,0.026000000000000023,main
+S3sigma,100,abundance,glm_pcps1,0.386,0.072,-0.314,main
+S3sigma,100,abundance,glm_pcps1_proc,0.302,0.035,-0.267,main
+S3sigma,100,abundance,glm_pcps2,0.017,0.006,-0.011000000000000001,main
+S3sigma,100,abundance,glm_pcps2_proc,0.004,0,-0.004,main
+S3sigma,100,abundance,mantel,0.539,0.33,-0.20900000000000002,main
+S3sigma,100,abundance,pcc,0.986,0.749,-0.237,main
+S3sigma,100,abundance,rda_pcps,0.48,0.268,-0.21199999999999997,main
+S3sigma,100,incidence,adonis,0.733,0.806,0.07300000000000006,main
+S3sigma,100,incidence,glm_pcps1,0.587,0.226,-0.361,main
+S3sigma,100,incidence,glm_pcps1_proc,0.534,0.138,-0.396,main
+S3sigma,100,incidence,glm_pcps2,0.041,0.011,-0.030000000000000002,main
+S3sigma,100,incidence,glm_pcps2_proc,0.024,0.011,-0.013000000000000001,main
+S3sigma,100,incidence,mantel,0.786,0.726,-0.06000000000000005,main
+S3sigma,100,incidence,pcc,0.994,0.804,-0.18999999999999995,main
+S3sigma,100,incidence,rda_pcps,0.599,0.404,-0.19499999999999995,main
+S3sigma,200,abundance,adonis,0.746,0.844,0.09799999999999998,main
+S3sigma,200,abundance,glm_pcps1,0.401,0.049,-0.35200000000000004,main
+S3sigma,200,abundance,glm_pcps1_proc,0.315,0.017,-0.298,main
+S3sigma,200,abundance,glm_pcps2,0.019,0.005,-0.013999999999999999,main
+S3sigma,200,abundance,glm_pcps2_proc,0.006,0,-0.006,main
+S3sigma,200,abundance,mantel,0.621,0.478,-0.14300000000000002,main
+S3sigma,200,abundance,pcc,0.999,0.946,-0.05300000000000005,main
+S3sigma,200,abundance,rda_pcps,0.545,0.356,-0.18900000000000006,main
+S3sigma,200,incidence,adonis,0.789,0.949,0.15999999999999992,main
+S3sigma,200,incidence,glm_pcps1,0.604,0.249,-0.355,main
+S3sigma,200,incidence,glm_pcps1_proc,0.591,0.134,-0.45699999999999996,main
+S3sigma,200,incidence,glm_pcps2,0.052,0.011,-0.040999999999999995,main
+S3sigma,200,incidence,glm_pcps2_proc,0.014,0.038,0.024,main
+S3sigma,200,incidence,mantel,0.821,0.846,0.025000000000000022,main
+S3sigma,200,incidence,pcc,1,0.971,-0.029000000000000026,main
+S3sigma,200,incidence,rda_pcps,0.628,0.502,-0.126,main
