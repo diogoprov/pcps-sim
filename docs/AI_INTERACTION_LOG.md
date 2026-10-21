@@ -127,3 +127,21 @@ decisions, commands and results). The full history of changes is in git.
   two Scopus/LeapSpace reports supplied by the author; every reference was
   verified on Crossref. An accuracy review corrected 18 over-claims or
   attributions beyond what the sources say.
+
+### 2026-10-20 — Mock review and responses
+- A subagent with no access to the conversation wrote a mock MEE review
+  (docs/review/MEE_mock_review.md; major revision). The author chose which
+  items to address; text-only items were answered at once (title, γ × N,
+  analysed-tree shape in Layer B, clade-recovery ranges, Procrustes variant).
+- New analyses requested by the author: prior sensitivity (priorsense),
+  prior predictive checks, H1 equivalence, paired contrasts, PCPS2 arch
+  effect, RDA PCPS in Layer A (which changed one recommendation), clade age,
+  δ = 0 baseline (27-min local run), and the lack of fit of the mean structure
+  (random effect per condition). All numbers were taken from the scripts'
+  CSV outputs and checked before entering the text.
+- Two new simulations designed with the author's approval and run on AWS spot
+  instances: optima with a fixed marginal distribution (separates tree shape
+  effects on the optima and on the analysis) and a spatial Layer B (torus,
+  autocorrelated gradient, kernel dispersal, torus-translation null validated
+  in a local pilot, incidence and abundance). Spot interruptions were handled
+  by aws/supervise.sh, which resumes from the S3 checkpoints.

@@ -3,7 +3,8 @@
 #        Yule) by N, with the calibrated (beta, c) and acceptance rates;
 #   S2 - every rate (rejection rate or clade-recovery hit rate) by condition,
 #        with its Monte Carlo standard error and 95% Monte Carlo interval;
-#   S3 - convergence and posterior predictive diagnostics of the formal models.
+#   S3 - convergence and posterior predictive diagnostics of the formal models
+#        (main models and the models of the run with the extra PCPS tests).
 # Usage: Rscript analysis/24_si_tables.R
 
 models <- file.path("data", "derived", "models")
@@ -46,7 +47,8 @@ s2 <- dplyr::bind_rows(
                 k, n, rate, mcse, mc_lower, mc_upper)
 readr::write_csv(s2, file.path(out_dir, "table_S2_rates_mcse.csv"))
 
-s3 <- purrr::map(c("type_I", "power", "B_type_I", "B_power", "clade"), \(m) {
+s3 <- purrr::map(c("type_I", "power", "B_type_I", "B_power", "clade", "type_I_axes",
+                   "power_axes"), \(m) {
   readr::read_csv(file.path(models, m, "diagnostics.csv"), show_col_types = FALSE) |>
     dplyr::mutate(model = m, .before = 1)
 }) |>
