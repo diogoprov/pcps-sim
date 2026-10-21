@@ -337,7 +337,7 @@ for (pp in list(c(10, 10), c(26, 10), c(18, 18), c(10, 26), c(26, 26)))
 line(760, 330, 1090, 330, stroke = "#d5dbe3", sw = 1)
 
 badge(ax + 14, 360, "B", fill = col_line, r = 13, size = 15)
-text(ax + 34, 365, "dynamic", size = 13, anchor = "start", fill = "#5c6878")
+text(ax + 34, 365, "process-based", size = 13, anchor = "start", fill = "#5c6878")
 patch <- data.frame(x = c(790, 908, 790, 908), y = c(392, 392, 510, 510),
                     e = c(0.1, 0.45, 0.65, 0.95))
 set.seed(3)

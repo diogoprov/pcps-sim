@@ -5,7 +5,7 @@
 ## General information
 
 1. Paper citation: to be added upon acceptance.
-2. Content: R code of the simulation study (Layer A, static metacommunities; Layer B, process-based metacommunities; recovery of a planted clade), the rates aggregated by condition, the summaries of the beta-binomial models, and the scripts that reproduce every table and figure of the manuscript and Supporting Information.
+2. Content: R code of the simulation study (static simulations of metacommunities; process-based simulations of metacommunity dynamics; recovery of a planted clade), the rates aggregated by condition, the summaries of the beta-binomial models, and the scripts that reproduce every table and figure of the manuscript and Supporting Information.
 3. Licences: code under the MIT licence; derived data under CC BY 4.0 (see LICENSE.md).
 
 ## Structure
@@ -13,7 +13,7 @@
 - `R/`: functions (tree generation, trait simulation, metacommunity dynamics, tests, clade-recovery methods, formal models).
 - `analysis/`: numbered scripts, run in order; `analysis/run_pipeline.R` and `_targets.R` run the simulations.
 - `tests/`: unit tests (testthat), including the checks of the permutation code against vegan and PCPS.
-- `data/published/`: published rates used for validation; `data/calibrated/`: calibrated pool sizes of Layer B.
+- `data/published/`: published rates used for validation; `data/calibrated/`: calibrated pool sizes of the process-based simulations.
 - `data/derived/models/`: rates aggregated by condition (`aggregated.csv`), posterior summaries, contrasts, posterior predictive checks and diagnostics of each model.
 - `data/derived/pools/`, `data/derived/trees/`, `data/derived/case_study/`: tree shapes of the regional pools, of the anuran clades of Portik et al. (2023) and the results of the case study (Appendix S3).
 - `manuscript/figures/`, `manuscript/si/`: figures and Supporting Information tables.
