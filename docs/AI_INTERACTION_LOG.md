@@ -176,3 +176,8 @@ decisions, commands and results). The full history of changes is in git.
   the author's page provetelab.org/ia-escrita-cientifica) and to point to this
   log on GitHub; the link appears only in the preprint, since the submission
   text is anonymized.
+
+### 2026-10-22 — Codex methodological review and correction plan
+- Codex (OpenAI, GPT-6-based assistant) reviewed the simulation code, manuscript and existing outputs at the author’s request, adopting the perspective of a simulated Methods in Ecology and Evolution reviewer. All existing testthat tests passed with the local project dependencies; the full simulation and Bayesian models were not rerun.
+- Identified eight methodological concerns, distinguishing confirmed implementation choices and output checks from questions about null hypotheses and causal interpretation. Proposed targeted controls, sensitivity analyses and revisions, with a preliminary estimate of 50–85 technical work hours plus benchmark-dependent computation.
+- At the author’s explicit request, saved the critique and plan in docs/review/CODEX_critica_e_plano_2026-10-22.md, identified Codex as its author and committed the documentation. No proposed simulation corrections were implemented, and no scientific decisions accepting the proposed corrections were inferred.
