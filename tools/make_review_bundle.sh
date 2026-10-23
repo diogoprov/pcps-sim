@@ -21,7 +21,8 @@ rm -f "$dest"/CLAUDE.md "$dest"/CITATION.cff \
       "$dest"/docs/MEMORIA_PROJETO.md "$dest"/docs/AI_INTERACTION_LOG.md \
       "$dest"/docs/resumo_projeto.qmd "$dest"/docs/GUIAS_RELATO_MEE.md \
       "$dest"/manuscript/*.qmd "$dest"/manuscript/*.docx "$dest"/manuscript/*.py
-rm -rf "$dest"/docs/lit_review "$dest"/tools
+# internal reviews, mock review and proposals (Portuguese, name the author)
+rm -rf "$dest"/docs/lit_review "$dest"/docs/review "$dest"/tools
 # internal working notes in Portuguese (first person, decision dates)
 rm -f "$dest"/docs/PLANO_SIMULACAO.md "$dest"/docs/ESPEC_PCC.md
 # scripts that read the third-party tadpole data (not distributed); they list
