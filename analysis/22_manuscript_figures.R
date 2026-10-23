@@ -52,7 +52,7 @@ surface_plot <- function(d, group, row, labels, fill_limits, fill_name) {
 
 type1 <- readr::read_csv(file.path(models, "type_I", "shape_surface.csv"), show_col_types = FALSE)
 p <- surface_plot(dplyr::filter(type1, test %in% names(test_labels)), "test", "scenario",
-                  test_labels, c(0, 0.17), "Type I\nerror")
+                  test_labels, c(0, 0.17), "Rejection\nrate")
 save_figure(p, "fig2_type1", 2, width = 17, height = 14)
 
 power <- readr::read_csv(file.path(models, "power", "shape_surface.csv"), show_col_types = FALSE)
