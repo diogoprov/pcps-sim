@@ -17,3 +17,15 @@
 - Stack: R (tidyverse, `|>`), `targets`, `renv`; `brms` com priors explícitos e
   diagnósticos; Quarto para o manuscrito, que será em inglês.
 - A execução pesada vai para a AWS. Antes de rodar algo demorado, confirme o plano.
+
+## Memória e regras de conduta
+
+Decisões de escopo, autoria, formato AIdIT e hábitos de código estão em
+[`MEMORIA.md`](MEMORIA.md). Três delas valem no dia a dia:
+
+- Aplicar as regras de código do `MEMORIA.md` e **revisar as mudanças em duas frentes**
+  (padrões + spec) antes de dizer que está pronto.
+- Declaração de IA no formato **AIdIT**, montada do template do app — nunca um parágrafo
+  COPE livre, e confirmar motores/datas com o Diogo.
+- **Não atribuir a ideia da simulação a Debastiani**: ele ajudou na implementação e vai nos
+  agradecimentos, não como coautor.
