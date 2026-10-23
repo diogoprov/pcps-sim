@@ -63,7 +63,11 @@ evopca_species_scores <- function(comm, tree, env, n_axes = 4, incidence = TRUE)
 #' difference in prevalence unrelated to E, and that the logit is linear in E
 #' although responses are unimodal; with the planted shift the response of the
 #' clade is monotone along E.
-phylofactor_node_scores <- function(comm, tree, env) {
+#' @param objective "full" (the `gpf` objective above) or "interaction" (only
+#'   the deviance of phylo:env, which does not reward a difference in
+#'   prevalence unrelated to E; sensitivity analysis of the clade recovery).
+phylofactor_node_scores <- function(comm, tree, env, objective = c("full", "interaction")) {
+  objective <- match.arg(objective)
   tips <- clade_tips(tree)
   n_site <- nrow(comm)
   k <- ncol(comm)
@@ -90,7 +94,7 @@ phylofactor_node_scores <- function(comm, tree, env) {
     d1 <- dev(y, n, cbind(one, g))
     d2 <- dev(y, n, cbind(one, g, e))
     d3 <- dev(y, n, cbind(one, g, e, g * e))
-    (d0 - d1) + (d2 - d3)
+    if (objective == "full") (d0 - d1) + (d2 - d3) else d2 - d3
   }, numeric(1))
   tibble::tibble(node = as.integer(names(tips)), score = unname(score))
 }

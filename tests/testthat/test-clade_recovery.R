@@ -101,3 +101,20 @@ test_that("an unscored planted node gets no rank", {
   s$score[s$node == true_node] <- NA
   expect_true(is.na(recovery_metrics(tree, s, p$tips)$rank))
 })
+
+test_that("h_factor scales the planted clade only and uses no random numbers", {
+  tree <- sim_tree_shape(40)
+  set.seed(5)
+  a <- sim_metacommunity_clade(tree, shift = 0)
+  set.seed(5)
+  b <- sim_metacommunity_clade(tree, shift = 0, h_factor = 1)
+  expect_identical(a$comm, b$comm)
+  set.seed(5)
+  c <- sim_metacommunity_clade(tree, shift = 0, h_factor = 0.2)
+  expect_identical(c$planted, a$planted)
+  both <- intersect(rownames(a$traits), rownames(c$traits))
+  in_clade <- both %in% a$planted$tips
+  expect_equal(c$traits[both, "h"][in_clade], 0.2 * a$traits[both, "h"][in_clade])
+  expect_equal(c$traits[both, "h"][!in_clade], a$traits[both, "h"][!in_clade])
+  expect_equal(c$traits[both, "u"], a$traits[both, "u"])
+})

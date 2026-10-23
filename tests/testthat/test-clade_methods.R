@@ -73,3 +73,22 @@ test_that("the best log-ratio split matches phylofactor::PhyloFactor", {
   out <- recover_clade_all(mca, incidence = FALSE)
   expect_false(anyNA(out$jaccard))
 })
+
+test_that("the interaction objective is the phylo:env part of the full one", {
+  full <- phylofactor_node_scores(mc$comm, mc$tree, mc$env)
+  inter <- phylofactor_node_scores(mc$comm, mc$tree, mc$env, objective = "interaction")
+  expect_equal(inter$node, full$node)
+  ok <- !is.na(full$score) & !is.na(inter$score)
+  expect_true(all(inter$score[ok] >= -1e-8))
+  expect_true(all(inter$score[ok] <= full$score[ok] + 1e-8))
+  # one split checked against the sequential deviance of glm
+  node <- inter$node[which(ok)[1]]
+  clade <- ape::extract.clade(mc$tree, node)$tip.label
+  in_g <- colnames(mc$comm) %in% clade
+  d <- data.frame(y = c(rowSums(mc$comm[, in_g]), rowSums(mc$comm[, !in_g])),
+                  n = rep(c(sum(in_g), sum(!in_g)), each = nrow(mc$comm)),
+                  g = rep(c(1, 0), each = nrow(mc$comm)), e = rep(mc$env, 2))
+  fit <- suppressWarnings(stats::glm(cbind(y, n - y) ~ g * e, binomial, data = d))
+  expect_equal(inter$score[inter$node == node], stats::anova(fit)["g:e", "Deviance"],
+               tolerance = 1e-6)
+})

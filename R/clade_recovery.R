@@ -51,15 +51,20 @@ plant_clade <- function(tree, min_frac = 0.1, max_frac = 0.3,
 #' and maximum abundance without signal, as in [sim_species_traits()]. The
 #' gradient analysed is the one that generated the data.
 #' @param depth passed to [plant_clade()].
+#' @param h_factor multiplies the maximum abundance of the planted species; with
+#'   `shift = 0` and `h_factor != 1` the clade differs from the rest in
+#'   prevalence but not in its association with E (control of the sensitivity
+#'   analysis). It uses no random numbers, so the other draws do not change.
 #' @return [finish_metacommunity()] output plus `planted` ([plant_clade()]).
 sim_metacommunity_clade <- function(tree, shift = 2, depth = "any", incidence = TRUE,
                                     n_sites = 100, mu_tol = 10, min_frac = 0.1,
-                                    max_frac = 0.3) {
+                                    max_frac = 0.3, h_factor = 1) {
   planted <- plant_clade(tree, min_frac, max_frac, depth)
   tr <- sim_species_traits(tree, lambda = 0, sigma_signal = FALSE, h_signal = FALSE,
                            mu_tol = mu_tol)
   in_clade <- tree$tip.label %in% planted$tips
   tr$u <- -1 + 102 * stats::pnorm(stats::rnorm(ape::Ntip(tree)) + shift * in_clade)
+  tr$h[in_clade] <- tr$h[in_clade] * h_factor
   env <- stats::runif(n_sites, 0, 100)
   mc <- finish_metacommunity(sim_comm_traits(tr, env, tree$tip.label, incidence), tree,
                              env, env_original = TRUE, traits = tr)
