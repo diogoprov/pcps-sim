@@ -1,7 +1,8 @@
 # Figures of the manuscript (manuscript/figures/), from the formal models
 # (analysis/18_formal_models.R, analysis/20_formal_models_layerB.R) and the
-# regional pools (analysis/21_regional_pools.R). Rates are posterior medians at
-# N = 100 and incidence data (clade recovery: shift 2).
+# regional pools (analysis/21_regional_pools.R). Rates are raw rates at N = 100
+# and incidence data (clade recovery: shift 2), since the beta-binomial medians
+# depart from them in single conditions (analysis/38_raw_contrasts.R).
 # Usage: Rscript analysis/22_manuscript_figures.R
 
 models <- file.path("data", "derived", "models")
@@ -50,17 +51,24 @@ surface_plot <- function(d, group, row, labels, fill_limits, fill_name) {
     theme_ms
 }
 
-type1 <- readr::read_csv(file.path(models, "type_I", "shape_surface.csv"), show_col_types = FALSE)
+# raw rate of each condition at N = 100 (static simulations: incidence data)
+raw_rates <- function(m) {
+  readr::read_csv(file.path(models, m, "aggregated.csv"), show_col_types = FALSE) |>
+    dplyr::filter(n_spp == 100, dplyr::if_all(dplyr::any_of("data_type"), \(x) x == "incidence")) |>
+    dplyr::mutate(rate = k / n)
+}
+
+type1 <- raw_rates("type_I")
 p <- surface_plot(dplyr::filter(type1, test %in% names(test_labels)), "test", "scenario",
                   test_labels, c(0, 0.17), "Rejection\nrate")
 save_figure(p, "fig2_type1", 2, width = 17, height = 14)
 
-power <- readr::read_csv(file.path(models, "power", "shape_surface.csv"), show_col_types = FALSE)
+power <- raw_rates("power")
 p <- surface_plot(dplyr::filter(power, test %in% names(test_labels)), "test", "scenario",
                   test_labels, c(0, 1), "Power")
 save_figure(p, "fig3_power", 3, width = 17, height = 9)
 
-clade <- readr::read_csv(file.path(models, "clade", "shape_surface.csv"), show_col_types = FALSE)
+clade <- dplyr::filter(raw_rates("clade"), shift == 2)
 p <- surface_plot(clade, "method", "depth", method_labels, c(0, 1), "Recovery")
 save_figure(p, "fig5_clade", 5, width = 15, height = 8)
 
@@ -71,12 +79,15 @@ archetype_labels <- c(sorting__none = "Sorting", sorting__phylo = "Sorting + phy
 cell_labels <- c(g_yule__c_yule = "Yule/Yule", g_low__c_yule = "low/Yule",
                  g_yule__c_high = "Yule/high", g_low__c_high = "low/high",
                  g_mid__c_mid = "mid/mid")
-b_power <- readr::read_csv(file.path(models, "B_power", "rates.csv"), show_col_types = FALSE) |>
-  dplyr::mutate(test = factor(test_labels[test], test_labels),
+# raw power with its 95% Jeffreys interval
+b_power <- raw_rates("B_power") |>
+  dplyr::mutate(lower = stats::qbeta(0.025, k + 0.5, n - k + 0.5),
+                upper = stats::qbeta(0.975, k + 0.5, n - k + 0.5),
+                test = factor(test_labels[test], test_labels),
                 archetype = factor(archetype_labels[archetype], archetype_labels),
                 cell = factor(cell_labels[cell], cell_labels),
                 scenario = scenario_label(scenario))
-p <- ggplot2::ggplot(b_power, ggplot2::aes(cell, median, colour = archetype)) +
+p <- ggplot2::ggplot(b_power, ggplot2::aes(cell, rate, colour = archetype)) +
   ggplot2::geom_pointrange(ggplot2::aes(ymin = lower, ymax = upper), size = 0.15,
                            position = ggplot2::position_dodge(width = 0.6)) +
   ggplot2::facet_grid(scenario ~ test) +
