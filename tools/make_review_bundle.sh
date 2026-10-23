@@ -23,6 +23,8 @@ rm -f "$dest"/CLAUDE.md "$dest"/CITATION.cff \
       "$dest"/manuscript/*.qmd "$dest"/manuscript/*.docx "$dest"/manuscript/*.py
 # internal reviews, mock review and proposals (Portuguese, name the author)
 rm -rf "$dest"/docs/lit_review "$dest"/docs/review "$dest"/tools
+# contributions to other packages (not part of the study)
+rm -rf "$dest"/contrib
 # internal working notes in Portuguese (first person, decision dates)
 rm -f "$dest"/docs/PLANO_SIMULACAO.md "$dest"/docs/ESPEC_PCC.md
 # scripts that read the third-party tadpole data (not distributed); they list
