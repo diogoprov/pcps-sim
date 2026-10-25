@@ -1158,6 +1158,10 @@ Próximos passos sugeridos:
   para lá estão em `R/trees.R`: `rtopology_beta`, `intervals_lineage_rate`,
   `assign_ages`, `sim_tree_shape`. Elas usam só `ape` e `stats`; os testes estão em
   `tests/testthat/test-trees.R`.
-- A definir: nome do pacote, repositório, CRAN ou só GitHub/r-universe, e se o
-  pcps-sim passa a depender dele. Atenção à revisão duplo-cega da MEE: citar um
+- Decidido (2026-10-25): nome `treeshapesim`; só GitHub (diogoprov/treeshapesim)
+  e r-universe, sem CRAN; o pcps-sim mantém a cópia local em `R/trees.R`. Pacote
+  0.1.0 montado (MIT, roxygen, testthat; `R CMD check` limpo, exceto o locale do
+  container e o `treestats` ausente, que fez pular 2 testes) e entregue como zip
+  para o Diogo pôr em ~/github/treeshapesim. Falta criar o repositório no GitHub,
+  dar push e registrar no r-universe. Atenção à revisão duplo-cega da MEE: citar um
   pacote com o nome do autor no texto de submissão identifica o autor.

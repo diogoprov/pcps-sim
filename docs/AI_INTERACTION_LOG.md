@@ -182,3 +182,7 @@ decisions, commands and results). The full history of changes is in git.
   tree-shape simulator to treestats. The maintainer declined (out of scope) and
   suggested a separate package. The author decided to release it as a separate
   package; the assistant recorded the decision and listed the open choices.
+- The author chose the name treeshapesim, GitHub plus r-universe only, and to
+  keep the local copy in pcps-sim. The assistant built the package (code and
+  tests copied from R/trees.R, roxygen documentation, README) and ran R CMD
+  check, and drafted a reply to the issue for the author to post.
