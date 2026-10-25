@@ -1164,7 +1164,10 @@ Próximos passos sugeridos:
   container e o `treestats` ausente, que fez pular 2 testes) e entregue como zip
   para o Diogo pôr em ~/github/treeshapesim. Repositório público
   github.com/diogoprov/treeshapesim criado e com push feito pelo Diogo (commit
-  f9d3102). Falta: responder/fechar treestats#35. Em 2026-10-25: PR #1 no treeshapesim
-  (site pkgdown no GitHub Pages; palavras-chave em X-schema.org-keywords) e PR #2
-  no diogoprov.r-universe.dev (branch padrão master) incluindo o pacote. Atenção à revisão duplo-cega da MEE: citar um
+  f9d3102). Em 2026-10-25: PR #1 mergeado (site pkgdown publicado no branch gh-pages,
+  no ar em diogoprov.github.io/treeshapesim; palavras-chave em
+  X-schema.org-keywords; logo hex em man/figures, opção 4 com as cores da 2;
+  script hexSticker em data-raw/). PR #2 no diogoprov.r-universe.dev (branch
+  padrão master) mergeado: o pacote entra no r-universe. Falta responder e
+  fechar treestats#35. Atenção à revisão duplo-cega da MEE: citar um
   pacote com o nome do autor no texto de submissão identifica o autor.

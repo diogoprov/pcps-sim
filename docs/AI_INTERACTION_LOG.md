@@ -189,3 +189,4 @@ decisions, commands and results). The full history of changes is in git.
 - The author created github.com/diogoprov/treeshapesim and pushed the package (the GitHub integration could not create repositories).
 - Opened treeshapesim#1 (pkgdown site via GitHub Actions/Pages, keywords) and diogoprov.r-universe.dev#2 (registry entry); drafted four hex-sticker concepts.
 - Hex sticker: the author chose concept 4 (comb to balanced) in the colours of concept 2; the assistant wrote data-raw/hex_sticker.R (hexSticker, to be run by the author, since CRAN is blocked in the container) and a ggplot2 preview.
+- Both PRs were merged (the author merged treeshapesim#1; the assistant merged the r-universe registry PR at the author's request). The site is live from the gh-pages branch. The assistant could not delete the pkgdown-site branch (proxy 403); the author deleted it.
