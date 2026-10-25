@@ -1147,3 +1147,17 @@ Próximos passos sugeridos:
 - Pendências: data da cover letter; e-mails de dois revisores; trocar o título do registro anônimo no Zenodo; revisão do Diogo.
 - Declaração de uso de IA no formato AIdIT v0.1 (Drobniak et al. 2026, Res. Integr. Peer Rev. 11: 57; modelo do app oficial github.com/szymekdr/AI_reporting/code/app.R), como seção 'AI disclosure statement' depois das referências do texto principal; saiu da folha de rosto (2026-10-21, pedido do Diogo: sempre usar AIdIT).
 - (2026-10-21) Declaração AIdIT confirmada pelo Diogo: singular ("The author declares"), conformidade com a Portaria CNPq nº 2.664/2026 (Política de Integridade na Atividade Científica; DOU 11/03/2026, Seção 1, p. 4; Art. 9º, I, c) e menção ao log de IA no GitHub (link direto só no preprint; no texto de submissão, "a ser citado após a revisão"). Diogo está lendo o preprint para depositar no bioRxiv; depois confere o pacote de submissão à MEE.
+
+## Simulador de forma de árvore: pacote à parte (2026-10-25)
+- Issue thijsjanzen/treestats#35 (aberta pelo Diogo em 2026-10-23) propôs incluir
+  `sim_tree_shape(n, beta, c)` no `treestats`. Resposta do Thijs Janzen (2026-10-25):
+  não entra, porque o `treestats` fica restrito a funções sobre filogenias existentes
+  (estatísticas). Ele sugeriu um pacote próprio ou contribuir ao `phytools`/`TreeSim`
+  e citou a CRAN Task View Phylogenetics.
+- Decisão do Diogo: publicar o simulador num pacote R separado. As funções que vão
+  para lá estão em `R/trees.R`: `rtopology_beta`, `intervals_lineage_rate`,
+  `assign_ages`, `sim_tree_shape`. Elas usam só `ape` e `stats`; os testes estão em
+  `tests/testthat/test-trees.R`.
+- A definir: nome do pacote, repositório, CRAN ou só GitHub/r-universe, e se o
+  pcps-sim passa a depender dele. Atenção à revisão duplo-cega da MEE: citar um
+  pacote com o nome do autor no texto de submissão identifica o autor.

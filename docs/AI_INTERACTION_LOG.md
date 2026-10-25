@@ -176,3 +176,9 @@ decisions, commands and results). The full history of changes is in git.
   the author's page provetelab.org/ia-escrita-cientifica) and to point to this
   log on GitHub; the link appears only in the preprint, since the submission
   text is anonymized.
+
+### 2026-10-25 — treestats issue #35
+- Read the maintainer's reply to the author's proposal (treestats#35) to add the
+  tree-shape simulator to treestats. The maintainer declined (out of scope) and
+  suggested a separate package. The author decided to release it as a separate
+  package; the assistant recorded the decision and listed the open choices.
