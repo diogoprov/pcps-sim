@@ -188,3 +188,4 @@ decisions, commands and results). The full history of changes is in git.
   check, and drafted a reply to the issue for the author to post.
 - The author created github.com/diogoprov/treeshapesim and pushed the package (the GitHub integration could not create repositories).
 - Opened treeshapesim#1 (pkgdown site via GitHub Actions/Pages, keywords) and diogoprov.r-universe.dev#2 (registry entry); drafted four hex-sticker concepts.
+- Hex sticker: the author chose concept 4 (comb to balanced) in the colours of concept 2; the assistant wrote data-raw/hex_sticker.R (hexSticker, to be run by the author, since CRAN is blocked in the container) and a ggplot2 preview.
