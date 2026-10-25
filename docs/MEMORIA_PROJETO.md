@@ -1162,6 +1162,7 @@ Próximos passos sugeridos:
   e r-universe, sem CRAN; o pcps-sim mantém a cópia local em `R/trees.R`. Pacote
   0.1.0 montado (MIT, roxygen, testthat; `R CMD check` limpo, exceto o locale do
   container e o `treestats` ausente, que fez pular 2 testes) e entregue como zip
-  para o Diogo pôr em ~/github/treeshapesim. Falta criar o repositório no GitHub,
-  dar push e registrar no r-universe. Atenção à revisão duplo-cega da MEE: citar um
+  para o Diogo pôr em ~/github/treeshapesim. Repositório público
+  github.com/diogoprov/treeshapesim criado e com push feito pelo Diogo (commit
+  f9d3102). Falta: registrar no r-universe e responder/fechar treestats#35. Atenção à revisão duplo-cega da MEE: citar um
   pacote com o nome do autor no texto de submissão identifica o autor.

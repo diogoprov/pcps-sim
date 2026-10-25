@@ -186,3 +186,4 @@ decisions, commands and results). The full history of changes is in git.
   keep the local copy in pcps-sim. The assistant built the package (code and
   tests copied from R/trees.R, roxygen documentation, README) and ran R CMD
   check, and drafted a reply to the issue for the author to post.
+- The author created github.com/diogoprov/treeshapesim and pushed the package (the GitHub integration could not create repositories).
