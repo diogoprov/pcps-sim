@@ -187,3 +187,4 @@ decisions, commands and results). The full history of changes is in git.
   tests copied from R/trees.R, roxygen documentation, README) and ran R CMD
   check, and drafted a reply to the issue for the author to post.
 - The author created github.com/diogoprov/treeshapesim and pushed the package (the GitHub integration could not create repositories).
+- Opened treeshapesim#1 (pkgdown site via GitHub Actions/Pages, keywords) and diogoprov.r-universe.dev#2 (registry entry); drafted four hex-sticker concepts.
