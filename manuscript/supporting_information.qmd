@@ -22,7 +22,7 @@ si <- function(file) readr::read_csv(file.path("si", file), show_col_types = FAL
 
 ## Tree generator and calibration of the grid
 
-We drew topologies from Aldous's β-splitting model (Aldous, 1996) and branching times from a pure-birth process in which each of the $k$ lineages diversifies at rate $k^{c}$, so that $c = 0$ corresponds to a Yule process and $c < 0$ to a slowdown in diversification, as under diversity dependence. We then ordered the nodes by a uniform linear extension of the partial order of the tree and set the root depth to one. Because γ depends only on the intervals between nodes and the Colless index only on the topology, this construction controls the two axes separately. This generator is our own design choice and not a published model; it replaced the library of trees from several generators, sampled by strata, that we had planned, because it gives independent control by construction.
+We drew topologies from Aldous's β-splitting model (Aldous, 1996) and branching times from a pure-birth process in which each of the $k$ lineages diversifies at rate $k^{c}$, so that $c = 0$ corresponds to a Yule process and $c < 0$ to a slowdown in diversification, as under diversity dependence. We then ordered the nodes by a uniform linear extension of the partial order of the tree and set the root depth to one. Because γ depends only on the intervals between nodes and the Colless index only on the topology, this construction controls the two axes separately. The topology follows Aldous' β-splitting model and the branching times the density-dependent exponential (DDX) model implemented in the R package laser (Rabosky, 2006), with $c = -x$; combining them through a uniform linear extension of the tree order is our own design choice rather than a published generator. This generator replaced the library of trees from several generators, sampled by strata, that we had planned, because it gives independent control by construction.
 
 We calibrated $c$ and β for each N with curves of the mean statistic against the parameter, and accepted a tree only when both statistics fell within 0.5 units of the targets of its cell, which gave acceptance rates of 9–25% (Table S1). Thus, every cell of the 3 × 3 grid could be filled. The Yule × Yule cell approximates the trees used in previous validations (Peres-Neto & Kembel, 2015; Duarte et al., 2016), since the acceptance window truncates the Yule distribution of both statistics.
 
@@ -239,6 +239,8 @@ Prado, V. H. M., & Rossa-Feres, D. C. (2014). The influence of niche and neutral
 Provete, D. B. (2018). Canopy cover and structural complexity affect the phylogenetic composition of a pond-dwelling Neotropical anuran metacommunity. *bioRxiv*, https://doi.org/10.1101/252478
 
 Provete, D. B., Gonçalves-Souza, T., Garey, M. V., Martins, I. A., & Rossa-Feres, D. C. (2014). Broad-scale spatial patterns of canopy cover and pond morphology affect the structure of a Neotropical amphibian metacommunity. *Hydrobiologia*, 734, 69–79. https://doi.org/10.1007/s10750-014-1870-0
+
+Rabosky, D. L. (2006). LASER: a maximum likelihood toolkit for detecting temporal shifts in diversification rates from molecular phylogenies. *Evolutionary Bioinformatics*, 2. https://doi.org/10.1177/117693430600200024
 
 Thompson, P. L., Guzman, L. M., De Meester, L., Horváth, Z., Ptacnik, R., Vanschoenwinkel, B., Viana, D. S., & Chase, J. M. (2020). A process-based metacommunity framework linking local and regional scale community ecology. *Ecology Letters*, 23, 1314–1329. https://doi.org/10.1111/ele.13568
 
