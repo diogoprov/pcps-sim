@@ -1218,4 +1218,4 @@ Próximos passos sugeridos:
   (regimes por clado, opção `stem`). 75 testes, check limpo. Hex sticker: o Diogo não
   gostou da 1ª rodada; 2ª rodada (A–D) a partir das opções 2 (grade) e 4 (sorting),
   em data-raw/hex_options2.R. Diogo descompactou o pacote em ~/github; commits novos
-  enviados como git bundle (último: 7fd36f3).
+  enviados como git bundle. Diogo escolheu juntar A e D: opção E (cores e bolinhas da A, setas de dispersão e gradiente nas manchas); commit 2a936e0 no pacote.
