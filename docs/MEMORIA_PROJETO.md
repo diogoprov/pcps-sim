@@ -1188,3 +1188,15 @@ Próximos passos sugeridos:
 - Publicar só depois da revisão duplo-cega na MEE (Thompson é revisor sugerido);
   repositório no GitHub deve ser privado até lá. Depois da revisão, escrever ao
   Thompson.
+- (2026-11-05) Kraft et al. 2007 (Am Nat 170: 271–283, doi:10.1086/519400) e Colwell &
+  Winkler 1984 (cap. 20 de Strong et al., Princeton, pp. 344–359,
+  doi:10.1515/9781400857081.344) lidos nos PDFs enviados pelo Diogo (fora do git).
+  Conferido: a regra de similaridade limitante de Kraft é o GAUSE de Colwell &
+  Winkler (do par mais próximo, sai a espécie com menor soma de distâncias às
+  restantes); Kraft diz que modificou Raup et al. 1973 para gerar árvores e
+  atributos e Colwell & Winkler para montar as comunidades. A filtragem (remover
+  os mais distantes de um ótimo ancestral ou derivado) é de Kraft, não de Colwell &
+  Winkler; as árvores de Kraft são Yule + Browniano (ECOVOLVE), as de Colwell &
+  Winkler vêm do programa GOD. Implementado no comdynamite: assemble_community()
+  (limiting_similarity, filtering, neutral; min_distance opcional) e traits_bm();
+  61 testes, check limpo.
