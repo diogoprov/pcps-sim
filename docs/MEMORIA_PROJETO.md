@@ -1200,3 +1200,15 @@ Próximos passos sugeridos:
   Winkler vêm do programa GOD. Implementado no comdynamite: assemble_community()
   (limiting_similarity, filtering, neutral; min_distance opcional) e traits_bm();
   61 testes, check limpo.
+- (2026-11-05) Pergunta do Diogo: Kraft et al. 2007 muda as simulações do artigo? Pela
+  descrição de `sim.com()` (seção "Desenho das simulações antigas", acima), o código de
+  2013–2014 filtrava espécies pela similaridade filogenética a uma espécie de referência,
+  sem atributos; não é o algoritmo de Kraft (atributos evoluídos na árvore + GAUSE ou
+  filtro por ótimo). O legacy/ não está neste contêiner para conferir o script. O
+  artigo atual (camadas A e B) não usa nenhum dos dois; Kraft monta uma comunidade
+  isolada, sem gradiente entre sítios, então não mede o que o artigo mede (relação
+  composição–ambiente). Recomendação: não mudar o artigo submetido.
+- Hex sticker do comdynamite: 4 opções em cores sólidas (data-raw/hex_options.R) e
+  script com hexSticker (data-raw/hex_sticker.R). O hexSticker não instalou aqui (a
+  instalação do ggiraph, dependência do ggimage, foi bloqueada pelo controle de
+  permissões); as prévias foram feitas com ggplot2 na mesma geometria.
