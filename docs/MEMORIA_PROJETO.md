@@ -1177,6 +1177,7 @@ Próximos passos sugeridos:
   o texto do modelo) e sem commits desde 2023-02. Não deu para verificar o CRAN daqui.
 - Decisão do Diogo: montar um pacote com o motor da camada B. Nome provisório
   `comdynamite` (sugestões: comdynamite, sortinghat, masseffect, metacommotion).
+  Nome escolhido pelo Diogo: comdynamite (2026-11-05). README com seção "Related packages" (mcomsimr, gen3sis: filogenia como saída vs entrada; treeshapesim). Ideia em aberto: módulo de montagem estática de Kraft et al. 2007 (Am Nat 170: 271–283; Diogo diz ser o mesmo modelo de Colwell & Winkler 1984), à espera dos PDFs para conferir as regras.
   Montado em /home/user/comdynamite (fora deste repositório), versão 0.0.0.9000:
   landscape_implicit/landscape_grid (toro, núcleo exponencial), dispersal_kernel,
   torus_permutations, env_over_time (AR(1), não é o gerador de Thompson),
