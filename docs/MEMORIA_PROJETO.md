@@ -1212,3 +1212,10 @@ Próximos passos sugeridos:
   script com hexSticker (data-raw/hex_sticker.R). O hexSticker não instalou aqui (a
   instalação do ggiraph, dependência do ggimage, foi bloqueada pelo controle de
   permissões); as prévias foram feitas com ggplot2 na mesma geometria.
+- (2026-11-05) comdynamite: `traits_ou()` substitui `traits_bm()` (OU de Hansen 1997,
+  multi-peak de Butler & King 2004, DOIs conferidos no PubMed; alpha = 0 é BM;
+  transição exata por ramo; regime constante em cada ramo) e `paint_regimes()`
+  (regimes por clado, opção `stem`). 75 testes, check limpo. Hex sticker: o Diogo não
+  gostou da 1ª rodada; 2ª rodada (A–D) a partir das opções 2 (grade) e 4 (sorting),
+  em data-raw/hex_options2.R. Diogo descompactou o pacote em ~/github; commits novos
+  enviados como git bundle (último: 7fd36f3).
