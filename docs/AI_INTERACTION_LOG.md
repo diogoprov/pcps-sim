@@ -190,3 +190,6 @@ decisions, commands and results). The full history of changes is in git.
 - Opened treeshapesim#1 (pkgdown site via GitHub Actions/Pages, keywords) and diogoprov.r-universe.dev#2 (registry entry); drafted four hex-sticker concepts.
 - Hex sticker: the author chose concept 4 (comb to balanced) in the colours of concept 2; the assistant wrote data-raw/hex_sticker.R (hexSticker, to be run by the author, since CRAN is blocked in the container) and a ggplot2 preview.
 - Both PRs were merged (the author merged treeshapesim#1; the assistant merged the r-universe registry PR at the author's request). The site is live from the gh-pages branch. The assistant could not delete the pkgdown-site branch (proxy 403); the author deleted it.
+
+### 2026-11-05 — metacommunity simulation package
+- The author asked whether the layer-B simulator should become a package. The assistant checked mcomsimr (still unlicensed, last commit 2023) and recommended a package published only after the double-blind review. The author agreed; the assistant suggested four names and built the package (working name comdynamite) from R/simulate_layerB.R, with tests, a vignette and a check that its output is identical to the code used in the study.

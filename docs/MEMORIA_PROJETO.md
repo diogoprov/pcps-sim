@@ -1171,3 +1171,19 @@ Próximos passos sugeridos:
   padrão master) mergeado: o pacote entra no r-universe. Falta responder e
   fechar treestats#35. Atenção à revisão duplo-cega da MEE: citar um
   pacote com o nome do autor no texto de submissão identifica o autor.
+
+## Pacote da simulação de metacomunidade (2026-11-05)
+- O `mcomsimr` (github.com/plthompson/mcomsimr) continua sem licença (DESCRIPTION com
+  o texto do modelo) e sem commits desde 2023-02. Não deu para verificar o CRAN daqui.
+- Decisão do Diogo: montar um pacote com o motor da camada B. Nome provisório
+  `comdynamite` (sugestões: comdynamite, sortinghat, masseffect, metacommotion).
+  Montado em /home/user/comdynamite (fora deste repositório), versão 0.0.0.9000:
+  landscape_implicit/landscape_grid (toro, núcleo exponencial), dispersal_kernel,
+  torus_permutations, env_over_time (AR(1), não é o gerador de Thompson),
+  species_traits, trait_bm, growth_rates, competition_matrix, mc_dynamics,
+  simulate_metacommunity (record_steps). R CMD check limpo, 41 testes, vinheta.
+  Com a mesma semente, o resultado é idêntico ao de R/simulate_layerB.R
+  (uniforme e espacial).
+- Publicar só depois da revisão duplo-cega na MEE (Thompson é revisor sugerido);
+  repositório no GitHub deve ser privado até lá. Depois da revisão, escrever ao
+  Thompson.
