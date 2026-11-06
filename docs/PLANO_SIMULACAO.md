@@ -185,6 +185,11 @@ O núcleo é o protocolo de Peres-Neto, Leibold & Dray 2012, usado tanto por Dua
 et al. 2016 quanto por Peres-Neto & Kembel 2015. Assim os resultados ficam
 comparáveis com os deles.
 
+> Nota de 2026-11-06: h em U(0, 30) e o Poisson não estão no protocolo de
+> Peres-Neto et al. 2012 (h em U(0,5; 1), L como abundância). Vêm de Peres-Neto &
+> Kembel 2015 (Apêndice A) e Duarte et al. 2016 (Apêndice S2). O desenho não
+> mudou; só a atribuição.
+
 - 100 sítios; E ~ U(0, 100).
 - Resposta unimodal: L_ij = h_j · exp(−(E_i − u_j)² / (2σ_j²)), com Poisson em
   seguida. Analisar incidência (como nos dois estudos) **e abundância** (decidido).

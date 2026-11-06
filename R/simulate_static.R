@@ -1,6 +1,6 @@
 # Layer A: static metacommunity simulation (Dray & Legendre 2008;
-# Peres-Neto, Leibold & Dray 2012), as used by Duarte et al. 2016 and
-# Peres-Neto & Kembel 2015.
+# Peres-Neto, Leibold & Dray 2012), as adapted by Duarte et al. 2016 and
+# Peres-Neto & Kembel 2015 (h ~ U(0, 30) and Poisson counts).
 
 #' Rescale a vector to [lo, hi]
 rescale_to <- function(x, lo = -1, hi = 101) {

@@ -1,6 +1,7 @@
-# Layer A of the new study: static metacommunities (Peres-Neto, Leibold & Dray
-# 2012 protocol) on trees from the shape grid, with the eight scenarios of
-# docs/PLANO_SIMULACAO.md, section 3.
+# Layer A of the new study: static metacommunities (protocol of Peres-Neto,
+# Leibold & Dray 2012, as adapted by Peres-Neto & Kembel 2015 and Duarte et al.
+# 2016: h ~ U(0, 30) and Poisson counts) on trees from the shape grid, with the
+# eight scenarios of docs/PLANO_SIMULACAO.md, section 3.
 
 #' Scenario table (docs/PLANO_SIMULACAO.md, section 3)
 #'
