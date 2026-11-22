@@ -1219,3 +1219,35 @@ Próximos passos sugeridos:
   gostou da 1ª rodada; 2ª rodada (A–D) a partir das opções 2 (grade) e 4 (sorting),
   em data-raw/hex_options2.R. Diogo descompactou o pacote em ~/github; commits novos
   enviados como git bundle. Diogo escolheu juntar A e D: opção E (cores e bolinhas da A, setas de dispersão e gradiente nas manchas); commit 2a936e0 no pacote.
+
+## Impacto das mudanças no comdynamite e no treeshapesim (2026-11-22)
+- Pergunta do Diogo antes da revisão final do texto: as correções nos pacotes quebram
+  ou mudam o artigo? Conferido em comdynamite main (4441b51) e treeshapesim main (385b4f7).
+- **O código do artigo não quebrou:** o pcps-sim não importa nenhum dos dois pacotes;
+  usa as cópias locais em `R/trees.R` e `R/simulate_layerB.R`, que não mudaram.
+- **Nenhuma correção muda as conclusões.** Conferido item a item:
+  - treeshapesim: `rtopology_beta()` iterativa e `assign_ages()` em uma passada dão as
+    mesmas árvores; ramos de comprimento zero só com c muito negativo (ex.: −20), e o
+    artigo usa c ∈ [−3, 0,2] (`invert_curve(rule = 1)` não extrapola); `c` não finito
+    teria dado erro, não viés. O resto (fit_shape, sampling_fraction, rate,
+    extinct_tips, validação de argumentos) é função nova.
+  - comdynamite: os bugs corrigidos estão em funções que não existem no pcps-sim
+    (`tstats()`, ABC, evolução, especiação, `node_test()`). A correção do
+    `pcc_test()` (espécies sem indivíduos viravam eixo de ruído) não se aplica:
+    `finish_metacommunity()` já remove espécies ausentes nas duas camadas. Alinhamento
+    de `alpha` por nome: o pcps-sim monta `alpha` na ordem das pontas. A validação do
+    comdynamite contra o `mcomsimr` e contra Thompson et al. (2020) e a do
+    `pcps_test()` (permutação livre infla em grade; toro nominal) concordam com o
+    artigo. O SI descreve corretamente a imigração (multinomial no não espacial,
+    Poisson no espacial), igual ao código.
+- **Pendências para a revisão do texto (não são bugs):**
+  1. Métodos, linha da Poisson: o texto cita Peres-Neto et al. (2012) para as
+     contagens de Poisson (e o h em U(0, 30) vem junto). O que está conferido no
+     projeto é Peres-Neto & Kembel (2015, Appendix A; ver ESPEC_PCC.md) e Duarte et
+     al. (2016, Appendix S2). O ROADMAP do comdynamite diz que Peres-Neto et al.
+     (2012) usam h em U(0,5; 1) e L como abundância, sem Poisson nos trechos lidos.
+     Conferir no PDF de 2012 ou trocar a citação.
+  2. Reprodutibilidade: o treeshapesim 0.2.1 documenta que a mesma semente dá
+     topologias diferentes em arm64 e x86-64; vale para `R/trees.R`. O README de
+     revisão diz que a grade de árvores é "regenerated ... from the seeds": acrescentar
+     que a regeneração é exata só na mesma plataforma (AWS = x86-64).
