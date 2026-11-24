@@ -1,3 +1,0 @@
-Adds `sim_tree_shape(n, beta = 0, c = 0)`, discussed in #<issue>. Topology from Aldous' beta-splitting model; internode intervals from a pure-birth process with per-lineage rate k^c, rescaled to root depth 1; branching times assigned to nodes in a uniform random linear extension of the tree order. Only uses ape and stats. Tests check the output (binary, ultrametric, root depth 1), argument checks, and that c moves gamma without moving the Yule-normalized Colless index and beta does the opposite. The documentation explains how to reach target values of gamma and Colless by calibration and rejection.
-
-*(Optional)* The code was written with the assistance of an AI model (Claude, Anthropic) and checked by me.

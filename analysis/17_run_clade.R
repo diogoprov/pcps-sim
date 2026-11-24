@@ -2,7 +2,7 @@
 # phylofactorization (R/clade_recovery.R, R/clade_methods.R) in the 9 grid
 # cells x N = 50/100/200, basal or recent clades and shifts 0/0.5/1/2 (0: no
 # planted effect, the chance level of each method), with
-# incidence data; abundance only for N = 100. Run locally (Diogo, 2026-10-19:
+# incidence data; abundance only for N = 100. Run locally (decision of 2026-10-19:
 # ~2 h on 12 cores, cheaper than rebuilding the AWS image with Bioconductor).
 #
 # Phase 1 draws `n_reps` new trees per cell and N with the calibrated

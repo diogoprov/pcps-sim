@@ -1,84 +1,34 @@
-# pcps-sim
+# Code and aggregated results for: Branching times and dispersal, not tree imbalance, govern the performance of phylogenetic community–environment methods
 
-Research compendium for a simulation study on the validity of inference based on
-phylogeny-weighted species composition (phylogenetic fuzzy weighting, matrix **P**,
-and Principal Coordinates of Phylogenetic Structure, PCPS), and on how tree shape
-affects it. A secondary aim compares PCPS with phylogenetic community composition
-(Peres-Neto & Kembel 2015), evoPCA (Pavoine 2016) and phylofactorization.
+**Note for reviewers:** *Methods in Ecology and Evolution* operates under double-anonymous peer review. Author names, affiliations, funding and acknowledgements have been removed from this deposit, and the public repository will be cited after acceptance.
 
-Author: Diogo B. Provete.
+## General information
 
-Status: simulations in progress. See `docs/PLANO_SIMULACAO.md` (simulation plan)
-and `docs/MEMORIA_PROJETO.md` (project log), both in Portuguese.
+1. Paper citation: to be added upon acceptance.
+2. Content: R code of the simulation study (static simulations of metacommunities; process-based simulations of metacommunity dynamics; recovery of a planted clade), the rates aggregated by condition, the summaries of the beta-binomial models, and the scripts that reproduce every table and figure of the manuscript and Supporting Information.
+3. Licences: code under the MIT licence; derived data under CC BY 4.0 (see LICENSE.md).
 
-## Repository structure
+## Structure
 
-```
-pcps-sim/
-├── R/                             functions (sourced by the pipeline and tests)
-│   ├── pfw.R                      matrix P, D_P, ADONIS and Mantel with site/taxa shuffles
-│   ├── pcps_glm.R                 PCPS axes, GLM on PCPS axes, joint D_P tests
-│   ├── pcc.R                      phylogenetic community composition (Peres-Neto & Kembel 2015)
-│   ├── trees.R                    tree generator (beta-splitting topology, lineage-rate times)
-│   ├── tree_grid.R                calibration of the gamma x Colless grid
-│   ├── simulate_static.R          static Gaussian-niche metacommunities (validation)
-│   ├── simulate_layerA.R          layer A scenarios (Pagel's lambda; signal in niche breadth and height)
-│   ├── simulate_layerB.R          layer B process-based dynamics (Thompson et al. 2020), pool calibration
-│   ├── validation.R               replication of published simulations
-│   └── pipeline.R                 design profiles and replicate chunks for targets
-├── analysis/                      numbered scripts, run in order
-│   ├── 01_validate_layerA.R       replication of Duarte et al. (2016) and Peres-Neto & Kembel (2015)
-│   ├── 02_compare_published.R     comparison with published rejection rates
-│   ├── 03_pnk_tree_spread.R       spread of PCC rejection rates across Yule trees
-│   ├── 04_pnk_tree_shape.R        PCC rejection rates vs tree shape
-│   ├── 05_tree_shape_empirical.R  gamma and Colless of anuran clades
-│   ├── 06_tree_grid.R             simulated tree grid
-│   ├── 07_pilot_tree_shape.R      tree-shape pilot
-│   ├── 08_tree_stats.R            treestats statistics for grid and empirical trees
-│   ├── 09_diag_s2sigma.R          diagnosis of the GLM inflation in scenario S2sigma
-│   ├── 10_calibrate_layerB.R      layer B pool sizes giving realized N = 50/100/200
-│   ├── 11_pilot_layerB.R          layer B pilot
-│   ├── 12_bench_blas.R            BLAS timing (Docker)
-│   ├── 13_fig1_schematic.R        Figure 1 (simulation schematic)
-│   └── run_pipeline.R             runs the targets pipeline for one design profile
-├── _targets.R                     targets pipeline, layers A and B (profiles in R/pipeline.R)
-├── tests/testthat/                unit tests
-├── data/
-│   ├── raw/                       immutable inputs (Portik et al. 2023 timetree; not redistributed, see data/raw/README.md)
-│   ├── published/                 rejection rates transcribed from published tables
-│   ├── calibrated/                calibrated design inputs (layer B pool sizes)
-│   └── derived/                   simulation outputs (not tracked)
-├── aws/                           scripts to run the pipeline on an EC2 spot instance
-├── Dockerfile                     container used on AWS (rocker/r-ver + renv)
-├── renv.lock                      package versions
-├── docs/                          simulation plan, project log, method specifications,
-│                                  status report (resumo_projeto.qmd; quarto render)
-├── manuscript/                    Quarto manuscript (in preparation) and figures
-├── legacy/                        material from the 2012–2016 version of the project (not tracked)
-└── references/                    literature (not tracked)
-```
+- `R/`: functions (tree generation, trait simulation, metacommunity dynamics, tests, clade-recovery methods, formal models).
+- `analysis/`: numbered scripts, run in order; `analysis/run_pipeline.R` and `_targets.R` run the simulations.
+- `tests/`: unit tests (testthat), including the checks of the permutation code against vegan and PCPS.
+- `data/published/`: published rates used for validation; `data/calibrated/`: calibrated pool sizes of the process-based simulations.
+- `data/derived/models/`: rates aggregated by condition (`aggregated.csv`), posterior summaries, contrasts, posterior predictive checks and diagnostics of each model.
+- `data/derived/pools/`, `data/derived/trees/`, `data/derived/case_study/`: tree shapes of the regional pools, of the anuran clades of Portik et al. (2023) and the results of the case study (Appendix S3).
+- `manuscript/figures/`, `manuscript/si/`: figures and Supporting Information tables.
+- `renv.lock`, `Dockerfile`: package versions and the computing environment.
 
-## Reproducing the analyses
+## Reproducing the tables and figures without rerunning the simulations
 
-Place the Portik et al. (2023) timetree in `data/raw/` first (see
-`data/raw/README.md`).
+From the repository root, with the packages in `renv.lock` (`renv::restore()`):
 
-```r
-renv::restore()
-# quick end-to-end check
-system("Rscript analysis/run_pipeline.R smoke 4")
-# full study (about 1,100 CPU-hours; aws/README.md describes running it on AWS)
-system("Rscript analysis/run_pipeline.R full 16")
-```
+    Rscript analysis/22_manuscript_figures.R   # Figs 2-5 and S1 from data/derived/models, data/derived/pools and manuscript/si/table_S1_grid.csv (all included)
 
-Outputs are written to `data/derived/<profile>/results.csv`, and the targets store
-to `_targets_<profile>/`.
+The tables `data/derived/models/*/aggregated.csv` hold the number of rejections (or hits) out of the replicates of every condition, which is all the formal models use: `fit_formal_model()` in `R/formal_models.R` refits each model from them, with the formulas given in `analysis/18_formal_models.R` and `analysis/20_formal_models_layerB.R` (these scripts start from the replicate tables). Fig. 1 (`analysis/13_fig1_schematic.R`) and Table S1 (`analysis/24_si_tables.R`) need the tree grid, which `analysis/06_tree_grid.R` regenerates. The comparison of raw and modelled rates (`analysis/38_raw_contrasts.R`) and the sensitivity analysis of clade recovery (`analysis/39_clade_sensitivity.R`) need the fitted models and the replicate tables, which are not included; their outputs are in `data/derived/models/` (`raw_contrasts.csv`, `model_discrepancy.csv`, `clade_sensitivity.csv` and `clade_sensitivity_ranking.csv`). The full simulations (about 870,000 metacommunities) are run with `_targets.R`; the tree grid and the raw replicate tables are not included because of their size and are regenerated by the pipeline from the seeds documented in the scripts.
 
-## License
+## Data and scripts not included
 
-Code is released under the MIT License (`LICENSE`). Text, figures and simulation
-outputs are released under CC BY 4.0 (`LICENSE.md`).
+The scripts that read the tadpole metacommunity data (`analysis/21_regional_pools.R` and `analysis/23_case_study.R`) are withheld for review because they name the data providers; their outputs are in `data/derived/pools/` and `data/derived/case_study/`.
 
-## Citation
-
-See `CITATION.cff`.
+The species-level time tree of Portik et al. (2023) must be downloaded from its original source (see `data/raw/README.md`). The raw tadpole metacommunity data of Appendix S3 come from published studies and from unpublished data shared with the authorss, which cannot be redistributed.
